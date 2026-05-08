@@ -1,0 +1,275 @@
+{% extends "layout/base.html" %} {% block title %} Centros de costo - Turnos
+Bonin {% endblock %} {% block content %}
+
+<!-- form card cc payment -->
+<div class="card card-outline-secondary bg-dark text-light">
+  <div class="card-body">
+    <div class="d-flex justify-content-between">
+      <h3>Centros de costo</h3>
+      <form class="d-flex" role="search" onsubmit="return false;">
+        <input
+          class="form-control me-2"
+          type="search"
+          placeholder="Nombre del centro de costo"
+          id="busqueda"
+        />
+        <button class="btn btn-outline-primary" type="submit">Buscar</button>
+      </form>
+    </div>
+    <hr />
+
+    {% with messages = get_flashed_messages(with_categories=true) %} {% for
+    category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+      <strong>{{ message }}</strong>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% endfor %} {% endwith %}
+
+    <table class="table table-dark table-striped">
+      <thead>
+        <tr>
+          <th scope="col">
+            <p class="title_column" onclick="ordenarTabla(0, 'numero')">
+              ID
+              <span class="arrow" data-type="darr" data-column="0"
+                ><strong>&darr;</strong></span
+              ><span class="arrow" data-type="uarr" data-column="0"
+                >&uarr;</span
+              >
+            </p>
+          </th>
+          <th scope="col">
+            <p class="title_column" onclick="ordenarTabla(1)">
+              Nombre de la línea
+              <span class="arrow" data-type="darr" data-column="1">&darr;</span
+              ><span class="arrow arrow-active" data-type="uarr" data-column="1"
+                >&uarr;</span
+              >
+            </p>
+          </th>
+          <th scope="col">
+            <p class="title_column" onclick="ordenarTabla(2)">
+              Departamento al que corresponde
+              <span class="arrow" data-type="darr" data-column="2">&darr;</span
+              ><span class="arrow" data-type="uarr" data-column="2"
+                >&uarr;</span
+              >
+            </p>
+          </th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody class="tbody-list">
+        {% for cdc in centros_de_costo %}
+        <tr class="record tr-list">
+          <th scope="row">{{ cdc.idCentro }}</th>
+          <td class="record-name">{{ cdc.nombreCentro }}</td>
+          <td>
+            {% for d in departamentos %} {% if d.idDepartment ==
+            cdc.idDepartment%} {{ d.name }} {% endif %} {% endfor %}
+          </td>
+          <td>
+            <button
+              type="button"
+              class="btn btn-warning"
+              data-bs-toggle="modal"
+              data-bs-target="#editModal{{ cdc.idCentro }}"
+            >
+              <img src="/static/img/edit-icon.png" height="15px" width="15px" />
+              <strong>Editar</strong>
+            </button>
+            <!-- Modal -->
+            <div
+              class="modal fade"
+              id="editModal{{ cdc.idCentro }}"
+              tabindex="-1"
+              aria-labelledby="modalLabel"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalLabel">
+                      Editar centro de costo
+                    </h1>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="modal-body">
+                    <form
+                      class="form"
+                      role="form"
+                      action="/web/centro_de_costo/editarCentro_de_costo_web"
+                      method="POST"
+                    >
+                      <div class="form-group">
+                        <label hidden for="idCentro"
+                          >ID del centro de costo</label
+                        >
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="idCentro"
+                          name="idCentro"
+                          title="ID del centro de costo"
+                          min="1"
+                          required
+                          value="{{ cdc.idCentro }}"
+                          readonly
+                          hidden
+                        />
+                      </div>
+
+                      <div class="form-group">
+                        <label for="nombreCentro"
+                          >Nombre del centro de costo</label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="nombreCentro"
+                          name="nombreCentro"
+                          title="Nombre del centro de costo"
+                          min="1"
+                          required
+                          value="{{ cdc.nombreCentro }}"
+                        />
+                      </div>
+
+                      <div class="form-group">
+                        <label for="idDepartment"
+                          >Departamento al que corresponde el centro de
+                          costo</label
+                        >
+                        <select
+                          type="text"
+                          class="form-control"
+                          id="idDepartment"
+                          name="idDepartment"
+                          title="Departamento al que corresponde el centro de costo"
+                          required
+                        >
+                          <option disabled value="{{ None }}">
+                            -- Seleccione una opción --
+                          </option>
+
+                          {% for d in departamentos %} {% if d.idDepartment ==
+                          cdc.idDepartment %}
+                          <option value="{{ d.idDepartment }}" selected>
+                            {{ d.name }}
+                          </option>
+                          {% else %}
+                          <option value="{{ d.idDepartment }}">
+                            {{ d.name }}
+                          </option>
+                          {% endif %} {% endfor %}
+                        </select>
+                      </div>
+
+                      <hr />
+                      <div class="d-flex justify-content-end">
+                        <button
+                          type="button"
+                          class="btn btn-secondary btn-lg m-1"
+                          data-bs-dismiss="modal"
+                        >
+                          Cerrar
+                        </button>
+                        <button
+                          type="submit"
+                          class="btn btn-success btn-lg btn-block m-1"
+                        >
+                          Confirmar
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <button
+              type="button"
+              class="btn btn-danger"
+              data-bs-toggle="modal"
+              data-bs-target="#deleteModal{{ cdc.idCentro }}"
+            >
+              <img
+                src="/static/img/delete-icon.png"
+                height="15px"
+                width="15px"
+              />
+              <strong>Eliminar</strong>
+            </button>
+            <div
+              class="modal fade"
+              id="deleteModal{{ cdc.idCentro }}"
+              tabindex="-1"
+            >
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">
+                      Eliminar línea
+                    </h1>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>
+                      ¿Seguro que quiere eliminar el registro {{ cdc.idCentro
+                      }}?
+                    </p>
+                  </div>
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-secondary btn-lg"
+                      data-bs-dismiss="modal"
+                    >
+                      Cerrar
+                    </button>
+                    <form
+                      action="/web/centro_de_costo/eliminarCentro_de_costo_web"
+                      method="POST"
+                    >
+                      <input
+                        type="number"
+                        value="{{cdc.idCentro}}"
+                        name="idCentro"
+                        hidden
+                      />
+                      <button type="submit" class="btn btn-danger btn-lg">
+                        Eliminar
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

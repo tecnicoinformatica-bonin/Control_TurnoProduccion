@@ -1,0 +1,5 @@
+{% extends "layout/base.html" %} {% block title %} Programación {% for d in
+departamentos %} {% if d.idDepartment == idDepartment %} {{ d.name }} {% endif
+%} {% endfor %} {{ fecha }} - Turnos Bonin {% endblock %} {% block content %} {%
+with messages = get_flashed_messages(with_categories=true) %} {% for category,
+message in messages %} {% endblock %}

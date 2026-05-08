@@ -1,0 +1,171 @@
+{% extends "layout/base.html" %} {% block title %} Crear empleado - Turnos Bonin
+{% endblock %} {% block content %}
+
+<div class="">
+  <!-- <div class="btn-group d-flex crud-control">
+    <a href="#" class="btn btn-dark active">Crear</a>
+    <a href="#" class="btn btn-dark">Editar</a>
+    <a href="#" class="btn btn-dark">Eliminar</a>
+  </div> -->
+  <hr class="mb-5" />
+
+  <!-- form card cc payment -->
+  <div class="card card-outline-secondary bg-dark text-light">
+    <div class="card-body">
+      <h3 class="text-left">Crear empleado</h3>
+      <hr />
+
+      {% with messages = get_flashed_messages(with_categories=true) %} {% for
+      category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+        <strong>{{ message }}</strong>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+      {% endfor %} {% endwith %}
+
+      <form
+        class="form"
+        role="form"
+        action="/web/empleado/crearEmpleado_web"
+        method="POST"
+      >
+        <div class="form-group">
+          <label for="idEmpleado">ID del empleado</label>
+          <input
+            type="number"
+            class="form-control"
+            id="idEmpleado"
+            name="idEmpleado"
+            title="ID del empleado"
+            min="1"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="badgeNumber">Badge del empleado</label>
+          <input
+            type="number"
+            class="form-control"
+            id="badgeNumber"
+            name="badgeNumber"
+            title="Badge del empleado"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="firstName">Primer nombre</label>
+          <input
+            type="text"
+            class="form-control"
+            id="firstName"
+            name="firstName"
+            title="Primer nombre del empleado"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="secondName">Segundo nombre</label>
+          <input
+            type="text"
+            class="form-control"
+            id="secondName"
+            name="secondName"
+            title="Segundo nombre del empleado"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Primer apellido</label>
+          <input
+            type="text"
+            class="form-control"
+            id="lastName"
+            name="lastName"
+            title="Primer apellido del empleado"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="lastName2">Segundo apellido</label>
+          <input
+            type="text"
+            class="form-control"
+            id="lastName2"
+            name="lastName2"
+            title="Segundo apellido del empleado"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="position">Puesto</label>
+          <input
+            type="text"
+            class="form-control"
+            id="position"
+            name="position"
+            title="Puesto del empleado"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="idDepartment">Departamento</label>
+          <select
+            type="text"
+            class="form-control"
+            id="idDepartment"
+            name="idDepartment"
+            title="Departamento al que pertenece el empleado"
+            required
+          >
+            <option selected disabled value="{{ None }}">
+              -- Seleccione una opción --
+            </option>
+            {% for d in departamentos %}
+            <option value="{{ d.idDepartment }}">{{ d.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group mt-3">
+          <input type="hidden" name="activo_hidden" value="0" />
+          <div class="form-check form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              name="activo"
+              id="activo"
+              value="1"
+            />
+            <label class="form-check-label" for="activo">Activo</label>
+          </div>
+        </div>
+
+        <hr />
+        <div class="form-group row">
+          <div class="col-md-6">
+            <button type="reset" class="btn btn-light btn-lg btn-block">
+              Borrar información
+            </button>
+          </div>
+          <div class="col-md-6">
+            <button type="submit" class="btn btn-success btn-lg btn-block">
+              Crear
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

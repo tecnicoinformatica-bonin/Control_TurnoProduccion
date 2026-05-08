@@ -1,0 +1,259 @@
+class ProgramacionRepository:
+    @staticmethod
+    def getProgramacionById(db, id):
+        cursor = None
+
+        try:
+            cursor = db.connection.cursor()
+
+            query = """
+            SELECT *
+            FROM turnos_programacion
+            WHERE idProgramacion = %s
+            """
+
+            cursor.execute(query, (id,))
+            programacion = cursor.fetchone()
+
+            return programacion
+        
+        except Exception as ex:
+            return {"error": f"No se pudo obtener la programación por ID en el repositorio: {str(ex)}"}
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    @staticmethod
+    def getProgramacionByDate(db, fecha):
+        cursor = None
+
+        try:
+            cursor = db.connection.cursor()
+
+            query = """
+            SELECT *
+            FROM turnos_programacion
+            WHERE fecha = %s
+            """
+
+            cursor.execute(query, (fecha,))
+            programacion = cursor.fetchone()
+
+            return programacion
+        
+        except Exception as ex:
+            return {"error": f"No se pudo obtener la programación por fecha en el repositorio: {str(ex)}"}
+
+        finally:
+            if cursor:
+                cursor.close()
+    
+    @staticmethod
+    def getProgramacionByDateAndIdDepartment(db, fecha, idDepartment):
+        cursor = None
+
+        try:
+            cursor = db.connection.cursor()
+
+            query = """
+            SELECT *
+            FROM turnos_programacion
+            WHERE fecha = %s AND idDepartment = %s
+            """
+
+            cursor.execute(query, (fecha,idDepartment,))
+            programacion = cursor.fetchone()
+
+            return programacion
+        
+        except Exception as ex:
+            return {"error": f"No se pudo obtener la programación por fecha y ID Departamento en el repositorio: {str(ex)}"}
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    @staticmethod
+    def getProgramaciones(db):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor()
+
+            query = """
+            SELECT * 
+            FROM turnos_programacion
+            """
+            cursor.execute(query)
+
+            programaciones = cursor.fetchall()
+
+            return programaciones
+        
+        except Exception as ex:
+            return {"error": f"No se pudo obtener las programaciones en el repositorio: {str(ex)}"}
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    @staticmethod
+    def getProgramacionesEnBorrador(db):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor()
+
+            query = """
+            SELECT * 
+            FROM turnos_programacion
+            WHERE estado = 'BORRADOR'
+            """
+            cursor.execute(query)
+
+            programaciones = cursor.fetchall()
+
+            return programaciones
+        
+        except Exception as ex:
+            return {"error": f"No se pudo obtener las programaciones en borrador, en el repositorio: {str(ex)}"}
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    @staticmethod
+    def createProgramacion(db, fecha, idDepartment, fecha_creacion, estado):
+        cursor = None
+
+        try: 
+            if(ProgramacionRepository.getProgramacionByDateAndIdDepartment(db, fecha, idDepartment)):
+                return {"error": "ID del programacion de esa fecha ya existe para ese departamento."}
+
+            cursor = db.connection.cursor()
+            
+            query = """
+                INSERT INTO turnos_programacion(fecha, idDepartment, fecha_creacion, estado)
+                VALUES (%s, %s, %s, %s)
+                """
+            cursor.execute(query, (fecha, idDepartment, fecha_creacion, estado,))
+            
+            db.connection.commit()
+
+            newProgramacion = {
+                "fecha": fecha, 
+                "idDepartment": idDepartment, 
+                "estado": estado,        
+                "fecha_creacion": fecha_creacion,        
+            }
+
+            return {"mensaje": f"Programacion creada correctamente. Fecha: {newProgramacion['fecha']}, idDepartment: {newProgramacion['idDepartment']}, estado: {newProgramacion['estado']},  fecha_creacion: {newProgramacion['fecha_creacion']}"}
+        
+        except Exception as ex:
+            db.connection.rollback()
+            return {"error": f"No se pudo crear la programación por ID en el repositorio: {str(ex)}"}
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    @staticmethod
+    def cerrarProgramacion(db, idProgramacion, elaborado_por, estado, fecha_cierre, cerrado_por):
+        cursor = None
+
+        try: 
+            # if(ProgramacionRepository.getProgramacionById(db, idProgramacion)):
+            #     return {"error": "ID del programacion de esa fecha ya existe para ese departamento."}
+
+            cursor = db.connection.cursor()
+            
+            query = """
+                UPDATE turnos_programacion SET elaborado_por = %s, estado = %s, fecha_cierre = %s, cerrado_por = %s
+                WHERE idProgramacion = %s
+                """
+            cursor.execute(query, (elaborado_por, estado, fecha_cierre, cerrado_por, idProgramacion,))
+            
+            db.connection.commit()
+
+            newProgramacion = {
+                "idProgramacion": idProgramacion, 
+                "elaborado_por": elaborado_por,  
+                "estado": estado,  
+                "fecha_cierre": fecha_cierre,  
+                "cerrado_por": cerrado_por,  
+            }
+
+            return {"mensaje": f"Programacion cerrada correctamente. idProgramacion: {newProgramacion['idProgramacion']}, estado: {newProgramacion['estado']}"}
+        
+        except Exception as ex:
+            db.connection.rollback()
+            return {"error": f"No se pudo cerrar la programación por ID en el repositorio: {str(ex)}"}
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    @staticmethod
+    def reOpenProgramacion(db, fecha, idDepartment, estado, fecha_reapertura, reabierto_por, motivo_reapertura):
+        cursor = None
+
+        try: 
+            if estado == "BORRADOR":
+                return {"error": f"La programacion aún no se encuentra cerrada."}
+            
+            cursor = db.connection.cursor()
+            
+            query = """
+                UPDATE turnos_programacion SET estado = 'BORRADOR', fecha_reapertura = %s, reabierto_por = %s, motivo_reapertura = %s
+                WHERE fecha = %s AND idDepartment = %s
+                """
+            
+            cursor.execute(query, (fecha, idDepartment, fecha_reapertura, reabierto_por, motivo_reapertura,))
+            
+            db.connection.commit()
+
+            editedProgramacion = {
+                "fecha": fecha, 
+                "idDepartment": idDepartment, 
+                "estado": estado, 
+                "fecha_reapertura": fecha_reapertura, 
+                "reabierto_por": reabierto_por, 
+                "motivo_reapertura": motivo_reapertura, 
+            }
+
+            return {"mensaje": f"Programacion modificada correctamente. Fecha: {editedProgramacion['fecha']}, ID del Departamento: {editedProgramacion['idDepartment']}, Estado: {editedProgramacion['estado']}"}
+
+        
+        except Exception as ex:
+            db.connection.rollback()
+            return {"error": f"No se pudo cambiar el estado de la programación a BORRADOR en el repositorio: {str(ex)}"}
+
+        finally:
+            if cursor:
+                cursor.close()
+        
+    @staticmethod
+    def deleteProgramacion(db, idProgramacion):
+        cursor = None
+
+        try:
+            cursor = db.connection.cursor()
+
+            query = """
+            DELETE FROM turnos_programacion
+            WHERE idProgramacion = %s
+            """
+
+            cursor.execute(query, (idProgramacion,))
+            db.connection.commit()
+            
+            return {"mensaje": "Programacion eliminada."}
+        
+        except Exception as ex:
+            db.connection.rollback()
+            return {"error": f"No se pudo eliminar la programación por ID en el repositorio: {str(ex)}"}
+
+        finally:
+            if cursor:
+                cursor.close()

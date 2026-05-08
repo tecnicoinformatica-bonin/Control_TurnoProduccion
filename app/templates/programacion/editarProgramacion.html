@@ -1,0 +1,692 @@
+{% extends "layout/base.html" %} {% block title %} Programación {% for d in
+departamentos %} {% if d.idDepartment == idDepartment %} {{ d.name }} {% endif
+%} {% endfor %} {{ fecha }} - Turnos Bonin {% endblock %} {% block content %} {%
+with messages = get_flashed_messages(with_categories=true) %} {% for category,
+message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible" role="alert">
+  <strong>{{ message }}</strong>
+  <button
+    type="button"
+    class="btn-close"
+    data-bs-dismiss="alert"
+    aria-label="Close"
+  ></button>
+</div>
+{% endfor %} {% endwith %}
+<div class="card card-outline-secondary bg-dark text-light mt-3">
+  <div class="card-body">
+    <div class="programacion-parent">
+      <div class="dia-fecha-text__programacion">Día y Fecha</div>
+      <div class="departamento-text__programacion">Departamento</div>
+      <div class="elaborado-por__programacion">Elaborado por</div>
+      <div class="cena-sin-costo-text__programacion">Total cenas sin costo</div>
+      <div class="cena-con-costo-text__programacion">Total cenas con costo</div>
+      <div class="almuerzos-sin-costo-text__programacion">Total almuerzos</div>
+      <div class="cena-sin-costo-data__programacion">0</div>
+      <div class="cena-con-costo-data__programacion">0</div>
+      <div class="almuerzos-sin-costo-data__programacion">0</div>
+      <div class="dia-fecha-data__programacion" data-fecha="{{ fecha }}"></div>
+      <div
+        class="departamento-data__programacion"
+        data-id-department="{{ idDepartment }}"
+      >
+        {% for d in departamentos %} {% if d.idDepartment == idDepartment %} {{
+        d.name }} {% endif %} {% endfor %}
+      </div>
+      <div class="elaborado-por-data__programacion">
+        <!-- <select name="elaborado_por" id="elaborado_por">
+          <option selected disabled value="">
+            -- Seleccione una opción --
+          </option>
+          {% for u in usuarios %}
+          <option value="{{ u.idUsuario }}">{{ u.nombre }}</option>
+          {% endfor %}
+        </select> -->
+        {% for u in usuarios %} {% if u.idUsuario ==
+        programacion_actual.cerrado_por%} {{ u.nombre }} {% endif %} {% endfor
+        %}
+        <label name="elaborado_por" id="elaborado_por"> </label>
+      </div>
+      <div class="horario-diurno-text__programacion">
+        Horario de 7:00 a 20:00 / 21:00 horas
+      </div>
+      <div class="horario-nocturno-text__programacion">
+        Horario de 18:00 a 06:00
+      </div>
+      <div class="asueto-text__programacion">Asueto</div>
+      <div class="asueto-data__programacion">Si</div>
+      <div class="estado-text__programacion">Estado</div>
+      <div class="estado-data__programacion">
+        {{ programacion_actual.estado }}
+      </div>
+    </div>
+  </div>
+  <div>
+    <button id="reactivity-add" class="btn btn-warning m-3">
+      Agregar registro
+    </button>
+    <button id="descargar-excel" class="btn btn-success m-3">
+      Descargar Excel
+    </button>
+    <button id="descargar-pdf" class="btn btn-danger m-3">Descargar PDF</button>
+  </div>
+
+  <div id="tabla-registros"></div>
+</div>
+<form id="formCerrarProgramacion" method="PUT">
+  <input
+    type="number"
+    name="idProgramacion"
+    value="{{ programacion_actual.idProgramacion }}"
+  />
+  <input
+    id="input__elaborado_por"
+    type="number"
+    name="elaborado_por"
+    value=""
+  />
+  <input id="input__idDepartment" type="number" name="idDepartment" value="" />
+  <input id="input__estado" type="text" name="estado" value="CERRADO" />
+  <input id="input__fecha_cierre" type="text" name="fecha_cierre" value="" />
+  <input id="input__fecha" type="text" name="fecha" value="" />
+  <input
+    id="input__cerrado_por"
+    type="number"
+    name="cerrado_por"
+    value="{{ current_user.id }}"
+  />
+</form>
+
+<script>
+  /* Formato a fecha del encabezado */
+  const diaFecha = document.querySelector(".dia-fecha-data__programacion");
+  const fechaSinFormato = new Date(Date.parse(diaFecha.dataset.fecha));
+  const localePrincipal = navigator.language;
+  const options = {
+    month: "long",
+    year: "numeric",
+    day: "numeric",
+    weekday: "long",
+  };
+
+  // const [year, month, day] = diaFecha.dataset.fecha.split("-");
+  const [year, month, day] = "{{ fecha }}".split("-");
+
+  const fechaHoraLocal = new Date(year, month - 1, day);
+
+  const fechaConFormato = new Intl.DateTimeFormat(
+    localePrincipal,
+    options,
+  ).format(fechaHoraLocal);
+
+  diaFecha.textContent = `${fechaConFormato[0].toUpperCase() + fechaConFormato.slice(1)}`;
+</script>
+
+<script>
+  const fechaProgramacion = document.querySelector(
+    ".dia-fecha-data__programacion",
+  ).dataset.fecha;
+
+  const idDepartmentProgramacion = document.querySelector(
+    ".departamento-data__programacion",
+  ).dataset.idDepartment;
+</script>
+
+<script>
+  (async function () {
+    let empleados = {};
+    let empleadosDataMap = {};
+    let lineas = {};
+    let procesos = {};
+    let centrosDeCosto = {};
+
+    async function cargarCatalogos() {
+      const [
+        empleadosResponse,
+        lineasResponse,
+        procesoResponse,
+        centrosResponse,
+      ] = await Promise.all([
+        fetch("/json/empleado/get_empleados"),
+        fetch("/json/linea/get_lineas"),
+        fetch("/json/proceso/get_procesos"),
+        fetch("/json/centro_de_costo/get_centros_de_costo"),
+      ]);
+
+      const empleadosData = await empleadosResponse.json();
+      const lineasData = await lineasResponse.json();
+      const procesosData = await procesoResponse.json();
+      const centrosData = await centrosResponse.json();
+
+      empleadosData.forEach((e) => {
+        empleados[e.idEmpleado] =
+          `${e.firstName} ${e.secondName ?? ""} ${e.lastName} ${e.lastName2 ?? ""}`;
+
+        empleadosDataMap[e.idEmpleado] = e;
+      });
+      lineasData.forEach((l) => (lineas[l.idLinea] = l.nameLinea));
+      procesosData.forEach((p) => (procesos[p.idProceso] = p.proceso));
+      centrosData.forEach((c) => (centrosDeCosto[c.idCentro] = c.nombreCentro));
+    }
+
+    await cargarCatalogos();
+
+    const idProgramacion = "{{ programacion_actual.idProgramacion }}";
+    const fecha = new Date("{{ programacion_actual.fecha }}");
+
+    const table = new Tabulator("#tabla-registros", {
+      theme: "site-dark",
+      height: "500px",
+      layout: "fitColumns",
+
+      ajaxURL: `/json/registro/get_registros/${idProgramacion}`,
+      ajaxConfig: "GET",
+
+      columns: [
+        /* { title: "ID", field: "idRegistro", width: 80 }, */
+        {
+          title: "Fecha",
+          field: "fecha",
+          editor: false,
+          visible: true,
+        },
+        {
+          title: "ID empleado",
+          field: "idEmpleado",
+          editor: false,
+          visible: true,
+        },
+        {
+          title: "Badge",
+          field: "badgeNumber",
+          editor: false,
+          visible: true,
+        },
+        {
+          title: "Empleado",
+          field: "idEmpleado",
+
+          formatter: function (cell) {
+            return (
+              empleados[cell.getValue()] ||
+              "<span style='color:gray'>Seleccione...</span>"
+            );
+          },
+
+          editor: "list",
+
+          editorParams: {
+            values: empleados,
+            autocomplete: true,
+            // clearable: true,
+          },
+        },
+        {
+          title: "Hora Inicio",
+          field: "hora_inicio",
+          editor: "time",
+          // formatter: "datetime",
+          formatterParams: {
+            inputFormat: "HH:mm:ss",
+            outputFormat: "HH:mm:ss",
+          },
+
+          editorParams: {
+            format: "HH:mm:ss",
+          },
+        },
+        {
+          title: "Hora Fin",
+          field: "hora_fin",
+          editor: "time",
+          // formatter: "datetime",
+          formatterParams: {
+            inputFormat: "HH:mm:ss",
+            outputFormat: "HH:mm",
+          },
+
+          editorParams: {
+            format: "HH:mm:ss",
+          },
+        },
+        {
+          title: "Centro de costo",
+          field: "idCentro",
+
+          formatter: function (cell) {
+            return centrosDeCosto[cell.getValue()] || "—";
+          },
+
+          editor: false,
+
+          editorParams: {
+            values: centrosDeCosto,
+          },
+        },
+        {
+          title: "Línea",
+          field: "idLinea",
+
+          formatter: function (cell) {
+            return lineas[cell.getValue()] || "—";
+          },
+
+          editor: "list",
+
+          editorParams: {
+            values: lineas,
+            autocomplete: true,
+          },
+        },
+        {
+          title: "Proceso",
+          field: "idProceso",
+
+          formatter: function (cell) {
+            return procesos[cell.getValue()] || "—";
+          },
+
+          editor: "list",
+
+          editorParams: {
+            values: procesos,
+            autocomplete: true,
+          },
+        },
+        {
+          title: "Almuerzo",
+          field: "aplica_almuerzo",
+          hozAlign: "center",
+          editor: false,
+          formatter: function (cell) {
+            return cell.getValue()
+              ? "<span style='color:lime;'>&check;</span>"
+              : "<span style='color:red;'>&cross;</span>";
+          },
+        },
+        {
+          title: "Cena",
+          field: "aplica_cena",
+          hozAlign: "center",
+          editor: false,
+          formatter: function (cell) {
+            return cell.getValue()
+              ? "<span style='color:lime;'>&check;</span>"
+              : "<span style='color:red;'>&cross;</span>";
+          },
+        },
+        {
+          title: "Transporte",
+          field: "aplica_transporte",
+          hozAlign: "center",
+          editor: true,
+          formatter: "tickCross",
+        },
+        {
+          title: "Observación de transporte",
+          field: "observacion_transporte",
+          editor: "input",
+        },
+        {
+          title: "❌",
+          hozAlign: "center",
+          formatter: () => "<button class='btn btn-danger'>&cross;</button>",
+          cellClick: function (e, cell) {
+            let row = cell.getRow();
+            let data = row.getData();
+
+            if (!data.idRegistro) {
+              row.delete();
+              return;
+            }
+
+            fetch(`/json/registro/delete_registro/${data.idRegistro}`, {
+              method: "DELETE",
+            })
+              .then((res) => res.json())
+              .then(() => row.delete());
+          },
+        },
+        {
+          title: "Estado",
+          field: "_saveStatus",
+          hozAlign: "center",
+
+          formatter: function (cell) {
+            const value = cell.getValue();
+
+            switch (value) {
+              case "draft":
+                return "🟡 Borrador";
+
+              case "saving":
+                return "💾 Guardando";
+
+              case "saved":
+                return "🟢 Guardado";
+
+              case "error":
+                return "🔴 Error";
+
+              default:
+                return "—";
+            }
+          },
+        },
+        {
+          title: "Guardar",
+          hozAlign: "center",
+
+          formatter: function () {
+            return `
+      <button class="btn btn-success btn-sm">
+        💾
+      </button>
+    `;
+          },
+
+          cellClick: async function (e, cell) {
+            const row = cell.getRow();
+            const data = row.getData();
+
+            // VALIDACIÓN
+            if (!data.idEmpleado || !data.hora_inicio || !data.hora_fin) {
+              alert("Complete los campos obligatorios");
+              return;
+            }
+
+            row.update({
+              _saveStatus: "saving",
+            });
+
+            try {
+              let response;
+
+              // CREATE
+              if (data._isNew) {
+                response = await fetch("/json/registro/create_registro", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(data),
+                });
+              } else {
+                // UPDATE
+                response = await fetch(
+                  `/json/registro/update_registro/${data.idRegistro}`,
+                  {
+                    method: "PUT",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(data),
+                  },
+                );
+              }
+
+              const resp = await response.json();
+
+              if (resp.error) {
+                throw new Error(resp.error);
+              }
+
+              row.update({
+                ...resp,
+
+                _isNew: false,
+                _isDirty: false,
+                _saveStatus: "saved",
+              });
+            } catch (error) {
+              console.error(error);
+
+              row.update({
+                _saveStatus: "error",
+              });
+
+              alert(error.message);
+            }
+          },
+        },
+      ],
+
+      dataLoaded: function () {
+        recalcularTotales();
+      },
+
+      rowAdded: function () {
+        recalcularTotales();
+      },
+
+      rowDeleted: function () {
+        recalcularTotales();
+      },
+    });
+
+    let updateTimeouts = {};
+
+    table.on("cellEdited", function (cell) {
+      const row = cell.getRow();
+      const data = row.getData();
+
+      updateAlmuerzoOrCenaField(cell);
+      updateIdEmpleadoAndBadgeField(cell);
+      changeRowState(cell);
+
+      recalcularTotales();
+
+      const id = data.idRegistro;
+
+      if (!id) return;
+
+      if (updateTimeouts[id]) {
+        clearTimeout(updateTimeouts[id]);
+      }
+
+      // Espera 800ms antes de guardar (debounce)
+      updateTimeouts[id] = setTimeout(() => {
+        fetch(`/json/registro/update_registro/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        })
+          .then((res) => res.json())
+          .then((resp) => {
+            if (resp.error) {
+              alert(resp.error);
+            }
+          });
+      }, 800);
+    });
+
+    table.on("tableBuilt", function () {
+      setTimeout(() => {
+        recalcularTotales();
+      }, 0);
+    });
+
+    function recalcularTotales() {
+      /* console.log("ANTES:", table.getData());
+
+       setTimeout(() => {
+         console.log("DESPUÉS:", table.getData());
+       }, 2000);
+  */
+      let data = table.getData();
+
+      let almuerzos = 0;
+      let cenas_sin_costo = 0;
+      let cenas_con_costo = 0;
+      data.forEach((row) => {
+        if (row.aplica_almuerzo === 1 || row.aplica_almuerzo === true)
+          almuerzos++;
+        if (row.aplica_cena === 1 || row.aplica_cena === true)
+          cenas_sin_costo++;
+        if (row.aplica_cena === 0 || row.aplica_cena === false)
+          cenas_con_costo++;
+      });
+
+      document.querySelector(
+        ".almuerzos-sin-costo-data__programacion",
+      ).innerText = almuerzos;
+      document.querySelector(".cena-sin-costo-data__programacion").innerText =
+        cenas_sin_costo;
+      document.querySelector(".cena-con-costo-data__programacion").innerText =
+        cenas_con_costo;
+    }
+
+    function calcularBeneficios(rowData) {
+      console.log(
+        `Calcular beneficios: ${rowData.hora_inicio} a ${rowData.hora_fin}`,
+      );
+
+      if (!rowData.hora_inicio || !rowData.hora_fin) return rowData;
+      console.log("hola función calcularBeneficios 2");
+
+      const entrada = parseHora(rowData.hora_inicio);
+      const salida = parseHora(rowData.hora_fin);
+      console.log({ entrada, salida });
+
+      const dia = fecha.getDay(); // 6 = sábado
+
+      const horaEntrada = entrada.h;
+      const horaSalida = salida.h;
+      console.log({ horaEntrada, horaSalida, dia });
+
+      // Almuerzo
+      rowData.aplica_almuerzo =
+        dia === 6 && horaEntrada <= 7 && horaSalida >= 11;
+
+      // Cena
+      rowData.aplica_cena =
+        horaEntrada <= 7 && horaSalida >= 20 && horaSalida <= 23;
+
+      return rowData;
+    }
+
+    function parseHora(horaStr) {
+      const [h, m, s] = horaStr.split(":").map(Number);
+      return { h, m, s };
+    }
+
+    function updateAlmuerzoOrCenaField(cell) {
+      const field = cell.getField();
+
+      if (field === "hora_inicio" || field === "hora_fin") {
+        const row = cell.getRow();
+        let data = row.getData();
+
+        data = calcularBeneficios(data);
+
+        row.update({
+          aplica_almuerzo: data.aplica_almuerzo,
+          aplica_cena: data.aplica_cena,
+        });
+      }
+    }
+
+    function updateIdEmpleadoAndBadgeField(cell) {
+      const field = cell.getField();
+
+      if (field === "idEmpleado") {
+        const row = cell.getRow();
+        const data = row.getData();
+
+        const empleado = empleadosDataMap[data.idEmpleado];
+
+        if (!empleado) return;
+
+        row.update({
+          idEmpleado: empleado.idEmpleado,
+          badgeNumber: empleado.badgeNumber,
+          idCentro: empleado.idCentro,
+        });
+
+        row.reformat();
+        console.log(data);
+      }
+    }
+
+    function changeRowState(cell) {
+      const row = cell.getRow();
+      const data = row.getData();
+
+      data._isDirty = true;
+
+      if (data._saveStatus !== "saving") {
+        row.update({
+          _saveStatus: data._isNew ? "draft" : "editing",
+        });
+      }
+    }
+
+    document
+      .getElementById("reactivity-add")
+      .addEventListener("click", function () {
+        table.addRow(
+          {
+            _isNew: true,
+            _isDirty: false,
+            _saveStatus: "draft",
+
+            fecha: fecha.toISOString().slice(0, 10),
+            idProgramacion: idProgramacion,
+
+            /* idEmpleado: "",
+            badgeNumber: "",
+            idCentro: "",
+
+            hora_inicio: "",
+            hora_fin: "",
+
+            idLinea: "",
+            idProceso: "",
+
+            aplica_almuerzo: false,
+            aplica_cena: false,
+            aplica_transporte: false,
+
+            observacion_transporte: "", */
+          },
+          false,
+        );
+
+        /* table.addRow(nuevaFila, false);
+
+        fetch(`/json/registro/create_registro`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(nuevaFila),
+        })
+          .then((res) => res.json())
+          .then((resp) => {
+            if (resp.error) {
+              alert(resp.error);
+              return;
+            }
+
+            table.getRows()[0].update(resp); // asigna ID real
+          }); */
+      });
+
+    document
+      .getElementById("descargar-excel")
+      .addEventListener("click", function () {
+        table.download("xlsx", `Reporte ${fecha.toISOString()}.xlsx`, {
+          sheetName: "Reporte",
+        });
+      });
+
+    document
+      .getElementById("descargar-pdf")
+      .addEventListener("click", function () {
+        table.download("pdf", "reporte.pdf", {
+          orientation: "portrait",
+          title: "Reporte",
+        });
+      });
+  })();
+</script>
+
+{% endblock %}

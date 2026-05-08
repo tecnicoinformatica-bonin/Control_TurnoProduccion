@@ -1,0 +1,250 @@
+/* body */
+
+.body-bg {
+  min-height: 100vh;
+  background: url("/static/img/bg.png") center/cover no-repeat;
+  background-attachment: fixed;
+}
+
+/* login.html */
+.login-bg {
+  /* background: linear-gradient(135deg, #5288ee, #2a5298); */
+  min-height: 100vh;
+  background: url("/static/img/login-bg.jpg") center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.login-bg::before {
+  min-height: 100vh;
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.login-bg > * {
+  position: relative;
+}
+
+.form-control {
+  border-radius: 10px;
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0 0.2rem rgba(42, 82, 152, 0.25);
+}
+
+.login-card {
+  /* border: none;
+  border-radius: 16px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15); */
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.fade-in-card {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    display: flex;
+  }
+}
+
+/* SIDEBAR */
+.sidebar {
+  height: 100vh;
+}
+.sidebar-item {
+  position: relative;
+  padding: 10px 15px;
+}
+
+.dropdown-sb {
+  display: none;
+  position: absolute;
+  left: 100%;
+  top: 0;
+  background-color: #212529;
+  min-width: 180px;
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+.dropdown-sb a {
+  display: block;
+  padding: 10px;
+  color: white;
+  text-decoration: none;
+}
+
+.dropdown-sb a:hover {
+  background-color: #34495e;
+}
+
+.sidebar-item:hover .dropdown-sb {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+/* Tables of data */
+.title_column:hover {
+  cursor: pointer;
+}
+
+.arrow-active {
+  color: aqua;
+}
+
+/* Roles form */
+.rol__form__btn {
+  display: none;
+}
+
+/* GRID de Encabezado de editarProgramacion */
+.programacion-parent {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.dia-fecha-text__programacion {
+  grid-column: span 2 / span 2;
+
+  font-weight: bold;
+}
+
+.departamento-text__programacion {
+  grid-column: span 2 / span 2;
+  grid-column-start: 1;
+  grid-row-start: 2;
+
+  font-weight: bold;
+}
+
+.elaborado-por__programacion {
+  grid-column: span 2 / span 2;
+  grid-column-start: 1;
+  grid-row-start: 3;
+
+  font-weight: bold;
+}
+
+.cena-sin-costo-text__programacion {
+  grid-column-start: 1;
+  grid-row-start: 4;
+
+  font-weight: bold;
+}
+
+.cena-con-costo-text__programacion {
+  grid-column-start: 1;
+  grid-row-start: 5;
+
+  font-weight: bold;
+}
+
+.almuerzos-sin-costo-text__programacion {
+  grid-column-start: 1;
+  grid-row-start: 6;
+
+  font-weight: bold;
+}
+
+.cena-sin-costo-data__programacion {
+  grid-column-start: 2;
+  grid-row-start: 4;
+}
+
+.cena-con-costo-data__programacion {
+  grid-column-start: 2;
+  grid-row-start: 5;
+}
+
+.almuerzos-sin-costo-data__programacion {
+  grid-column-start: 2;
+  grid-row-start: 6;
+}
+
+.dia-fecha-data__programacion {
+  grid-column: span 3 / span 3;
+  grid-column-start: 3;
+  grid-row-start: 1;
+}
+
+.departamento-data__programacion {
+  grid-column: span 3 / span 3;
+  grid-column-start: 3;
+  grid-row-start: 2;
+}
+
+.elaborado-por-data__programacion {
+  grid-column: span 3 / span 3;
+  grid-column-start: 3;
+  grid-row-start: 3;
+}
+
+.horario-diurno-text__programacion {
+  grid-column: span 2 / span 2;
+  grid-column-start: 6;
+  grid-row-start: 1;
+
+  font-weight: bold;
+}
+
+.horario-nocturno-text__programacion {
+  grid-column: span 2 / span 2;
+  grid-column-start: 6;
+  grid-row-start: 2;
+
+  font-weight: bold;
+}
+
+.asueto-text__programacion {
+  grid-column-start: 6;
+  grid-row-start: 3;
+
+  font-weight: bold;
+}
+
+.asueto-data__programacion {
+  grid-column-start: 7;
+  grid-row-start: 3;
+}
+
+.btn-cerrar__programacion {
+  grid-column: span 2 / span 2;
+  grid-column-start: 6;
+  grid-row-start: 6;
+}
+
+.estado-text__programacion {
+  grid-column-start: 6;
+  grid-row-start: 5;
+
+  font-weight: bold;
+}
+
+.estado-data__programacion {
+  grid-column-start: 7;
+  grid-row-start: 5;
+}
+
+/* tabulator */

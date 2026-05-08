@@ -1,0 +1,263 @@
+{% extends "layout/base.html" %} {% block title %} Departamentos - Turnos Bonin
+{% endblock %} {% block content %}
+
+<!-- form card cc payment -->
+<div class="card card-outline-secondary bg-dark text-light">
+  <div class="card-body">
+    <div class="d-flex justify-content-between">
+      <h3>Departamentos</h3>
+      <form class="d-flex" role="search" onsubmit="return false;">
+        <input
+          class="form-control me-2"
+          type="search"
+          placeholder="Escriba el nombre del departamento"
+          id="busqueda"
+        />
+        <button class="btn btn-outline-primary" type="submit">Buscar</button>
+      </form>
+    </div>
+    <hr />
+
+    {% with messages = get_flashed_messages(with_categories=true) %} {% for
+    category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+      <strong>{{ message }}</strong>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% endfor %} {% endwith %}
+
+    <table class="table table-dark table-striped">
+      <thead>
+        <tr>
+          <th scope="col">
+            <p class="title_column" onclick="ordenarTabla(0, 'numero')">
+              ID
+              <span class="arrow" data-type="darr" data-column="0"
+                ><strong>&darr;</strong></span
+              ><span class="arrow" data-type="uarr" data-column="0"
+                >&uarr;</span
+              >
+            </p>
+          </th>
+          <th scope="col">
+            <p class="title_column" onclick="ordenarTabla(1)">
+              Nombre
+              <span class="arrow" data-type="darr" data-column="1">&darr;</span
+              ><span class="arrow arrow-active" data-type="uarr" data-column="1"
+                >&uarr;</span
+              >
+            </p>
+          </th>
+          <th scope="col">
+            <p class="title_column" onclick="ordenarTabla(2)">
+              Aplica para horas extra
+              <span class="arrow" data-type="darr" data-column="2">&darr;</span
+              ><span class="arrow" data-type="uarr" data-column="2"
+                >&uarr;</span
+              >
+            </p>
+          </th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody class="tbody-list">
+        {% for d in departamentos %}
+        <tr class="record tr-list">
+          <th scope="row">{{ d.idDepartment }}</th>
+          <td class="record-name">{{ d.name }}</td>
+          <td>
+            {% if d.aplica_horas_extra == 1 %} Sí {% else %} No {% endif %}
+          </td>
+          <td>
+            <button
+              type="button"
+              class="btn btn-warning"
+              data-bs-toggle="modal"
+              data-bs-target="#editModal{{ d.idDepartment }}"
+            >
+              <img src="/static/img/edit-icon.png" height="15px" width="15px" />
+              <strong>Editar</strong>
+            </button>
+            <!-- Modal -->
+            <div
+              class="modal fade"
+              id="editModal{{ d.idDepartment }}"
+              tabindex="-1"
+              aria-labelledby="exampleModalLabel"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">
+                      Editar Departamento
+                    </h1>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="modal-body">
+                    <form
+                      class="form"
+                      role="form"
+                      action="/web/departamento/editarDepartamento_web"
+                      method="POST"
+                    >
+                      <div hidden class="form-group">
+                        <label for="idDepartment">ID del departamento</label>
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="idDepartment"
+                          name="idDepartment"
+                          title="ID del departamento"
+                          min="1"
+                          required
+                          value="{{ d.idDepartment }}"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="name">Nombre del departamento</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="name"
+                          name="name"
+                          title="Nombre del departamento"
+                          required
+                          value="{{ d.name }}"
+                        />
+                      </div>
+                      <div class="form-group mt-3">
+                        <input type="hidden" name="activo_hidden" value="0" />
+                        <div class="form-check form-switch">
+                          {% if d.aplica_horas_extra == 1 %}
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            role="switch"
+                            name="aplica_horas_extra"
+                            id="aplica_horas_extra"
+                            value="1"
+                            checked
+                          />
+                          {% else %}
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            role="switch"
+                            name="aplica_horas_extra"
+                            id="aplica_horas_extra"
+                            value="1"
+                          />
+                          {% endif %}
+                          <label
+                            class="form-check-label"
+                            for="aplica_horas_extra"
+                            >Activo</label
+                          >
+                        </div>
+                      </div>
+
+                      <hr />
+                      <div class="d-flex justify-content-end">
+                        <button
+                          type="button"
+                          class="btn btn-secondary btn-lg m-1"
+                          data-bs-dismiss="modal"
+                        >
+                          Cerrar
+                        </button>
+                        <button
+                          type="submit"
+                          class="btn btn-success btn-lg btn-block m-1"
+                        >
+                          Confirmar
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <button
+              type="button"
+              class="btn btn-danger"
+              data-bs-toggle="modal"
+              data-bs-target="#deleteModal{{ d.idDepartment }}"
+            >
+              <img
+                src="/static/img/delete-icon.png"
+                height="15px"
+                width="15px"
+              />
+              <strong>Eliminar</strong>
+            </button>
+            <div
+              class="modal fade"
+              id="deleteModal{{ d.idDepartment }}"
+              tabindex="-1"
+            >
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">
+                      Eliminar Departamento
+                    </h1>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>¿Seguro que quiere eliminar el registro?</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-secondary btn-lg"
+                      data-bs-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                    <form
+                      action="/web/departamento/eliminarDepartamento_web"
+                      method="POST"
+                    >
+                      <input
+                        type="number"
+                        value="{{d.idDepartment}}"
+                        name="idDepartment"
+                        hidden
+                      />
+                      <button type="submit" class="btn btn-danger btn-lg">
+                        Eliminar
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

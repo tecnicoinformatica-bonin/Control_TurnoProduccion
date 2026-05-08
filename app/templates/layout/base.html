@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}Control de Turnos{% endblock %}</title>
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/bootstrap.min.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='img/favicon.png') }}"
+    />
+    <script src="{{ url_for('static', filename='libs/tabulator/tabulator.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='libs/luxon/luxon.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='libs/JS PDF/jspdf.es.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='libs/JS PDF/jspdf.plugin.autotable.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='libs/SheetJS/xlsx.full.min.js') }}"></script>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='libs/tabulator/tabulator.min.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='libs/tabulator/tabulator_bootstrap5.min.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='libs/tabulator/tabulator_site_dark.min.css') }}"
+    />
+  </head>
+
+  <body class="body-bg">
+    {% include "layout/navbar.html" %}
+
+    <div class="container-fluid">
+      <div class="row">
+        {% if current_user.id == 1 %}
+        <div
+          class="col-md-2 bg-light vh-100 shadow p-3 mb-5 bg-body-tertiary rounded"
+        >
+          {% include "layout/sidebar.html" %}
+        </div>
+        {% endif %}
+
+        <div class="{% if current_user.id == 1 %} col-md-10 p-4 {% endif %}">
+          {% block content %} {% endblock %}
+        </div>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  </body>
+</html>

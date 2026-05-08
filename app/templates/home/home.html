@@ -1,0 +1,200 @@
+{% extends "layout/base.html" %} {% block title %} Inicio - Turnos Bonin {%
+endblock %} {% block content %}
+
+<h2>Bienvenido nuevamente, {{ current_user.nombre }}</h2>
+<table class="table table-light">
+  <thead>
+    <tr>
+      <th>Roles asignados</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% for
+    category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+      <strong>{{ message }}</strong>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% endfor %} {% endwith %} {% for ur in usuario_roles %} {% for r in roles
+    %} {% if current_user.id == ur.idUsuario and r.idRol == ur.idRol %}
+    <tr>
+      <td>{{ r.nombre }}</td>
+    </tr>
+    {% endif %} {% endfor %} {% endfor %}
+  </tbody>
+</table>
+
+<div class="card card-outline-secondary bg-dark text-light">
+  <div class="card-body">
+    <div class="d-flex justify-content-between">
+      <div class="d-flex justify-content-between">
+        <h3>Reportes pendientes de cerrar</h3>
+        <button
+          type="button"
+          class="btn btn-warning ms-3"
+          data-bs-toggle="modal"
+          data-bs-target="#crearProgramacionesAutomaticas"
+        >
+          <img src="/static/img/edit-icon.png" height="15px" width="15px" />
+          <strong>Crear reportes automáticamente</strong>
+        </button>
+      </div>
+      <form class="d-flex" role="search" onsubmit="return false;">
+        <input
+          class="form-control me-2"
+          type="search"
+          placeholder="Nombre del departamento"
+          id="busqueda"
+        />
+        <button class="btn btn-outline-primary" type="submit">Buscar</button>
+      </form>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-dark table-striped table-hover">
+        <thead>
+          <hr />
+          <tr>
+            <th scope="col">
+              <p class="title_column" onclick="ordenarTabla(0)">
+                Fecha
+                <span class="arrow" data-type="darr" data-column="0"
+                  ><strong>&darr;</strong></span
+                ><span class="arrow-active" data-type="uarr" data-column="0"
+                  >&uarr;</span
+                >
+              </p>
+            </th>
+            <th scope="col">
+              <p class="title_column" onclick="ordenarTabla(1)">
+                Departamento
+                <span class="arrow" data-type="darr" data-column="1"
+                  ><strong>&darr;</strong></span
+                ><span class="arrow" data-type="uarr" data-column="1"
+                  >&uarr;</span
+                >
+              </p>
+            </th>
+            <th scope="col">
+              <p class="title_column" onclick="ordenarTabla(2)">
+                Estado
+                <span class="arrow" data-type="darr" data-column="2"
+                  ><strong>&darr;</strong></span
+                ><span class="arrow" data-type="uarr" data-column="2"
+                  >&uarr;</span
+                >
+              </p>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pb in programaciones_borrador %}
+          <tr class="record">
+            <td>{{ pb.fecha }}</td>
+            {% for d in departamentos %} {% if d.idDepartment == pb.idDepartment
+            %}
+            <td class="record-name">{{ d.name }}</td>
+            {% endif %} {% endfor %}
+            <td>{{ pb.estado }}</td>
+            <td class="text-center">
+              <a
+                href="/template/programacion/editarProgramacion/{{ pb.idDepartment }}/{{ pb.fecha }}"
+                class="btn btn-success"
+                style="width: 95%"
+                >Ir</a
+              >
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="crearProgramacionesAutomaticas" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Crear reportes</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p>Ingrese la fecha deseada para generar los reportes</p>
+        <form
+          id="formCreacionAutomaticaProgramacion"
+          action="/web/programacion/crearProgramacionAutomatica_web"
+          method="POST"
+        >
+          <div class="col-12">
+            <div class="form-floating mb-3">
+              <input
+                type="date"
+                class="form-control"
+                name="fecha"
+                id="fecha"
+                placeholder="Fecha deseada"
+                required
+              />
+              <label for="fecha" class="form-label">Fecha</label>
+            </div>
+          </div>
+        </form>
+        <p>
+          Se crearan las programaciones para el día de hoy para los siguientes
+          departamentos:
+        </p>
+        <h2>Departamentos a los que aplican horas extra</h2>
+        <table class="table table-light table-hover">
+          <thead>
+            <hr />
+            <tr>
+              <th scope="col">
+                <p>ID Departamento</p>
+              </th>
+              <th scope="col">
+                <p>Nombre de departamento</p>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for depto in departamentos_aplica_horas_extra %}
+            <tr>
+              <th scope="row">{{ depto.idDepartment }}</th>
+              <td>{{ depto.name }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary btn-lg"
+          data-bs-dismiss="modal"
+        >
+          Cerrar
+        </button>
+        <button
+          onclick="confirmarFormCreacionAutomaticaProgramacion()"
+          class="btn btn-success btn-lg"
+        >
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

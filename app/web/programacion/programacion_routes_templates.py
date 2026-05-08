@@ -1,0 +1,61 @@
+from flask import Blueprint, render_template, abort
+from flask_login import login_required
+
+from app.api.programacion.programacion_service import Programacion_Service
+from app.api.departamento.departamento_service import Departamento_Service
+from app.api.usuario.usuario_service import Usuario_Service
+from app.extensions.db import db
+
+programacion_template_bp = Blueprint(
+    "programacion_template",
+    __name__,
+    template_folder="../../templates"
+)
+
+@programacion_template_bp.route("/crearProgramacion")
+@login_required
+def crearProgramacion_template():
+    programaciones = Programacion_Service.getProgramaciones_service(db)
+    programaciones_borrador = Programacion_Service.getProgramacionesEnBorrador_service(db)
+        
+    return render_template(
+        f"programacion/crearProgramacion.html", 
+        programaciones = programaciones,
+        programaciones_borrador = programaciones_borrador,
+    )
+
+@programacion_template_bp.route("/listaProgramaciones")
+@login_required
+def listaProgramaciones_template():
+    programaciones = Programacion_Service.getProgramaciones_service(db)
+    departamentos = Departamento_Service.getDepartamentos_service(db)
+    usuarios = Usuario_Service.getUsuarios_service(db)
+    programaciones_borrador = Programacion_Service.getProgramacionesEnBorrador_service(db)
+            
+    return render_template(
+        f"programacion/listaProgramaciones.html", 
+        programaciones = programaciones,
+        departamentos = departamentos,
+        usuarios = usuarios,
+        programaciones_borrador = programaciones_borrador,
+    )
+
+@programacion_template_bp.route("/editarProgramacion/<idDepartment>/<fecha>")
+@login_required
+def editarProgramacion_template(idDepartment, fecha):
+    programaciones = Programacion_Service.getProgramaciones_service(db)
+    departamentos = Departamento_Service.getDepartamentos_service(db)
+    usuarios = Usuario_Service.getUsuarios_service(db)
+    programaciones_borrador = Programacion_Service.getProgramacionesEnBorrador_service(db)
+    programacion_actual = Programacion_Service.getProgramacionByDateAndIdDepartment_service(db, fecha, idDepartment)
+            
+    return render_template(
+        f"programacion/editarProgramacion.html", 
+        programaciones = programaciones,
+        departamentos = departamentos,
+        usuarios = usuarios,
+        programaciones_borrador = programaciones_borrador,
+        idDepartment = int(idDepartment), 
+        fecha = fecha,
+        programacion_actual = programacion_actual,
+    )
