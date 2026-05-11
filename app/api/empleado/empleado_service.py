@@ -7,16 +7,16 @@ class Empleado_Service():
         try:
             data = EmpleadoRepository.getEmpleadoById(db, id)
             empleado = {
-                "idEmpleado": data['idEmpleado'],
-                "badgeNumber": data['badgeNumber'],
-                "firstName": data['firstName'],
-                "secondName": data['secondName'],
-                "lastName": data['lastName'],
-                "lastName2": data['lastName2'],
-                "position": data['position'],
-                "idDepartment": data['idDepartment'],
-                "activo": data['activo'],
-                "idCentro": data['idCentro'],
+                "idEmpleado": data[0],
+                "badgeNumber": data[1],
+                "firstName": data[2],
+                "secondName": data[3],
+                "lastName": data[4],
+                "lastName2": data[5],
+                "position": data[6],
+                "idDepartment": data[7],
+                "activo": data[8],
+                "idCentro": data[9],
             }
             
             return empleado

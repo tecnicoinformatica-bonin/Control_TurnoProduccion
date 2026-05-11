@@ -1,3 +1,7 @@
+from app.api.centro_de_costo.centro_de_costo_service import Centro_de_costo_Service
+from app.api.empleado.empleado_service import Empleado_Service
+from app.api.linea.linea_service import Linea_Service
+from app.api.proceso.proceso_service import Proceso_Service
 from app.api.registro.registro_repository import RegistroRepository
 
 class Registro_Service():
@@ -78,6 +82,46 @@ class Registro_Service():
                     "idCentro": row[12],
                     "badgeNumber": row[13],
                 }
+                registros.append(registro)
+            return registros
+
+        except Exception as ex:
+            return {"error": f"No se puede obtener registros desde el servicio: {str(ex)}"}
+    
+    @staticmethod
+    def getDetalleRegistrosByProgramacion_service(db, idProgramacion):
+        try:
+            dataRegistro = RegistroRepository.getRegistrosByProgramacion(db, idProgramacion)
+                        
+            registros = []
+            for row in dataRegistro:
+                registro = {
+                    "idRegistro": row[0],
+                    "idProgramacion": row[1],
+                    "idEmpleado": row[2],
+                    "hora_inicio": str(row[3]) if row[3] else None,
+                    "hora_fin": str(row[4]) if row[4] else None,
+                    "idLinea": row[5],
+                    "idProceso": row[6],
+                    "aplica_almuerzo": row[7],
+                    "aplica_cena": row[8],
+                    "aplica_transporte": row[9],
+                    "observacion_transporte": row[10],
+                    "fecha": row[11].isoformat(),
+                    "idCentro": row[12],
+                    "badgeNumber": row[13],
+                }
+
+                dataEmpleado = Empleado_Service.getEmpleadoById_service(db, registro["idEmpleado"])
+                dataLinea = Linea_Service.getLineaById_service(db, registro["idLinea"])
+                dataProceso = Proceso_Service.getProcesoById_service(db, registro["idProceso"])
+                dataCentro = Centro_de_costo_Service.getCentros_de_costoById_service(db, registro["idCentro"])
+                
+                registro["nombreEmpleado"] = f"{dataEmpleado["firstName"]} {dataEmpleado["secondName"] or ""} {dataEmpleado["lastName"]} {dataEmpleado["lastName2"] or ""}"
+                registro["nombreLinea"] = dataLinea["nameLinea"]
+                registro["nombreProceso"] = dataProceso["proceso"]
+                registro["nombreCentro"] = dataCentro["nombreCentro"]
+
                 registros.append(registro)
             return registros
 

@@ -19,6 +19,21 @@ def getRegistros():
 
     return jsonify(registros)
 
+@registro_api_bp.route("/getDetalleRegistrosByProgramacion/<int:idProgramacion>", methods=["GET"])
+def getDetalleRegistrosByProgramacion(idProgramacion):
+    """
+    Obtener registros
+    ---
+    tags:
+      - Registro
+    responses:
+      200:
+        description: Lista de registros
+    """
+    registros = Registro_Service.getDetalleRegistrosByProgramacion_service(db, idProgramacion)
+
+    return jsonify(registros)
+
 @registro_api_bp.route("/createRegistro", methods=["POST"])
 def createRegistro():
     """

@@ -17,7 +17,22 @@ class Linea_Service():
             return lineas
 
         except Exception as ex:
-            raise Exception(ex)
+            return {"error": f"No se pudo obtener líneas en servicio: {str(ex)}"}
+    
+    @staticmethod
+    def getLineaById_service(db, idLinea):
+        try:
+            data = LineaRepository.getLineaById(db, idLinea)
+            linea = {
+                "idLinea": data[0], 
+                "nameLinea": data[1], 
+                "idDepartment": data[2], 
+            }
+            
+            return linea
+
+        except Exception as ex:
+            return {"error": f"No se pudo obtener líneas en servicio: {str(ex)}"}
             
     @staticmethod
     def createLinea_service(db, data):

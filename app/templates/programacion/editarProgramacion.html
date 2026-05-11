@@ -65,7 +65,11 @@ message in messages %}
     <button id="reactivity-add" class="btn btn-warning m-3">
       Agregar registro
     </button>
-    <button id="descargar-excel" class="btn btn-success m-3">
+    <button
+      onclick="descargarExcel('{{ programacion_actual.idProgramacion}}')"
+      id="descargar-excel"
+      class="btn btn-success m-3"
+    >
       Descargar Excel
     </button>
     <button id="descargar-pdf" class="btn btn-danger m-3">Descargar PDF</button>
@@ -651,31 +655,6 @@ message in messages %}
           },
           false,
         );
-
-        /* table.addRow(nuevaFila, false);
-
-        fetch(`/json/registro/create_registro`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(nuevaFila),
-        })
-          .then((res) => res.json())
-          .then((resp) => {
-            if (resp.error) {
-              alert(resp.error);
-              return;
-            }
-
-            table.getRows()[0].update(resp); // asigna ID real
-          }); */
-      });
-
-    document
-      .getElementById("descargar-excel")
-      .addEventListener("click", function () {
-        table.download("xlsx", `Reporte ${fecha.toISOString()}.xlsx`, {
-          sheetName: "Reporte",
-        });
       });
 
     document
@@ -687,6 +666,12 @@ message in messages %}
         });
       });
   })();
+
+  async function descargarExcel(idProgramacion) {
+    window.open(
+      `/json/reports/programacion/descargar_programacion/${idProgramacion}`,
+    );
+  }
 </script>
 
 {% endblock %}

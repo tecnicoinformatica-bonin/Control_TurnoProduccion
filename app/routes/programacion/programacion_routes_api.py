@@ -19,6 +19,21 @@ def getProgramaciones():
 
     return jsonify(programaciones)
 
+@programacion_api_bp.route("/getDetallesProgramacionById/<int:idProgramacion>", methods=["GET"])
+def getDetallesProgramacionById(idProgramacion):
+    """
+    Obtener programaciones
+    ---
+    tags:
+      - Programacion
+    responses:
+      200:
+        description: Lista de programaciones
+    """
+    programaciones = Programacion_Service.getDetallesProgramacionByIdProgramacion_service(db, idProgramacion)
+
+    return jsonify(programaciones)
+
 @programacion_api_bp.route("/getProgramacionesEnBorrador", methods=["GET"])
 def getProgramacionesEnBorrador():
     """

@@ -2,6 +2,7 @@ from datetime import datetime
 
 from app.api.departamento.departamento_service import Departamento_Service
 from app.api.programacion.programacion_repository import ProgramacionRepository
+from app.api.usuario.usuario_service import Usuario_Service
 from app.extensions.slugify import Slugify
 
 class Programacion_Service():
@@ -69,6 +70,46 @@ class Programacion_Service():
                 "reabierto_por": data[9],
                 "motivo_reapertura": data[10],  
             }
+
+            return programacion
+
+        except Exception as ex:
+            return {"error": f"No se pudieron obtener las programaciones en el servicio: {str(ex)}"}
+    
+    @staticmethod
+    def getDetallesProgramacionByIdProgramacion_service(db, idProgramacion):
+        try:
+            dataProgramacion = ProgramacionRepository.getProgramacionById(db, idProgramacion)
+            dataDepartamento = Departamento_Service.getDepartamentos_service(db)
+            dataUsuario = Usuario_Service.getUsuarios_service(db)
+
+            programacion = {
+                "idProgramacion": dataProgramacion[0], 
+                "fecha": dataProgramacion[1], 
+                "idDepartment": dataProgramacion[2],
+                "elaborado_por": dataProgramacion[3], 
+                "fecha_creacion": dataProgramacion[4], 
+                "estado": dataProgramacion[5], 
+                "fecha_cierre": dataProgramacion[6],
+                "cerrado_por": dataProgramacion[7], 
+                "fecha_reapertura": dataProgramacion[8],
+                "reabierto_por": dataProgramacion[9],
+                "motivo_reapertura": dataProgramacion[10],  
+            }
+
+            for row in dataDepartamento:
+                if row["idDepartment"] == programacion["idDepartment"]:
+                    programacion["nombreDepartamento"] = row["name"]
+
+            for row in dataUsuario:
+                if row["idUsuario"] == programacion["elaborado_por"]:
+                    programacion["nombre_elaborado_por"] = row["nombre"]
+
+                if row["idUsuario"] == programacion["cerrado_por"]:
+                    programacion["nombre_cerrado_por"] = row["nombre"]
+
+                if row["idUsuario"] == programacion["reabierto_por"]:
+                    programacion["nombre_reabierto_por"] = row["nombre"]
 
             return programacion
 

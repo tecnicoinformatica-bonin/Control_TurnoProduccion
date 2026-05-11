@@ -16,7 +16,22 @@ class Proceso_Service():
             return procesos
 
         except Exception as ex:
-            raise Exception(ex)
+            return {"error": f"No se pudo obtener proceso en el servicio: {str(ex)}"}
+   
+    @staticmethod
+    def getProcesoById_service(db, idProceso):
+        try:
+            data = ProcesoRepository.getProcesoById(db, idProceso)
+            proceso = {
+                "idProceso": data[0], 
+                "proceso": data[1], 
+                "idDepartment": data[2], 
+            }
+
+            return proceso
+
+        except Exception as ex:
+            return {"error": f"No se pudo obtener proceso en el servicio: {str(ex)}"}
             
     @staticmethod
     def createProceso_service(db, data):
