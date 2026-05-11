@@ -257,3 +257,34 @@ class ProgramacionRepository:
         finally:
             if cursor:
                 cursor.close()
+
+    @staticmethod
+    def cerrar_programaciones_vencidas(db):
+        cursor = None
+
+        try:
+            cursor = db.connection.cursor()
+
+            query = """
+            UPDATE turnos_programacion
+            SET
+                estado = 'CERRADO',
+                fecha_cierre = NOW(),
+                cerrado_por = 0
+            WHERE estado = 'BORRADOR'
+            AND NOW() >= DATE_ADD(fecha, INTERVAL 1 DAY) + INTERVAL 15 HOUR
+            """
+
+            cursor.execute(query)
+
+            db.connection.commit()
+
+            return cursor.rowcount
+
+        except Exception as e:
+            db.connection.rollback()
+            raise Exception(f"Error cerrando programaciones: {str(e)}")
+
+        finally:
+            if cursor:
+                cursor.close()

@@ -295,3 +295,8 @@ class Programacion_Service():
         
         except Exception as ex:
             return {"error": f"No se pudo eliminar el programacion. {str(ex)}"}
+        
+
+    @staticmethod
+    def cerrar_programaciones_vencidas_service(db):
+        return ProgramacionRepository.cerrar_programaciones_vencidas(db)
