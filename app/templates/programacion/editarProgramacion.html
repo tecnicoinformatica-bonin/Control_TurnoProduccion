@@ -72,7 +72,13 @@ message in messages %}
     >
       Descargar Excel
     </button>
-    <button id="descargar-pdf" class="btn btn-danger m-3">Descargar PDF</button>
+    <button
+      onclick="descargarPDF('{{ programacion_actual.idProgramacion}}')"
+      id="descargar-pdf"
+      class="btn btn-danger m-3"
+    >
+      Descargar PDF
+    </button>
   </div>
 
   <div id="tabla-registros"></div>
@@ -669,7 +675,13 @@ message in messages %}
 
   async function descargarExcel(idProgramacion) {
     window.open(
-      `/json/reports/programacion/descargar_programacion/${idProgramacion}`,
+      `/json/reports/programacion/descargar_programacion/${idProgramacion}/isPDF=${0}`,
+    );
+  }
+
+  async function descargarPDF(idProgramacion) {
+    window.open(
+      `/json/reports/programacion/descargar_programacion/${idProgramacion}/isPDF=${1}`,
     );
   }
 </script>

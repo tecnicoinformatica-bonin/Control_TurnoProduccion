@@ -116,7 +116,7 @@ def generar_reporte_programacion(programacion, detalles):
     # =========================================================
     # EXPORTAR EN MEMORIA
     # =========================================================
-
+    
     archivo = BytesIO()
 
     wb.save(archivo)
