@@ -1,0 +1,144 @@
+{% extends "layout/base.html" %} {% block title %} Crear permiso - Turnos Bonin
+{% endblock %} {% block content %}
+
+<div class="">
+  <!-- <div class="btn-group d-flex crud-control">
+    <a href="#" class="btn btn-dark active">Crear</a>
+    <a href="#" class="btn btn-dark">Editar</a>
+    <a href="#" class="btn btn-dark">Eliminar</a>
+  </div> -->
+  <hr class="mb-5" />
+
+  <!-- form card cc payment -->
+  <div class="card card-outline-secondary bg-dark text-light">
+    <div class="card-body">
+      <h3 class="text-left">Crear permiso</h3>
+      <hr />
+
+      {% with messages = get_flashed_messages(with_categories=true) %} {% for
+      category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+        <strong>{{ message }}</strong>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+      {% endfor %} {% endwith %}
+
+      <form
+        id="formCrearPermiso"
+        class="form"
+        role="form"
+        action="/web/permiso/crearPermiso_web"
+        method="POST"
+      >
+        <div hidden class="form-group">
+          <label for="nombrePermiso">Nombre del permiso</label>
+          <input
+            type="text"
+            class="form-control"
+            id="nombrePermiso"
+            name="nombrePermiso"
+            title="Nombre del permiso"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="modulo">Módulo al que corresponde el permiso</label>
+          <select class="form-control" name="modulo" id="modulo">
+            <option disabled selected value="">
+              -- Seleccione una opción --
+            </option>
+            <option value="centro_de_costo">centro_de_costo</option>
+            <option value="departamento">departamento</option>
+            <option value="empleado">empleado</option>
+            <option value="linea">linea</option>
+            <option value="permiso">permiso</option>
+            <option value="proceso">proceso</option>
+            <option value="programacion">programacion</option>
+            <option value="registro">registro</option>
+            <option value="rol">rol</option>
+            <option value="ruta">ruta</option>
+            <option value="usuario">usuario</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="departamento">Departamento</label>
+          <select class="form-control" name="departamento" id="departamento">
+            <option disabled selected value="">
+              -- Seleccione una opción --
+            </option>
+            {% for d in departamentos %}
+            <option value="{{ d.nameSlug }}">{{d.name}}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="nombreClave">Nombre clave del permiso</label>
+          <select class="form-control" name="nombreClave" id="nombreClave">
+            <option disabled selected value="">
+              -- Seleccione una opción --
+            </option>
+            <option value="ver">Ver</option>
+            <option value="crear">Crear</option>
+            <option value="editar">Editar</option>
+            <option value="eliminar">Eliminar</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="descripcion">Descripción del permiso</label>
+          <input
+            type="text"
+            class="form-control"
+            id="descripcion"
+            name="descripcion"
+            title="Descripción del permiso"
+            required
+          />
+        </div>
+
+        <hr />
+        <div class="form-group row">
+          <div class="col-md-6">
+            <button type="reset" class="btn btn-light btn-lg btn-block">
+              Borrar información
+            </button>
+          </div>
+          <div class="col-md-6">
+            <button
+              onclick="submitFormPermiso()"
+              type="submit"
+              class="btn btn-success btn-lg btn-block"
+            >
+              Crear
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function submitFormPermiso() {
+    const formCrearPermiso = document.getElementById("formCrearPermiso");
+    const modulo = document.getElementById("modulo");
+    const departamento = document.getElementById("departamento");
+    const nombreClave = document.getElementById("nombreClave");
+    const nombrePermiso = document.getElementById("nombrePermiso");
+
+    let moduloYNombreClave = `${modulo.value}.${departamento.value}.${nombreClave.value}`;
+
+    nombrePermiso.value = moduloYNombreClave;
+
+    formCrearPermiso.submit();
+  }
+</script>
+{% endblock %}

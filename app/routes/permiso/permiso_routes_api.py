@@ -1,31 +1,31 @@
 from flask import Blueprint, jsonify, request
-from app.api.linea.linea_service import Linea_Service
+from app.api.permiso.permiso_service import Permiso_Service
 from app.extensions.db import db
 
-linea_api_bp = Blueprint("linea_api_bp", __name__)
+permiso_api_bp = Blueprint("permiso_api_bp", __name__)
 
-@linea_api_bp.route("/getLineas", methods=["GET"])
-def getLineas():
+@permiso_api_bp.route("/getPermisos", methods=["GET"])
+def getPermisos():
     """
-    Obtener lineas
+    Obtener permisos
     ---
     tags:
-      - Linea
+      - Permiso
     responses:
       200:
-        description: Lista de lineas
+        description: Lista de permisos
     """
-    lineas = Linea_Service.getLineas_service(db)
+    permisos = Permiso_Service.getPermisos_service(db)
 
-    return jsonify(lineas)
+    return jsonify(permisos)
 
-@linea_api_bp.route("/createLinea", methods=["POST"])
-def createLinea():
+@permiso_api_bp.route("/createPermiso", methods=["POST"])
+def createPermiso():
     """
-    Crear una nueva linea
+    Crear una nueva permiso
     ---
     tags:
-      - Linea
+      - Permiso
     parameters:
       - name: body
         in: body
@@ -33,54 +33,15 @@ def createLinea():
         schema:
           type: object
           properties:
-            nameLinea:
+            nombrePermiso:
               type: string
-              example: nombreLinea
-            idDepartment:
-              type: integer
-              example: 1
-    responses:
-      200:
-        description: linea creada correctamente
-    """
-
-    # La siguiente línea es para que el endpoint funcione desde Swagger o Postman
-    data = request.get_json(silent=True)
-    
-    # Si la info viene desde un formulario de HTML, entonces esta validación es importante.
-    if not data:
-        data = request.form
-
-    linea = Linea_Service.createLinea_service(db, data)
-
-    return jsonify(linea)
-
-@linea_api_bp.route("/updateLinea", methods=["POST"])
-def updateLinea():
-    """
-    Modificar una linea
-    ---
-    tags:
-      - Linea
-    parameters:
-      - name: body
-        in: body
-        required: true
-        schema:
-          type: object
-          properties:
-            idLinea:
-              type: integer
-              example: 1
-            nameLinea:
+              example: "nombrePermiso"
+            descripcion:
               type: string
-              example: nombreLinea
-            idDepartment:
-              type: integer
-              example: 1
+              example: "descripcion"
     responses:
       200:
-        description: linea modificada correctamente
+        description: permiso creada correctamente
     """
 
     # La siguiente línea es para que el endpoint funcione desde Swagger o Postman
@@ -90,17 +51,17 @@ def updateLinea():
     if not data:
         data = request.form
 
-    linea = Linea_Service.updateLinea_service(db, data)
+    permiso = Permiso_Service.createPermiso_service(db, data)
 
-    return jsonify(linea)
+    return jsonify(permiso)
 
-@linea_api_bp.route("/deleteLinea", methods=["POST"])
-def deleteLinea():
+@permiso_api_bp.route("/updatePermiso", methods=["POST"])
+def updatePermiso():
     """
-    Eliminar una linea
+    Modificar una permiso
     ---
     tags:
-      - Linea
+      - Permiso
     parameters:
       - name: body
         in: body
@@ -108,12 +69,18 @@ def deleteLinea():
         schema:
           type: object
           properties:
-            idLinea:
+            idPermiso:
               type: integer
               example: 1
+            nombrePermiso:
+              type: string
+              example: "nombrePermiso"
+            descripcion:
+              type: string
+              example: "descripcion"
     responses:
       200:
-        description: linea eliminada correctamente
+        description: permiso modificada correctamente
     """
 
     # La siguiente línea es para que el endpoint funcione desde Swagger o Postman
@@ -123,6 +90,39 @@ def deleteLinea():
     if not data:
         data = request.form
 
-    linea = Linea_Service.deleteLinea_service(db, data)
+    permiso = Permiso_Service.updatePermiso_service(db, data)
 
-    return jsonify(linea)
+    return jsonify(permiso)
+
+@permiso_api_bp.route("/deletePermiso", methods=["POST"])
+def deletePermiso():
+    """
+    Eliminar una permiso
+    ---
+    tags:
+      - Permiso
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            idPermiso:
+              type: integer
+              example: 1
+    responses:
+      200:
+        description: permiso eliminada correctamente
+    """
+
+    # La siguiente línea es para que el endpoint funcione desde Swagger o Postman
+    data = request.get_json(silent=True)
+    
+    # Si la info viene desde un formulario de HTML, entonces esta validación es importante.
+    if not data:
+        data = request.form
+
+    permiso = Permiso_Service.deletePermiso_service(db, data)
+
+    return jsonify(permiso)

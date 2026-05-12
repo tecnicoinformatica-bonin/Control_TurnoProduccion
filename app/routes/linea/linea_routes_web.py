@@ -38,7 +38,7 @@ def crearLinea_web():
 @login_required
 def editarLinea_web():
     lineas = Linea_Service.getLineas_service(db)
-    departamentos = Departamento_Service.getDepartamentosSuperiores_service(db);
+    departamentos = Departamento_Service.getDepartamentos_service(db);
     
     if request.method == "POST":
         data = {
@@ -74,7 +74,7 @@ def editarLinea_web():
 @login_required
 def eliminarLinea_web():
     lineas = Linea_Service.getLineas_service(db)
-    departamentos = Departamento_Service.getDepartamentosSuperiores_service(db);
+    departamentos = Departamento_Service.getDepartamentos_service(db);
     
     if request.method == "POST":
         data = {

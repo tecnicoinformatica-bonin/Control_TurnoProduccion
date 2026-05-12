@@ -38,7 +38,7 @@ def crearProceso_web():
 @login_required
 def editarProceso_web():
     procesos = Proceso_Service.getProcesos_service(db)
-    departamentos = Departamento_Service.getDepartamentosSuperiores_service(db);
+    departamentos = Departamento_Service.getDepartamentos_service(db);
     
     if request.method == "POST":
         data = {
@@ -74,7 +74,7 @@ def editarProceso_web():
 @login_required
 def eliminarProceso_web():
     procesos = Proceso_Service.getProcesos_service(db)
-    departamentos = Departamento_Service.getDepartamentosSuperiores_service(db);
+    departamentos = Departamento_Service.getDepartamentos_service(db);
     
     if request.method == "POST":
         data = {

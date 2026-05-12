@@ -15,7 +15,7 @@ proceso_template_bp = Blueprint(
 @login_required
 def crearProceso_template():
     procesos = Proceso_Service.getProcesos_service(db)
-    departamentos = Departamento_Service.getDepartamentosSuperiores_service(db);
+    departamentos = Departamento_Service.getDepartamentos_service(db);
         
     return render_template(
         f"proceso/crearProceso.html", 
@@ -27,7 +27,7 @@ def crearProceso_template():
 @login_required
 def listaProcesos_template():
     procesos = Proceso_Service.getProcesos_service(db)
-    departamentos = Departamento_Service.getDepartamentosSuperiores_service(db);
+    departamentos = Departamento_Service.getDepartamentos_service(db);
             
     return render_template(
         f"proceso/listaProcesos.html", 
