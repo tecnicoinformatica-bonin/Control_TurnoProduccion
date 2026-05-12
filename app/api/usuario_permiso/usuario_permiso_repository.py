@@ -26,16 +26,16 @@ class Usuario_Permiso_Repository:
                 cursor.close()
 
     @staticmethod
-    def createUsuario_Permiso(db, idUsuario, idRol):
+    def createUsuario_Permiso(db, idUsuario, idPermiso):
         cursor = None
 
         try:
             data = Usuario_Permiso_Repository.getUsuario_Permisos(db)
             idUsuario = int(idUsuario)
-            idRol = int(idRol)
+            idPermiso = int(idPermiso)
 
             exists = any(
-                int(row[0]) == idUsuario and int(row[1]) == idRol
+                int(row[0]) == idUsuario and int(row[1]) == idPermiso
                 for row in data
             )
 
@@ -47,19 +47,19 @@ class Usuario_Permiso_Repository:
             cursor = db.connection.cursor()
             
             query = """
-                INSERT INTO turnos_usuario_permiso(idUsuario, idRol)
+                INSERT INTO turnos_usuario_permiso(idUsuario, idPermiso)
                 VALUES (%s, %s)
                 """
-            cursor.execute(query, (idUsuario, idRol,))
+            cursor.execute(query, (idUsuario, idPermiso,))
             
             db.connection.commit()
 
             newUsuario_Permiso = {
                 "idUsuario": idUsuario, 
-                "idRol": idRol,          
+                "idPermiso": idPermiso,          
             }
 
-            return {"mensaje": f"Usuario_Permiso creado correctamente. ID: {newUsuario_Permiso['idUsuario']}, Rol: {newUsuario_Permiso['idRol']}"}
+            return {"mensaje": f"Usuario_Permiso creado correctamente. ID: {newUsuario_Permiso['idUsuario']}, Rol: {newUsuario_Permiso['idPermiso']}"}
 
         
         except Exception as ex:
@@ -72,16 +72,16 @@ class Usuario_Permiso_Repository:
                 cursor.close()
 
     @staticmethod
-    def updateUsuario_Permiso(db, idUsuario, idRol):
+    def updateUsuario_Permiso(db, idUsuario, idPermiso):
         cursor = None
 
         try: 
             data = Usuario_Permiso_Repository.getUsuario_Permisos(db)
             idUsuario = int(idUsuario)
-            idRol = int(idRol)
+            idPermiso = int(idPermiso)
 
             exists = any(
-                int(row[0]) == idUsuario and int(row[1]) == idRol
+                int(row[0]) == idUsuario and int(row[1]) == idPermiso
                 for row in data
             )
 
@@ -93,20 +93,20 @@ class Usuario_Permiso_Repository:
             cursor = db.connection.cursor()
             
             query = """
-                UPDATE turnos_usuario_permiso SET idRol = %s
+                UPDATE turnos_usuario_permiso SET idPermiso = %s
                 WHERE idUsuario = %s
                 """
             
-            cursor.execute(query, (idRol, idUsuario))
+            cursor.execute(query, (idPermiso, idUsuario))
             
             db.connection.commit()
 
             editedUsuario_Permiso = {
                 "idUsuario": idUsuario, 
-                "idRol": idRol, 
+                "idPermiso": idPermiso, 
             }
 
-            return {"mensaje": f"Usuario_Permiso_ modificado correctamente. ID: {editedUsuario_Permiso['idUsuario']}, Rol: {editedUsuario_Permiso['idRol']}"}
+            return {"mensaje": f"Usuario_Permiso_ modificado correctamente. ID: {editedUsuario_Permiso['idUsuario']}, Rol: {editedUsuario_Permiso['idPermiso']}"}
 
         except Exception as ex:
             db.connection.rollback()
@@ -118,7 +118,7 @@ class Usuario_Permiso_Repository:
                 cursor.close()
         
     @staticmethod
-    def deleteUsuario_Permiso(db, idUsuario, idRol):
+    def deleteUsuario_Permiso(db, idUsuario, idPermiso):
         cursor = None
 
         try:
@@ -126,10 +126,10 @@ class Usuario_Permiso_Repository:
 
             query = """
             DELETE FROM turnos_usuario_permiso
-            WHERE idUsuario = %s AND idRol = %s
+            WHERE idUsuario = %s AND idPermiso = %s
             """
 
-            cursor.execute(query, (idUsuario, idRol, ))
+            cursor.execute(query, (idUsuario, idPermiso, ))
             db.connection.commit()
             
             return {"mensaje": "Usuario_Permiso eliminado."}

@@ -31,7 +31,7 @@ endblock %} {% block content %}
     </div>
     {% endfor %} {% endwith %}
 
-    <table class="table table-dark table-striped table-hover">
+    <table class="table table-responsive table-dark table-striped table-hover">
       <thead>
         <tr>
           <th scope="col">
@@ -80,10 +80,16 @@ endblock %} {% block content %}
               >
             </p>
           </th>
-          <th></th>
-          <th></th>
-          <th></th>
-          <th></th>
+          <th scope="col">
+            <p class="title_column" onclick="ordenarTabla(5)">
+              Permisos
+              <span class="arrow" data-type="darr" data-column="5">&darr;</span
+              ><span class="arrow" data-type="uarr" data-column="5"
+                >&uarr;</span
+              >
+            </p>
+          </th>
+          <th scope="col"></th>
         </tr>
       </thead>
       <tbody class="tbody-list">
@@ -92,78 +98,110 @@ endblock %} {% block content %}
           <th scope="row">{{ u.idUsuario }}</th>
           <td class="record-name">{{ u.username }}</td>
           <td>{{ u.nombre }}</td>
-          <td>{{ u.activo }}</td>
+          <td>{% if u.activo == 1 %} Sí {% else %} No {% endif %}</td>
           <td>
             {% for ur in usuario_roles %} {% for r in roles %} {% if u.idUsuario
             == ur.idUsuario and r.idRol == ur.idRol %}
             <p>{{ r.nombre }}</p>
             {% endif %} {% endfor %} {% endfor %}
           </td>
-          {% if u.username != "admin"%}
           <td>
-            <button
-              type="button"
-              class="btn btn-warning"
-              data-bs-toggle="modal"
-              data-bs-target="#editModal{{ u.idUsuario }}"
-            >
-              <img src="/static/img/edit-icon.png" height="15px" width="15px" />
-              <strong>Editar datos</strong>
-            </button>
+            {% for up in usuario_permisos %} {% for p in permisos %} {% if
+            u.idUsuario == up.idUsuario and p.idPermiso == up.idPermiso %}
+            <p>{{ p.nombrePermiso }}</p>
+            {% endif %} {% endfor %} {% endfor %}
           </td>
+
           <td>
-            <button
-              type="button"
-              class="btn btn-success"
-              data-bs-toggle="modal"
-              data-bs-target="#editRolesModal{{ u.idUsuario }}"
-            >
-              <img src="/static/img/rol-icon.png" height="15px" width="15px" />
-              <strong>Editar roles</strong>
-            </button>
+            {% if u.idUsuario == 0 or u.idUsuario == 1 %}
+            <div></div>
+            {% else %}
+
+            <div class="d-flex justify-content-between align-items-stretch">
+              <button
+                type="button"
+                title="Editar datos"
+                class="btn btn-warning"
+                data-bs-toggle="modal"
+                data-bs-target="#editModal{{ u.idUsuario }}"
+              >
+                <img
+                  src="/static/img/edit-icon.png"
+                  height="15px"
+                  width="15px"
+                />
+                <strong></strong>
+              </button>
+
+              <button
+                type="button"
+                title="Editar roles"
+                class="btn btn-success"
+                data-bs-toggle="modal"
+                data-bs-target="#editRolesModal{{ u.idUsuario }}"
+              >
+                <img
+                  src="/static/img/rol-icon.png"
+                  height="15px"
+                  width="15px"
+                />
+                <strong></strong>
+              </button>
+
+              <button
+                type="button"
+                title="Editar permisos"
+                class="btn btn-light"
+                data-bs-toggle="modal"
+                data-bs-target="#editPermisosModal{{ u.idUsuario }}"
+              >
+                <img
+                  src="/static/img/permission-icon.png"
+                  height="15px"
+                  width="15px"
+                />
+                <strong></strong>
+              </button>
+
+              <button
+                type="button"
+                title="Eliminar"
+                class="btn btn-danger"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteModal{{ u.idUsuario }}"
+              >
+                <img
+                  src="/static/img/delete-icon.png"
+                  height="15px"
+                  width="15px"
+                />
+                <strong></strong>
+              </button>
+
+              <button
+                type="button"
+                title="Cambiar contraseña"
+                class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#passModal{{ u.idUsuario }}"
+              >
+                <img
+                  src="/static/img/chg_password-icon.png"
+                  height="15px"
+                  width="15px"
+                />
+                <strong></strong>
+              </button>
+            </div>
+
+            {% endif %}
           </td>
-          <td>
-            <button
-              type="button"
-              class="btn btn-danger"
-              data-bs-toggle="modal"
-              data-bs-target="#deleteModal{{ u.idUsuario }}"
-            >
-              <img
-                src="/static/img/delete-icon.png"
-                height="15px"
-                width="15px"
-              />
-              <strong>Eliminar</strong>
-            </button>
-          </td>
-          <td>
-            <button
-              type="button"
-              class="btn btn-primary"
-              data-bs-toggle="modal"
-              data-bs-target="#passModal{{ u.idUsuario }}"
-            >
-              <img
-                src="/static/img/chg_password-icon.png"
-                height="15px"
-                width="15px"
-              />
-              <strong>Cambiar contraseña</strong>
-            </button>
-          </td>
-          {% else %}
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          {% endif %}
         </tr>
         {% endfor %}
       </tbody>
     </table>
     {% for u in usuarios %}
-    <!-- Modal -->
+    <!-- Edit Modal -->
     <div
       class="modal fade"
       id="editModal{{ u.idUsuario }}"
@@ -279,6 +317,7 @@ endblock %} {% block content %}
       </div>
     </div>
 
+    <!-- Edit Roles -->
     <div class="modal fade" id="editRolesModal{{ u.idUsuario }}" tabindex="-1">
       <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -406,6 +445,141 @@ endblock %} {% block content %}
       </div>
     </div>
 
+    <!-- Edit Permisos -->
+    <div
+      class="modal fade"
+      id="editPermisosModal{{ u.idUsuario }}"
+      tabindex="-1"
+    >
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">
+              Permisos del usuario {{ u.nombre }}
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <h2>Agregar permiso</h2>
+            <div>
+              <form
+                class="form"
+                role="form"
+                action="/web/usuario_permiso/crearUsuario_Permiso_web"
+                method="POST"
+              >
+                <div class="form-group">
+                  <label hidden for="idUsuario">ID del usuario</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="idUsuario"
+                    name="idUsuario"
+                    title="ID del usuario"
+                    min="1"
+                    hidden
+                    value="{{ u.idUsuario }}"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="idPermiso">Permiso</label>
+                  <select
+                    type="text"
+                    class="form-control"
+                    id="idPermiso"
+                    name="idPermiso"
+                    title="Permiso que desea asignar"
+                    required
+                  >
+                    <option disabled selected value="{{ None }}">
+                      -- Seleccione una opción --
+                    </option>
+                    {% for p in permisos %}
+                    <option value="{{ p.idPermiso }}">
+                      {{ p.nombrePermiso }}
+                    </option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="d-flex justify-content-end">
+                  <button
+                    type="submit"
+                    class="btn btn-success btn-lg btn-block m-1"
+                  >
+                    Confirmar
+                  </button>
+                </div>
+              </form>
+
+              <table class="table table-light table-hover">
+                <thead>
+                  <hr />
+                  <tr>
+                    <th scope="col">
+                      <p>ID Permiso</p>
+                    </th>
+                    <th scope="col">
+                      <p>Nombre de Permiso</p>
+                    </th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for up in usuario_permisos %} {% for p in permisos %} {% if
+                  u.idUsuario == up.idUsuario and p.idPermiso == up.idPermiso %}
+                  <tr>
+                    <th scope="row">{{ p.idPermiso }}</th>
+                    <td>{{ p.nombrePermiso }}</td>
+                    <td>
+                      <button
+                        type="button"
+                        class="btn btn-danger btn-lg m-1 permiso__btn-delete"
+                        onclick="mostrarBotonesEliminarPermiso(this)"
+                      >
+                        &times;
+                      </button>
+
+                      <div class="permiso__form__btn">
+                        <button
+                          onclick="submitDeletePermiso('{{ u.idUsuario }}', '{{ up.idPermiso }}')"
+                          class="btn btn-danger btn-lg ms-3"
+                        >
+                          Confirmar
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-secondary btn-lg ms-3"
+                          onclick="cancelarEliminarPermiso(this)"
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endif %} {% endfor %} {% endfor %}
+                </tbody>
+              </table>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-lg"
+                  data-bs-dismiss="modal"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Eliminar Modal -->
     <div class="modal fade" id="deleteModal{{ u.idUsuario }}" tabindex="-1">
       <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -536,6 +710,14 @@ endblock %} {% block content %}
 >
   <input type="hidden" name="idUsuario" id="delete_idUsuario" />
   <input type="hidden" name="idRol" id="delete_idRol" />
+</form>
+<form
+  id="deletePermisoForm"
+  action="/web/usuario_permiso/eliminarUsuario_Permiso_web"
+  method="POST"
+>
+  <input type="hidden" name="idUsuario" id="delete_idUsuarioP" />
+  <input type="hidden" name="idPermiso" id="delete_idPermiso" />
 </form>
 
 {% endblock %}

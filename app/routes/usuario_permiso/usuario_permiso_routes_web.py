@@ -21,7 +21,7 @@ usuario_permiso_web_bp = Blueprint(
 def crearUsuario_Permiso_web():
     usuarios = Usuario_Service.getUsuarios_service(db)
     usuario_permisos = Usuario_Permiso_Service.getUsuario_Permisos_service(db)
-    permisos = Permiso_Service.getPermisoes_service(db)
+    permisos = Permiso_Service.getPermisos_service(db)
 
     if request.method == "POST":
         data = {
@@ -60,7 +60,7 @@ def crearUsuario_Permiso_web():
 def editarUsuario_Permiso_web():
     usuarios = Usuario_Service.getUsuarios_service(db)
     usuario_permisos = Usuario_Permiso_Service.getUsuario_Permisos_service(db)
-    permisos = Permiso_Service.getPermisoes_service(db)
+    permisos = Permiso_Service.getPermisos_service(db)
 
     if request.method == "POST":
         data = {
@@ -98,7 +98,7 @@ def editarUsuario_Permiso_web():
 @login_required
 def eliminarUsuario_Permiso_web():
     usuarios = Usuario_Service.getUsuarios_service(db)
-    permisos = Permiso_Service.getPermisoes_service(db)
+    permisos = Permiso_Service.getPermisos_service(db)
     
     if request.method == "POST":
         data = {

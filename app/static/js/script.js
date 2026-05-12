@@ -171,3 +171,33 @@ async function confirmarFormCerrarProgramacion() {
     btn.textContent = "Cerrar reporte";
   }
 }
+
+const mostrarBotonesEliminarPermiso = function (btn) {
+  const contenedor = btn.closest("td");
+  const btnsPermisos = contenedor.querySelector(".permiso__form__btn");
+  const btnX = contenedor.querySelector(".permiso__btn-delete");
+
+  // console.log(btnsPermisos);
+
+  btnX.style.display = "none";
+  btnsPermisos.style.display = "flex";
+};
+
+const cancelarEliminarPermiso = function (btn) {
+  const contenedor = btn.closest("td");
+  const btnsPermisos = contenedor.querySelector(".permiso__form__btn");
+  const btnX = contenedor.querySelector(".permiso__btn-delete");
+
+  // console.log(btnsPermisos);
+
+  btnX.style.display = "";
+  btnsPermisos.style.display = "none";
+};
+
+function submitDeletePermiso(idUsuario, idPermiso) {
+  // console.log("Hola submitDelete");
+
+  document.getElementById("delete_idUsuarioP").value = idUsuario;
+  document.getElementById("delete_idPermiso").value = idPermiso;
+  document.getElementById("deletePermisoForm").submit();
+}

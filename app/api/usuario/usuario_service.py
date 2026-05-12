@@ -119,6 +119,7 @@ class Usuario_Service():
          return {"error": f"Usuario {username} no existe", "status": 404}
          
       paths_usuario = UsuarioRepository.getUserPaths(db, usuario[0])
+      permisos = UsuarioRepository.getUserPermissionsById(db, usuario[0])
       roles_usuario = UsuarioRepository.getUserRolesById(db, usuario[0])
 
       usuarioALoguear = Usuario_Rutas(
@@ -127,6 +128,7 @@ class Usuario_Service():
          usuario[2],
          usuario[4],
          roles_usuario,
+         permisos,
          paths_usuario
          )
          
@@ -165,14 +167,16 @@ class Usuario_Service():
          return None
 
       paths = UsuarioRepository.getUserPaths(db, usuario[0])
+      permisos = UsuarioRepository.getUserPermissionsById(db, usuario[0])
       roles = UsuarioRepository.getUserRolesById(db, usuario[0])
-
+      
       user = Usuario_Rutas(
          usuario[0],
          usuario[1],
          usuario[2],
          usuario[4],
          roles,
+         permisos,
          paths
       )
 

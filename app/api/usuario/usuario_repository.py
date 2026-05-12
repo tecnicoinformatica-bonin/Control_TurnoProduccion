@@ -161,6 +161,35 @@ class UsuarioRepository:
         finally: 
             if cursor:
                 cursor.close()
+    
+    @staticmethod
+    def getUserPermissionsById(db, idUsuario):
+        cursor = None
+
+        try:
+            cursor = db.connection.cursor()
+
+            query = """
+            SELECT p.nombrePermiso
+            FROM turnos_permiso p
+            JOIN turnos_usuario_permiso up ON p.idPermiso = up.idPermiso
+            WHERE up.idUsuario  = %s
+            """
+
+            cursor.execute(query, (idUsuario,))
+            rows = cursor.fetchall()
+
+            if rows is not None:
+                roles = [row[0] for row in rows]
+
+            return roles
+        
+        except Exception as ex:
+            return {"error": f"No se pueden obtener roles del usuario en el repositorio: {str(ex)}"}
+                    
+        finally: 
+            if cursor:
+                cursor.close()
 
     @staticmethod
     def createUsuario(db, username, nombre, password, activo):
