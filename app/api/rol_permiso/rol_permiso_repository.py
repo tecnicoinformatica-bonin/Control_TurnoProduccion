@@ -24,6 +24,31 @@ class Rol_Permiso_Repository:
         finally:
             if cursor:
                 cursor.close()
+    
+    @staticmethod
+    def getPermisosByRol(db, idRol):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor()
+
+            query = """
+            SELECT * 
+            FROM turnos_rol_permiso
+            WHERE idRol = %s
+            """
+            cursor.execute(query, (idRol,))
+
+            permisos = cursor.fetchall()
+
+            return permisos
+        
+        except Exception as ex:
+            return {"error": f"No se pueden listar las permisos por rol en repositorio: {str(ex)}"}
+
+        finally:
+            if cursor:
+                cursor.close()
 
     @staticmethod
     def createRol_Permiso(db, idRol, idPermiso):

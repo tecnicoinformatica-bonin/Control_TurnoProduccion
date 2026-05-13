@@ -1,12 +1,13 @@
 from flask_login import UserMixin
 
 class Usuario():
-    def __init__(self, idUsuario, username, nombre, password_hash, activo):
+    def __init__(self, idUsuario, username, nombre, password_hash, activo, idDepartment):
         self.idUsuario = idUsuario
         self.username = username
         self.nombre = nombre
         self.password_hash = password_hash
         self.activo = activo
+        self.idDepartment = idDepartment
 
 class Usuario_Rutas(UserMixin):
     def __init__(self, idUsuario, username, nombre, activo, roles, permisos, paths):
