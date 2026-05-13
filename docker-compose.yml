@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  turnos:
+    build: .
+
+    container_name: turnos_app
+
+    restart: unless-stopped
+
+    mem_limit: 512m
+
+    ports:
+      - "8080:5000"
+
+    env_file:
+      - .env
+
+    volumes:
+      - ./reports:/app/reports
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
