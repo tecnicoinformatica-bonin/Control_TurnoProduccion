@@ -50,33 +50,6 @@ class UsuarioRepository:
         finally:
             if cursor:
                 cursor.close()
-
-
-    @staticmethod
-    def getUsuarioByUsername(db, username):
-        cursor = None
-
-        try:
-            cursor = db.connection.cursor()
-
-            query = """
-            SELECT idUsuario, username, nombre, password_hash, activo
-
-            FROM turnos_usuario
-            WHERE username = %s
-            """
-            cursor.execute(query, (username,))
-            usuario = cursor.fetchone()
-
-            return usuario
-
-        except Exception as ex:
-            return {"error": f"No se pudo obtener el usuario en el repositorio: {str(ex)}"}
-
-        finally:
-            if cursor:
-                cursor.close()
-
     
     @staticmethod
     def getUsuarioById(db, idUsuario):
