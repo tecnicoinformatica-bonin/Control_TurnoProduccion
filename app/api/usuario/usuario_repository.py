@@ -28,24 +28,24 @@ class UsuarioRepository:
             
     @staticmethod
     def getUsuarioByUsername(db, username):
-        
         cursor = None
 
         try:
             cursor = db.connection.cursor()
+
             query = """
-                SELECT idUsuario 
-                FROM turnos_usuario
-                WHERE username = %s
-                """
+            SELECT idUsuario, username, nombre, password_hash, activo
+
+            FROM turnos_usuario
+            WHERE username = %s
+            """
             cursor.execute(query, (username,))
-            idUsuario = cursor.fetchone()
-            
-            if idUsuario:
-                return idUsuario is not None
-        
+            usuario = cursor.fetchone()
+
+            return usuario
+
         except Exception as ex:
-            return {"error": f"No se pudo determinar si el usuario existe en el repositorio: {str(ex)}"}
+            return {"error": f"No se pudo obtener el usuario en el repositorio: {str(ex)}"}
 
         finally:
             if cursor:
