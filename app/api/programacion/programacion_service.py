@@ -278,10 +278,10 @@ class Programacion_Service():
             if missing_fields:
                 return {"error": f"Faltan campos obligatorios: {', '.join(missing_fields)}"}
             
-            return ProgramacionRepository.updateProgramacion(db, fecha, idDepartment, estado, fecha_reapertura, reabierto_por, motivo_reapertura)
+            return ProgramacionRepository.reOpenProgramacion(db, fecha, idDepartment, estado, fecha_reapertura, reabierto_por, motivo_reapertura)
         
         except Exception as ex:
-            return {"error": f"No se pudo reabrir la programación. {str(ex)}"}
+            return {"error": f"No se pudo reabrir la programación en el servicio: {str(ex)}"}
         
     @staticmethod
     def deleteProgramacion_service(db, data):
