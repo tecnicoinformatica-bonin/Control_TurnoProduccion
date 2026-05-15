@@ -2,6 +2,7 @@ from app.api.centro_de_costo.centro_de_costo_service import Centro_de_costo_Serv
 from app.api.empleado.empleado_service import Empleado_Service
 from app.api.linea.linea_service import Linea_Service
 from app.api.proceso.proceso_service import Proceso_Service
+from app.api.programacion.programacion_service import Programacion_Service
 from app.api.registro.registro_repository import RegistroRepository
 
 class Registro_Service():
@@ -184,7 +185,7 @@ class Registro_Service():
             fecha = data.get("fecha")
             idCentro = data.get("idCentro")
             badgeNumber = data.get("badgeNumber")
-                        
+
             required_fields = {
                     "idProgramacion": idProgramacion,
                     "idEmpleado": idEmpleado,
@@ -206,6 +207,12 @@ class Registro_Service():
             if missing_fields:
                 return {"error": f"Faltan campos obligatorios: {', '.join(missing_fields)}"}
             
+            programacion = Programacion_Service.getProgramacionByIdProgramacion_service(db, idProgramacion)
+
+            if programacion["estado"] == "CERRADO":
+                return { "error": "La programación ya se encuentra cerrada." }
+
+
             return RegistroRepository.createRegistro(db, idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber)
         
         except Exception as ex:
@@ -246,6 +253,13 @@ class Registro_Service():
             if missing_fields:
                 return {"error": f"Faltan campos obligatorios: {', '.join(missing_fields)}"}
             
+            registro = RegistroRepository.getRegistroById(db, idRegistro)
+
+            programacion = Programacion_Service.getProgramacionByIdProgramacion_service(db, registro[1])
+
+            if programacion["estado"] == "CERRADO":
+                return { "error": "La programación ya se encuentra cerrada." }
+            
             return RegistroRepository.updateRegistro(db, idRegistro, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber)
         
         except Exception as ex:
@@ -255,9 +269,17 @@ class Registro_Service():
     def deleteRegistro_service(db, data):
         try:
             idRegistro = data.get("idRegistro")
-            
+
             if not idRegistro:
                 return {"error": "ID del registro es requerido."}
+            
+            registro = RegistroRepository.getRegistroById(db, idRegistro)
+
+            programacion = Programacion_Service.getProgramacionByIdProgramacion_service(db, registro[1])
+
+            if programacion["estado"] == "CERRADO":
+                return { "error": "La programación ya se encuentra cerrada." }
+            
             
             return RegistroRepository.deleteRegistro(db, idRegistro)
         

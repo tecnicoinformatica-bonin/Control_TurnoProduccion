@@ -205,6 +205,11 @@ class Programacion_Service():
             fecha_cierre = datetime.now()
             cerrado_por = data.get("cerrado_por")
 
+            programacion = ProgramacionRepository.getProgramacionById(db, idProgramacion)
+
+            if programacion[5] == "CERRADO":
+                return { "error": "La programación ya está cerrada." }
+
             required_fields = {
                     "idProgramacion": idProgramacion, 
                     "elaborado_por": elaborado_por,
@@ -263,6 +268,11 @@ class Programacion_Service():
             fecha_reapertura = datetime.now()
             reabierto_por = data.get("reabierto_por")
             motivo_reapertura = data.get("motivo_reapertura")
+
+            programacion = ProgramacionRepository.getProgramacionByDateAndIdDepartment(db, fecha, idDepartment)
+
+            if programacion[5] == "BORRADOR":
+                return { "error": "La programación ya está en borrador." }
 
             required_fields = {
                     "fecha": fecha, 
