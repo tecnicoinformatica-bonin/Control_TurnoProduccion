@@ -1,3 +1,5 @@
+import platform
+
 from flask import Blueprint, jsonify, request, send_file
 
 import os
@@ -20,6 +22,8 @@ def descargar_programacion(idProgramacion, isPDF):
 
     archivo = generar_reporte_programacion(programacion_detalles, registros_detalles)
 
+    isPDF = bool(isPDF)
+
     if isPDF:
         temp_dir = tempfile.mkdtemp()
 
@@ -29,8 +33,13 @@ def descargar_programacion(idProgramacion, isPDF):
         with open(ruta_excel, "wb") as f:
             f.write(archivo.getbuffer())
 
+        if platform.system() == "Windows":
+            libreoffice_cmd = r"C:\Program Files\LibreOffice\program\soffice.exe"
+        else:
+            libreoffice_cmd = "/usr/bin/libreoffice"
+
         comando = [
-            "libreoffice",
+            libreoffice_cmd,
             "--headless",
             "--convert-to",
             "pdf",

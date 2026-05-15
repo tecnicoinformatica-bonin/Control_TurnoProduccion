@@ -205,6 +205,11 @@ class Programacion_Service():
             fecha_cierre = datetime.now()
             cerrado_por = data.get("cerrado_por")
 
+            programacion = ProgramacionRepository.getProgramacionById(db, idProgramacion)
+
+            if programacion[5] == "CERRADO":
+                return { "error": "La programación ya está cerrada." }
+
             required_fields = {
                     "idProgramacion": idProgramacion, 
                     "elaborado_por": elaborado_por,
@@ -264,6 +269,11 @@ class Programacion_Service():
             reabierto_por = data.get("reabierto_por")
             motivo_reapertura = data.get("motivo_reapertura")
 
+            programacion = ProgramacionRepository.getProgramacionByDateAndIdDepartment(db, fecha, idDepartment)
+
+            if programacion[5] == "BORRADOR":
+                return { "error": "La programación ya está en borrador." }
+
             required_fields = {
                     "fecha": fecha, 
                     "idDepartment": idDepartment,
@@ -278,10 +288,10 @@ class Programacion_Service():
             if missing_fields:
                 return {"error": f"Faltan campos obligatorios: {', '.join(missing_fields)}"}
             
-            return ProgramacionRepository.updateProgramacion(db, fecha, idDepartment, estado, fecha_reapertura, reabierto_por, motivo_reapertura)
+            return ProgramacionRepository.reOpenProgramacion(db, fecha, idDepartment, estado, fecha_reapertura, reabierto_por, motivo_reapertura)
         
         except Exception as ex:
-            return {"error": f"No se pudo reabrir la programación. {str(ex)}"}
+            return {"error": f"No se pudo reabrir la programación en el servicio: {str(ex)}"}
         
     @staticmethod
     def deleteProgramacion_service(db, data):

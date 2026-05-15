@@ -43,7 +43,7 @@ message in messages %}
           {% endfor %}
         </select> -->
         {% for u in usuarios %} {% if u.idUsuario ==
-        programacion_actual.cerrado_por%} {{ u.nombre }} {% endif %} {% endfor
+        programacion_actual.elaborado_por%} {{ u.nombre }} {% endif %} {% endfor
         %}
         <label name="elaborado_por" id="elaborado_por"> </label>
       </div>
@@ -83,7 +83,7 @@ message in messages %}
 
   <div id="tabla-registros"></div>
 </div>
-<form id="formCerrarProgramacion" method="PUT">
+<form hidden id="formCerrarProgramacion" method="PUT">
   <input
     type="number"
     name="idProgramacion"
@@ -144,6 +144,10 @@ message in messages %}
 
 <script>
   (async function () {
+    const idProgramacion = "{{ programacion_actual.idProgramacion }}";
+    const fecha = new Date("{{ programacion_actual.fecha }}");
+    const canEdit = "{{ programacion_actual.estado }}" !== "CERRADO";
+
     let empleados = {};
     let empleadosDataMap = {};
     let lineas = {};
@@ -180,9 +184,6 @@ message in messages %}
     }
 
     await cargarCatalogos();
-
-    const idProgramacion = "{{ programacion_actual.idProgramacion }}";
-    const fecha = new Date("{{ programacion_actual.fecha }}");
 
     const table = new Tabulator("#tabla-registros", {
       theme: "site-dark",
@@ -223,7 +224,7 @@ message in messages %}
             );
           },
 
-          editor: "list",
+          editor: canEdit ? "list" : false,
 
           editorParams: {
             values: empleados,
@@ -234,7 +235,7 @@ message in messages %}
         {
           title: "Hora Inicio",
           field: "hora_inicio",
-          editor: "time",
+          editor: canEdit ? "time" : false,
           // formatter: "datetime",
           formatterParams: {
             inputFormat: "HH:mm:ss",
@@ -248,7 +249,7 @@ message in messages %}
         {
           title: "Hora Fin",
           field: "hora_fin",
-          editor: "time",
+          editor: canEdit ? "time" : false,
           // formatter: "datetime",
           formatterParams: {
             inputFormat: "HH:mm:ss",
@@ -281,7 +282,7 @@ message in messages %}
             return lineas[cell.getValue()] || "—";
           },
 
-          editor: "list",
+          editor: canEdit ? "list" : false,
 
           editorParams: {
             values: lineas,
@@ -296,7 +297,7 @@ message in messages %}
             return procesos[cell.getValue()] || "—";
           },
 
-          editor: "list",
+          editor: canEdit ? "list" : false,
 
           editorParams: {
             values: procesos,
@@ -329,7 +330,7 @@ message in messages %}
           title: "Transporte",
           field: "aplica_transporte",
           hozAlign: "center",
-          editor: true,
+          editor: canEdit ? true : false,
           formatter: "tickCross",
         },
         {
@@ -340,10 +341,18 @@ message in messages %}
         {
           title: "❌",
           hozAlign: "center",
-          formatter: () => "<button class='btn btn-danger'>&cross;</button>",
+          formatter: () => {
+            if (!canEdit) {
+              return "";
+            }
+
+            return "<button class='btn btn-danger'>&cross;</button>";
+          },
           cellClick: function (e, cell) {
             let row = cell.getRow();
             let data = row.getData();
+
+            if (!canEdit) return;
 
             if (!data.idRegistro) {
               row.delete();
@@ -375,11 +384,14 @@ message in messages %}
               case "saved":
                 return "🟢 Guardado";
 
+              case "editing":
+                return "📝 Editando";
+
               case "error":
                 return "🔴 Error";
 
               default:
-                return "—";
+                return "✅ Confirmado";
             }
           },
         },
@@ -388,11 +400,15 @@ message in messages %}
           hozAlign: "center",
 
           formatter: function () {
+            if (!canEdit) {
+              return "";
+            }
+
             return `
-      <button class="btn btn-success btn-sm">
-        💾
-      </button>
-    `;
+              <button class="btn btn-success btn-sm">
+                💾
+              </button>
+            `;
           },
 
           cellClick: async function (e, cell) {
@@ -404,6 +420,8 @@ message in messages %}
               alert("Complete los campos obligatorios");
               return;
             }
+
+            if (!canEdit) return;
 
             row.update({
               _saveStatus: "saving",

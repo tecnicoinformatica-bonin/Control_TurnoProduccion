@@ -70,7 +70,7 @@ endblock %} {% block content %}
             </th>
             <th scope="col">
               <p class="title_column" onclick="ordenarTabla(3)">
-                Activo
+                Departamento
                 <span class="arrow" data-type="darr" data-column="3"
                   >&darr;</span
                 ><span class="arrow" data-type="uarr" data-column="3"
@@ -80,7 +80,7 @@ endblock %} {% block content %}
             </th>
             <th scope="col">
               <p class="title_column" onclick="ordenarTabla(4)">
-                Roles
+                Activo
                 <span class="arrow" data-type="darr" data-column="4"
                   >&darr;</span
                 ><span class="arrow" data-type="uarr" data-column="4"
@@ -90,10 +90,20 @@ endblock %} {% block content %}
             </th>
             <th scope="col">
               <p class="title_column" onclick="ordenarTabla(5)">
-                Permisos
+                Roles
                 <span class="arrow" data-type="darr" data-column="5"
                   >&darr;</span
                 ><span class="arrow" data-type="uarr" data-column="5"
+                  >&uarr;</span
+                >
+              </p>
+            </th>
+            <th scope="col">
+              <p class="title_column" onclick="ordenarTabla(6)">
+                Permisos
+                <span class="arrow" data-type="darr" data-column="6"
+                  >&darr;</span
+                ><span class="arrow" data-type="uarr" data-column="6"
                   >&uarr;</span
                 >
               </p>
@@ -107,6 +117,10 @@ endblock %} {% block content %}
             <th scope="row">{{ u.idUsuario }}</th>
             <td class="record-name">{{ u.username }}</td>
             <td>{{ u.nombre }}</td>
+            <td>
+              {% for d in departamentos %} {% if d.idDepartment ==
+              u.idDepartment%} {{ d.name }} {% endif %} {% endfor %}
+            </td>
             <td>{% if u.activo == 1 %} Sí {% else %} No {% endif %}</td>
             <td>
               {% for ur in usuario_roles %} {% for r in roles %} {% if
@@ -120,7 +134,6 @@ endblock %} {% block content %}
               <p>{{ p.nombrePermiso }}</p>
               {% endif %} {% endfor %} {% endfor %}
             </td>
-
             <td>
               {% if u.idUsuario == 0 or u.idUsuario == 1 %}
               <div></div>
@@ -274,6 +287,32 @@ endblock %} {% block content %}
                     required
                     value="{{ u.nombre }}"
                   />
+                </div>
+
+                <div class="form-group">
+                  <label for="idDepartment">Departamento</label>
+                  <select
+                    type="text"
+                    class="form-control select-department"
+                    id="idDepartment{{ u.idUsuario }}"
+                    name="idDepartment"
+                    title="Departamento al que pertenece el usuario"
+                    required
+                    data-empleado="{{ u.idUsuario }}"
+                  >
+                    <option disabled value="{{ None }}">
+                      -- Seleccione una opción --
+                    </option>
+
+                    {% for d in departamentos %} {% if d.idDepartment ==
+                    u.idDepartment %}
+                    <option value="{{ d.idDepartment }}" selected>
+                      {{ d.name }}
+                    </option>
+                    {% else %}
+                    <option value="{{ d.idDepartment }}">{{ d.name }}</option>
+                    {% endif %} {% endfor %}
+                  </select>
                 </div>
 
                 <div class="form-group mt-3">

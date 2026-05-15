@@ -34,7 +34,7 @@ class UsuarioRepository:
             cursor = db.connection.cursor()
 
             query = """
-            SELECT idUsuario, username, nombre, password_hash, activo
+            SELECT idUsuario, username, nombre, password_hash, activo, idDepartment
 
             FROM turnos_usuario
             WHERE username = %s
@@ -59,7 +59,7 @@ class UsuarioRepository:
             cursor = db.connection.cursor()
 
             query = """
-            SELECT idUsuario, username, nombre, password_hash, activo
+            SELECT idUsuario, username, nombre, password_hash, activo, idDepartment
 
             FROM turnos_usuario
             WHERE idUsuario = %s
@@ -165,7 +165,7 @@ class UsuarioRepository:
                 cursor.close()
 
     @staticmethod
-    def createUsuario(db, username, nombre, password, activo):
+    def createUsuario(db, username, nombre, password, activo, idDepartment):
         cursor = None
 
         try:
@@ -176,10 +176,10 @@ class UsuarioRepository:
             hashedPassword = generate_password_hash(password)
 
             query = """
-                INSERT INTO turnos_usuario(username, nombre, password_hash, activo) 
-                VALUES(%s, %s, %s, %s)
+                INSERT INTO turnos_usuario(username, nombre, password_hash, activo, idDepartment) 
+                VALUES(%s, %s, %s, %s, %s)
                 """
-            cursor.execute(query, (username, nombre, hashedPassword, activo))
+            cursor.execute(query, (username, nombre, hashedPassword, activo, idDepartment))
 
             db.connection.commit()
 
@@ -188,9 +188,10 @@ class UsuarioRepository:
                 "username": username,
                 "nombre": nombre,   
                 "activo": activo,
+                "idDepartment": idDepartment,
             }
 
-            return {"mensaje": f"Usuario creado correctamente. ID: {newUser['idUsuario']}, Usuario: {newUser['username']}, Nombre: {newUser['nombre']}, Activo: {newUser['activo']}"}
+            return {"mensaje": f"Usuario creado correctamente. ID: {newUser['idUsuario']}, Usuario: {newUser['username']}, Nombre: {newUser['nombre']}, Activo: {newUser['activo']}, idDepartment: {newUser['idDepartment']}"}
         
         except Exception as ex:
             db.connection.rollback()
@@ -201,37 +202,29 @@ class UsuarioRepository:
                 cursor.close()
 
     @staticmethod
-    def updateUsuario(db, idUsuario, nombre, activo):
+    def updateUsuario(db, idUsuario, nombre, activo, idDepartment):
         cursor = None
 
         try: 
-            """ [_, username_db, _, _, _] = UsuarioRepository.getUsuarioByUsername(db)
-            username_db = Slugify.slugify(username_db)
-            slugUsername = Slugify.slugif)
-
-            if UsuarioRepository.getUsuarioByUsername(db) and username_db != slugUsername:
-                return {
-                    "error": f"El usuario} ya existe."
-                }
-            """
             cursor = db.connection.cursor()
             
             query = """
-                UPDATE turnos_usuario SET nombre = %s, activo = %s
+                UPDATE turnos_usuario SET nombre = %s, activo = %s, idDepartment = %s
                 WHERE idUsuario = %s
                 """
             
-            cursor.execute(query, (nombre, activo, idUsuario))
+            cursor.execute(query, (nombre, activo, idDepartment, idUsuario))
             
             db.connection.commit()
 
             editedUsuario = {
                 "idUsuario": idUsuario,
                 "nombre": nombre,
-                "activo": activo
+                "activo": activo,
+                "idDepartment": idDepartment,
             }
 
-            return {"mensaje": f"Usuario modificado correctamente. ID: {editedUsuario['idUsuario']}, {editedUsuario['nombre']}, {editedUsuario['activo']}"}
+            return {"mensaje": f"Usuario modificado correctamente. ID: {editedUsuario['idUsuario']}, {editedUsuario['nombre']}, {editedUsuario['activo']}, idDeparment: {editedUsuario['idDepartment']}"}
 
         except Exception as ex:
             db.connection.rollback()

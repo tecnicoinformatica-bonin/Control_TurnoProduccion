@@ -202,8 +202,8 @@ class ProgramacionRepository:
         cursor = None
 
         try: 
-            if estado == "BORRADOR":
-                return {"error": f"La programacion aún no se encuentra cerrada."}
+            if estado == "CERRADO":
+                return {"error": f"La programacion ya se encuentra cerrada."}
             
             cursor = db.connection.cursor()
             
@@ -212,7 +212,7 @@ class ProgramacionRepository:
                 WHERE fecha = %s AND idDepartment = %s
                 """
             
-            cursor.execute(query, (fecha, idDepartment, fecha_reapertura, reabierto_por, motivo_reapertura,))
+            cursor.execute(query, (fecha_reapertura, reabierto_por, motivo_reapertura, fecha, idDepartment,))
             
             db.connection.commit()
 

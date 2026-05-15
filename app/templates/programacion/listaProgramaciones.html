@@ -1,16 +1,16 @@
-{% extends "layout/base.html" %} {% block title %} Empleados - Turnos Bonin {%
-endblock %} {% block content %}
+{% extends "layout/base.html" %} {% block title %} Programaciones - Turnos Bonin
+{% endblock %} {% block content %}
 
 <!-- form card cc payment -->
 <div class="card card-outline-secondary bg-dark text-light">
   <div class="card-body">
     <div class="d-flex justify-content-between">
-      <h3>Empleados</h3>
+      <h3>Programaciones</h3>
       <form class="d-flex" role="search" onsubmit="return false;">
         <input
           class="form-control me-2"
           type="search"
-          placeholder="Escriba el nombre del empleado"
+          placeholder="Escriba el nombre del Programacion"
           id="busqueda"
         />
         <button class="btn btn-outline-primary" type="submit">Buscar</button>
@@ -31,399 +31,277 @@ endblock %} {% block content %}
     </div>
     {% endfor %} {% endwith %}
 
-    <table class="table table-dark table-striped">
-      <thead>
-        <tr>
-          <th scope="col">
-            <p class="title_column" onclick="ordenarTabla(0, 'numero')">
-              ID
-              <span class="arrow" data-type="darr" data-column="0"
-                ><strong>&darr;</strong></span
-              ><span class="arrow" data-type="uarr" data-column="0"
-                >&uarr;</span
+    <div class="talbe-responsive">
+      <table class="table table-dark table-striped">
+        <thead>
+          <tr>
+            <th scope="col">
+              <p class="title_column" onclick="ordenarTabla(0, 'numero')">
+                ID
+                <span class="arrow" data-type="darr" data-column="0"
+                  ><strong>&darr;</strong></span
+                ><span class="arrow" data-type="uarr" data-column="0"
+                  >&uarr;</span
+                >
+              </p>
+            </th>
+            <th scope="col">
+              <p class="title_column" onclick="ordenarTabla(1)">
+                Fecha
+                <span class="arrow" data-type="darr" data-column="1"
+                  >&darr;</span
+                ><span
+                  class="arrow arrow-active"
+                  data-type="uarr"
+                  data-column="1"
+                  >&uarr;</span
+                >
+              </p>
+            </th>
+            <th scope="col">
+              <p class="title_column" onclick="ordenarTabla(2)">
+                Departamento
+                <span class="arrow" data-type="darr" data-column="2"
+                  >&darr;</span
+                ><span class="arrow" data-type="uarr" data-column="2"
+                  >&uarr;</span
+                >
+              </p>
+            </th>
+            <th scope="col">
+              <p class="title_column" onclick="ordenarTabla(3)">
+                Elaborado por
+                <span class="arrow" data-type="darr" data-column="3"
+                  >&darr;</span
+                ><span class="arrow" data-type="uarr" data-column="3"
+                  >&uarr;</span
+                >
+              </p>
+            </th>
+            <th scope="col">
+              <p class="title_column" onclick="ordenarTabla(4)">
+                Estado
+                <span class="arrow" data-type="darr" data-column="4"
+                  >&darr;</span
+                ><span class="arrow" data-type="uarr" data-column="4"
+                  >&uarr;</span
+                >
+              </p>
+            </th>
+            <th scope="col">
+              <p class="title_column" onclick="ordenarTabla(5)">
+                Fecha de cierre
+                <span class="arrow" data-type="darr" data-column="5"
+                  >&darr;</span
+                ><span class="arrow" data-type="uarr" data-column="5"
+                  >&uarr;</span
+                >
+              </p>
+            </th>
+            <th scope="col">
+              <p class="title_column" onclick="ordenarTabla(6)">
+                Fecha de reapertura
+                <span class="arrow" data-type="darr" data-column="6"
+                  >&darr;</span
+                ><span class="arrow" data-type="uarr" data-column="6"
+                  >&uarr;</span
+                >
+              </p>
+            </th>
+            <th scope="col">
+              <p class="title_column" onclick="ordenarTabla(7)">
+                Reabierto por
+                <span class="arrow" data-type="darr" data-column="7"
+                  >&darr;</span
+                ><span class="arrow" data-type="uarr" data-column="7"
+                  >&uarr;</span
+                >
+              </p>
+            </th>
+            <th scope="col">
+              <p class="title_column" onclick="ordenarTabla(8)">
+                Motivo de reapertura
+                <span class="arrow" data-type="darr" data-column="8"
+                  >&darr;</span
+                ><span class="arrow" data-type="uarr" data-column="8"
+                  >&uarr;</span
+                >
+              </p>
+            </th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody class="tbody-list">
+          {% for pg in programaciones %}
+          <tr class="record tr-list">
+            <th scope="row">{{ pg.idProgramacion }}</th>
+            <td>{{ pg.fecha }}</td>
+            <td>
+              {% for d in departamentos %} {% if d.idDepartment ==
+              pg.idDepartment %} {{ d.name }} {% endif %} {% endfor %}
+            </td>
+            <td class="record-name">
+              {% for u in usuarios %} {% if u.idUsuario == pg.elaborado_por %}
+              {{ u.nombre }} {% endif %} {% endfor %}
+            </td>
+            <td>{{ pg.estado }}</td>
+            <td>{{ pg.fecha_cierre }}</td>
+            <td>{{ pg.fecha_reapertura }}</td>
+            <td>
+              {% for u in usuarios %} {% if u.idUsuario == pg.reabierto_por %}
+              {{ u.nombre }} {% endif %} {% endfor %}
+            </td>
+            <td>{{ pg.motivo_reapertura }}</td>
+            <td>
+              <button
+                type="button"
+                class="btn btn-warning"
+                data-bs-toggle="modal"
+                data-bs-target="#reOpenModal{{ pg.idProgramacion }}"
               >
-            </p>
-          </th>
-          <th scope="col">
-            <p class="title_column" onclick="ordenarTabla(1, 'numero')">
-              Badge
-              <span class="arrow" data-type="darr" data-column="1">&darr;</span
-              ><span class="arrow arrow-active" data-type="uarr" data-column="1"
-                >&uarr;</span
+                <img
+                  src="/static/img/reopen-icon.png"
+                  height="15px"
+                  width="15px"
+                />
+                <strong>Reabrir</strong>
+              </button>
+            </td>
+            <td>
+              <a
+                href="/template/programacion/editarProgramacion/{{ pg.idDepartment }}/{{ pg.fecha }}"
+                class="btn btn-primary"
               >
-            </p>
-          </th>
-          <th scope="col">
-            <p class="title_column" onclick="ordenarTabla(2)">
-              Nombre
-              <span class="arrow" data-type="darr" data-column="2">&darr;</span
-              ><span class="arrow" data-type="uarr" data-column="2"
-                >&uarr;</span
-              >
-            </p>
-          </th>
-          <th scope="col">
-            <p class="title_column" onclick="ordenarTabla(3)">
-              Puesto
-              <span class="arrow" data-type="darr" data-column="3">&darr;</span
-              ><span class="arrow" data-type="uarr" data-column="3"
-                >&uarr;</span
-              >
-            </p>
-          </th>
-          <th scope="col">
-            <p class="title_column" onclick="ordenarTabla(4)">
-              Departamento
-              <span class="arrow" data-type="darr" data-column="4">&darr;</span
-              ><span class="arrow" data-type="uarr" data-column="4"
-                >&uarr;</span
-              >
-            </p>
-          </th>
-          <th scope="col">
-            <p class="title_column" onclick="ordenarTabla(5)">
-              Activo
-              <span class="arrow" data-type="darr" data-column="5">&darr;</span
-              ><span class="arrow" data-type="uarr" data-column="5"
-                >&uarr;</span
-              >
-            </p>
-          </th>
-          <th></th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody class="tbody-list">
-        {% for e in empleados %}
-        <tr class="record tr-list">
-          <th scope="row">{{ e.idEmpleado }}</th>
-          <td>{{ e.badgeNumber }}</td>
-          <td class="record-name">
-            {{ e.firstName }} {{ e.secondName }} {{ e.lastName }} {{ e.lastName2
-            }}
-          </td>
-          <td>{{ e.position }}</td>
-          <td>
-            {% for d in departamentos %} {% if d.idDepartment ==
-            e.idDepartment%} {{ d.name }} {% endif %} {% endfor %}
-          </td>
-          <td>{{ e.activo }}</td>
-          <td>
-            <button
-              type="button"
-              class="btn btn-warning"
-              data-bs-toggle="modal"
-              data-bs-target="#editModal{{ e.idEmpleado }}"
-            >
-              <img src="/static/img/edit-icon.png" height="15px" width="15px" />
-              <strong>Editar</strong>
-            </button>
-            <!-- Modal -->
-            <div
-              class="modal fade"
-              id="editModal{{ e.idEmpleado }}"
-              tabindex="-1"
-              aria-labelledby="modalLabel"
-              aria-hidden="true"
-            >
-              <div class="modal-dialog modal-xl">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalLabel">
-                      Editar empleado
-                    </h1>
-                    <button
-                      type="button"
-                      class="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-label="Close"
-                    ></button>
-                  </div>
-                  <div class="modal-body">
-                    <form
-                      class="form"
-                      role="form"
-                      action="/web/empleado/editarEmpleado_web"
-                      method="POST"
-                    >
-                      <div class="form-group">
-                        <label hidden for="oldIdEmpleado"
-                          >ID del departamento</label
-                        >
-                        {% with oldIdEmpleado = e.idEmpleado %}
-                        <input
-                          type="number"
-                          class="form-control"
-                          id="oldIdEmpleado"
-                          name="oldIdEmpleado"
-                          title="ID anterior del empleado"
-                          min="1"
-                          required
-                          value="{{ oldIdEmpleado }}"
-                          hidden
-                        />
-                        {% endwith %}
-                      </div>
+                <img
+                  src="/static/img/ruta-icon.png"
+                  height="15px"
+                  width="15px"
+                />
+                <strong>Ir a detalles</strong>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
 
-                      <div class="form-group">
-                        <label hidden for="oldBadgeNumber"
-                          >Badge del Empleado</label
-                        >
-                        {% with oldBadgeNumber = e.badgeNumber %}
-                        <input
-                          type="number"
-                          class="form-control"
-                          id="oldBadgeNumber"
-                          name="oldBadgeNumber"
-                          title="Badge anterior del empleado"
-                          min="1"
-                          required
-                          value="{{ oldBadgeNumber }}"
-                          hidden
-                        />
-                        {% endwith %}
-                      </div>
-
-                      <div class="form-group">
-                        <label for="idEmpleado">ID del empleado</label>
-                        <input
-                          type="number"
-                          class="form-control"
-                          id="idEmpleado"
-                          name="idEmpleado"
-                          title="ID del empleado"
-                          min="1"
-                          required
-                          value="{{ e.idEmpleado }}"
-                        />
-                      </div>
-
-                      <div class="form-group">
-                        <label for="badgeNumber">Badge del empleado</label>
-                        <input
-                          type="number"
-                          class="form-control"
-                          id="badgeNumber"
-                          name="badgeNumber"
-                          title="Badge del empleado"
-                          required
-                          value="{{ e.badgeNumber }}"
-                        />
-                      </div>
-
-                      <div class="form-group">
-                        <label for="firstName">Primer nombre</label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="firstName"
-                          name="firstName"
-                          title="Primer nombre del empleado"
-                          required
-                          value="{{ e.firstName }}"
-                        />
-                      </div>
-
-                      <div class="form-group">
-                        <label for="secondName">Segundo nombre</label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="secondName"
-                          name="secondName"
-                          title="Segundo nombre del empleado"
-                          required
-                          value="{{ e.secondName }}"
-                        />
-                      </div>
-
-                      <div class="form-group">
-                        <label for="lastName">Primer apellido</label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="lastName"
-                          name="lastName"
-                          title="Primer apellido del empleado"
-                          required
-                          value="{{ e.lastName }}"
-                        />
-                      </div>
-
-                      <div class="form-group">
-                        <label for="lastName2">Segundo apellido</label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="lastName2"
-                          name="lastName2"
-                          title="Segundo apellido del empleado"
-                          required
-                          value="{{ e.lastName2 }}"
-                        />
-                      </div>
-
-                      <div class="form-group">
-                        <label for="position">Puesto</label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="position"
-                          name="position"
-                          title="Puesto del empleado"
-                          required
-                          value="{{ e.position }}"
-                        />
-                      </div>
-
-                      <div class="form-group">
-                        <label for="idDepartment">Departamento</label>
-                        <select
-                          type="text"
-                          class="form-control"
-                          id="idDepartment"
-                          name="idDepartment"
-                          title="Departamento al que pertenece el empleado"
-                          required
-                        >
-                          <option disabled value="{{ None }}">
-                            -- Seleccione una opción --
-                          </option>
-
-                          {% for d in departamentos %} {% if d.idDepartment ==
-                          e.idDepartment %}
-                          <option value="{{ d.idDepartment }}" selected>
-                            {{ d.name }}
-                          </option>
-                          {% else %}
-                          <option value="{{ d.idDepartment }}">
-                            {{ d.name }}
-                          </option>
-                          {% endif %} {% endfor %}
-                        </select>
-                      </div>
-
-                      <div class="form-group mt-3">
-                        <input type="hidden" name="activo_hidden" value="0" />
-                        <div class="form-check form-switch">
-                          {% if e.activo == 1 %}
-                          <input
-                            class="form-check-input"
-                            type="checkbox"
-                            role="switch"
-                            name="activo"
-                            id="activo"
-                            value="1"
-                            checked
-                          />
-                          {% else %}
-                          <input
-                            class="form-check-input"
-                            type="checkbox"
-                            role="switch"
-                            name="activo"
-                            id="activo"
-                            value="1"
-                          />
-                          {% endif %}
-                          <label class="form-check-label" for="activo"
-                            >Activo</label
-                          >
-                        </div>
-                      </div>
-
-                      <hr />
-                      <div class="d-flex justify-content-end">
-                        <button
-                          type="button"
-                          class="btn btn-secondary btn-lg m-1"
-                          data-bs-dismiss="modal"
-                        >
-                          Cerrar
-                        </button>
-                        <button
-                          type="submit"
-                          class="btn btn-success btn-lg btn-block m-1"
-                        >
-                          Confirmar
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
+      {% for pg in programaciones %}
+      <!-- Edit Modal -->
+      <div
+        class="modal fade"
+        id="reOpenModal{{ pg.idProgramacion }}"
+        tabindex="-1"
+        aria-labelledby="modalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="modalLabel">
+                Reabrir programacion
+              </h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
             </div>
-          </td>
-          <td>
-            <button
-              type="button"
-              class="btn btn-danger"
-              data-bs-toggle="modal"
-              data-bs-target="#deleteModal{{ e.idEmpleado }}"
-            >
-              <img
-                src="/static/img/delete-icon.png"
-                height="15px"
-                width="15px"
-              />
-              <strong>Eliminar</strong>
-            </button>
-            <div
-              class="modal fade"
-              id="deleteModal{{ e.idEmpleado }}"
-              tabindex="-1"
-            >
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">
-                      Eliminar empleado
-                    </h1>
-                    <button
-                      type="button"
-                      class="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-label="Close"
-                    ></button>
-                  </div>
-                  <div class="modal-body">
-                    <p>
-                      ¿Seguro que quiere eliminar el registro {{ e.idEmpleado
-                      }}?
-                    </p>
-                  </div>
-                  <div class="modal-footer">
-                    <button
-                      type="button"
-                      class="btn btn-secondary btn-lg"
-                      data-bs-dismiss="modal"
-                    >
-                      Close
-                    </button>
-                    <form
-                      action="/web/empleado/eliminarEmpleado_web"
-                      method="POST"
-                    >
-                      <input
-                        type="number"
-                        value="{{e.idEmpleado}}"
-                        name="idEmpleado"
-                        hidden
-                      />
-                      <button type="submit" class="btn btn-danger btn-lg">
-                        Eliminar
-                      </button>
-                    </form>
-                  </div>
+            <div class="modal-body">
+              <form
+                class="form"
+                role="form"
+                action="/web/programacion/reOpenProgramacion_web"
+                method="POST"
+              >
+                <div hidden class="form-group">
+                  <label for="idProgramacion">ID de la programación</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="idProgramacion"
+                    name="idProgramacion"
+                    title="ID del programación"
+                    min="1"
+                    required
+                    value="{{ pg.idProgramacion }}"
+                  />
                 </div>
-              </div>
-            </div>
-          </td>
-        </tr>
 
-        {% endfor %}
-      </tbody>
-    </table>
+                <div hidden class="form-group">
+                  <label for="idDepartment"
+                    >Departamento de la programación</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="idDepartment"
+                    name="idDepartment"
+                    title="Departamento de la programación"
+                    required
+                    value="{{ pg.idDepartment }}"
+                  />
+                </div>
+
+                <div hidden class="form-group">
+                  <label for="fecha">Fecha de la programación</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="fecha"
+                    name="fecha"
+                    title="Fecha de la programación"
+                    required
+                    value="{{ pg.fecha }}"
+                  />
+                </div>
+
+                <div hidden class="form-group">
+                  <label for="reabierto_por">Reabierto por</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="reabierto_por"
+                    name="reabierto_por"
+                    title="Reabierto por"
+                    required
+                    value="{{ current_user.id }}"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="motivo_reapertura">Motivo de reapertura</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="motivo_reapertura"
+                    name="motivo_reapertura"
+                    title="Primer apellido del Programacion"
+                    required
+                    value="{{ pg.motivo_reapertura }}"
+                  />
+                </div>
+                <hr />
+                <div class="d-flex justify-content-end">
+                  <button
+                    type="button"
+                    class="btn btn-secondary btn-lg ms-1"
+                    data-bs-dismiss="modal"
+                  >
+                    Cerrar
+                  </button>
+
+                  <button type="submit" class="btn btn-success btn-lg ms-1">
+                    Confirmar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
   </div>
 </div>
 

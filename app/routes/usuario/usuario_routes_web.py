@@ -53,6 +53,7 @@ def crearUsuario_web():
             "nombre": request.form.get("nombre"),
             "password": request.form.get("password"),
             "activo": request.form.get("activo"),
+            "idDepartment": request.form.get("idDepartment"),
         }
 
         result = Usuario_Service.createUsuario_service(db, data)
@@ -78,6 +79,7 @@ def editarUsuario_web():
             "nombre": request.form.get("nombre"),
             "password": request.form.get("password"),
             "activo": request.form.get("activo"),
+            "idDepartment": request.form.get("idDepartment"),
         }
 
         result = Usuario_Service.updateUsuario_service(db, data)
@@ -86,18 +88,15 @@ def editarUsuario_web():
             FlashMessages.flash_error(result["error"])
             return redirect(url_for(
                 "usuario_template.listaUsuarios_template", 
-                usuarios = usuarios, 
             ))
         else:
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for(
                 "usuario_template.listaUsuarios_template", 
-                usuarios = usuarios,
             ))
 
     return redirect(url_for(
         "usuario_template.listaUsuarios_template", 
-        usuarios = usuarios,
     ))    
 
 @usuario_web_bp.route("/eliminarUsuario_web", methods=["GET", "POST"])
@@ -116,18 +115,15 @@ def eliminarUsuario_web():
             FlashMessages.flash_error(result["error"])
             return redirect(url_for(
                 "usuario_template.listaUsuarios_template",
-                usuarios = usuarios,
             ))
         else:
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for(
                 "usuario_template.listaUsuarios_template",
-                usuarios = usuarios,
             ))
 
     return redirect(url_for(
         "usuario_template.listaUsuarios_template", 
-        usuarios = usuarios,
     ))    
 
 
@@ -149,16 +145,13 @@ def cambiarPasswordUsuario_web():
             FlashMessages.flash_error(result["error"])
             return redirect(url_for(
                 "usuario_template.listaUsuarios_template",
-                usuarios = usuarios,
             ))
         else:
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for(
                 "usuario_template.listaUsuarios_template",
-                usuarios = usuarios,
             ))
 
     return redirect(url_for(
         "usuario_template.listaUsuarios_template", 
-        usuarios = usuarios,
     ))    
