@@ -120,6 +120,7 @@ class Usuario_Service():
       paths_usuario = UsuarioRepository.getUserPaths(db, usuario[0])
       permisos = UsuarioRepository.getUserPermissionsById(db, usuario[0])
       roles_usuario = UsuarioRepository.getUserRolesById(db, usuario[0])
+      departamentos = UsuarioRepository.getUserDepartmentsById(db, usuario[0])
 
       usuarioALoguear = Usuario_Rutas(
          usuario[0],
@@ -128,7 +129,8 @@ class Usuario_Service():
          usuario[4],
          roles_usuario,
          permisos,
-         paths_usuario
+         paths_usuario,
+         departamentos,
          )
          
       if not usuarioALoguear.activo:
@@ -165,18 +167,22 @@ class Usuario_Service():
       if not usuario:
          return None
 
-      paths = UsuarioRepository.getUserPaths(db, usuario[0])
-      permisos = UsuarioRepository.getUserPermissionsById(db, usuario[0])
-      roles = UsuarioRepository.getUserRolesById(db, usuario[0])
+      idUsuarioEncontrado = usuario["idUsuario"]
+
+      paths = UsuarioRepository.getUserPaths(db, idUsuarioEncontrado)
+      permisos = UsuarioRepository.getUserPermissionsById(db, idUsuarioEncontrado)
+      roles = UsuarioRepository.getUserRolesById(db, idUsuarioEncontrado)
+      departamentos = UsuarioRepository.getUserDepartmentsById(db, idUsuarioEncontrado)
       
       user = Usuario_Rutas(
-         usuario[0],
-         usuario[1],
-         usuario[2],
-         usuario[4],
+         usuario["idUsuario"],
+         usuario["username"],
+         usuario["nombre"],
+         usuario["activo"],
          roles,
          permisos,
-         paths
+         paths,
+         departamentos
       )
 
       return user

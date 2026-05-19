@@ -1,3 +1,4 @@
+import MySQLdb
 from werkzeug.security import generate_password_hash, check_password_hash
 
 class UsuarioRepository:
@@ -53,7 +54,7 @@ class UsuarioRepository:
         cursor = None
 
         try:
-            cursor = db.connection.cursor()
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
 
             query = """
             SELECT idUsuario, username, nombre, password_hash, activo
@@ -149,12 +150,47 @@ class UsuarioRepository:
             rows = cursor.fetchall()
 
             if rows is not None:
-                roles = [row[0] for row in rows]
+                permisos = [row[0] for row in rows]
 
-            return roles
+            return permisos
         
         except Exception as ex:
-            return {"error": f"No se pueden obtener roles del usuario en el repositorio: {str(ex)}"}
+            return {"error": f"No se pueden obtener permisos del usuario en el repositorio: {str(ex)}"}
+                    
+        finally: 
+            if cursor:
+                cursor.close()
+    
+    @staticmethod
+    def getUserDepartmentsById(db, idUsuario):
+        cursor = None
+
+        try:
+            cursor = db.connection.cursor()
+
+            query = """
+            SELECT d.idDepartment, d.name
+            FROM turnos_departamento d
+            JOIN turnos_usuario_departamento ud ON d.idDepartment  = ud.idDepartment 
+            WHERE ud.idUsuario  = %s
+            """
+
+            cursor.execute(query, (idUsuario,))
+            rows = cursor.fetchall()
+
+            departamentos = [
+                {
+                    "idDepartment": row[0], 
+                    "name": row[1]
+                } 
+                
+                for row in rows
+            ]
+            
+            return departamentos
+        
+        except Exception as ex:
+            return {"error": f"No se pueden obtener departamentos del usuario en el repositorio: {str(ex)}"}
                     
         finally: 
             if cursor:
