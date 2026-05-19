@@ -45,9 +45,6 @@ def createUsuario():
             activo:
               type: boolean
               example: 1
-            idDepartment:
-              type: integer
-              example: 1
     responses:
       200:
         description: Usuario creado correctamente

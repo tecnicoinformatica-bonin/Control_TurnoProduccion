@@ -147,6 +147,7 @@ message in messages %}
     const idProgramacion = "{{ programacion_actual.idProgramacion }}";
     const fecha = new Date("{{ programacion_actual.fecha }}");
     const canEdit = "{{ programacion_actual.estado }}" !== "CERRADO";
+    console.log(fecha);
 
     let empleados = {};
     let empleadosDataMap = {};
@@ -546,12 +547,19 @@ message in messages %}
       let almuerzos = 0;
       let cenas_sin_costo = 0;
       let cenas_con_costo = 0;
+
       data.forEach((row) => {
+        const entrada = parseHora(row.hora_inicio);
+        const horaEntrada = entrada.h;
+
         if (row.aplica_almuerzo === 1 || row.aplica_almuerzo === true)
           almuerzos++;
         if (row.aplica_cena === 1 || row.aplica_cena === true)
           cenas_sin_costo++;
-        if (row.aplica_cena === 0 || row.aplica_cena === false)
+        if (
+          (row.aplica_cena === 0 || row.aplica_cena === false) &&
+          horaEntrada === 18
+        )
           cenas_con_costo++;
       });
 
@@ -576,7 +584,7 @@ message in messages %}
       const salida = parseHora(rowData.hora_fin);
       console.log({ entrada, salida });
 
-      const dia = fecha.getDay(); // 6 = sábado
+      const dia = fecha.getDay() + 1; // 6 = sábado
 
       const horaEntrada = entrada.h;
       const horaSalida = salida.h;
@@ -588,7 +596,10 @@ message in messages %}
 
       // Cena
       rowData.aplica_cena =
-        horaEntrada <= 7 && horaSalida >= 20 && horaSalida <= 23;
+        horaEntrada <= 5 &&
+        horaSalida >= 20 &&
+        horaSalida <= 23 &&
+        horaEntrada != 18;
 
       return rowData;
     }

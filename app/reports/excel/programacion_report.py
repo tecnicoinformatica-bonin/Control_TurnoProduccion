@@ -40,9 +40,9 @@ def generar_reporte_programacion(programacion, detalles):
 
         ws[f"A{fila_contador}"] = contador
 
-        ws[f"B{fila_contador}"] = detalle["idEmpleado"]
+        ws[f"B{fila_contador}"] = detalle["badgeNumber"]
         
-        ws[f"C{fila_contador}"] = detalle["badgeNumber"]
+        ws[f"C{fila_contador}"] = detalle["idEmpleado"]
 
         ws[f"D{fila_contador}"] =  detalle["nombreEmpleado"] #f"{detalle["firstName"]} {detalle["secondName"] or ""} {detalle["lastName"]} {detalle["lastName2"] or ""}"
 
@@ -60,7 +60,7 @@ def generar_reporte_programacion(programacion, detalles):
         
         ws[f"K{fila_contador}"] = "SÍ" if detalle["aplica_cena"] == 1  else "NO"
         
-        ws[f"L{fila_contador}"] = "SÍ" if detalle["aplica_cena"] == 0  else "NO"
+        ws[f"L{fila_contador}"] = "SÍ" if detalle["aplica_cena"] == 0 and detalle["hora_inicio"] == "18:00:00"  else "NO"
         
         ws[f"M{fila_contador}"] = "SÍ" if detalle["aplica_transporte"] == 1  else "NO"
         

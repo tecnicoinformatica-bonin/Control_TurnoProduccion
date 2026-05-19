@@ -83,25 +83,6 @@
           />
         </div>
 
-        <div class="form-group">
-          <label for="idDepartment">Departamento</label>
-          <select
-            type="text"
-            class="form-control"
-            id="idDepartment"
-            name="idDepartment"
-            title="Departamento al que pertenece el usuario"
-            required
-          >
-            <option selected disabled value="{{ None }}">
-              -- Seleccione una opción --
-            </option>
-            {% for d in departamentos %}
-            <option value="{{ d.idDepartment }}">{{ d.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-
         <div class="form-group mt-3">
           <input type="hidden" name="activo_hidden" value="0" />
           <div class="form-check form-switch">

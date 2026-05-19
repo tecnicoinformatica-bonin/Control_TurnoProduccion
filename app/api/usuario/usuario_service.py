@@ -5,8 +5,7 @@ from werkzeug.security import check_password_hash
 from flask_login import login_user
 
 from app.api.usuario.usuario_repository import UsuarioRepository
-from app.api.usuario.usuario_model import Usuario_Rutas, Usuario
-from app.api.usuario_rol.usuario_rol_repository import Usuario_Rol_Repository
+from app.api.usuario.usuario_model import Usuario_Rutas
 
 class Usuario_Service():
    @staticmethod
@@ -20,7 +19,6 @@ class Usuario_Service():
                "username": row[1],
                "nombre": row[2],
                "activo": row[4],               
-               "idDepartment": row[5],               
             }
             usuarios.append(usuario)
 
@@ -35,12 +33,11 @@ class Usuario_Service():
          nombre = data.get("nombre")
          password = data.get("password")
          activo = bool(data.get("activo"))
-         idDepartment = data.get("idDepartment")
          
          if not username or not password:
             return {"error": "Nombre de usuario y contraseña son obligatorios"}, 400
          
-         return UsuarioRepository.createUsuario(db, username, nombre, password, activo, idDepartment)
+         return UsuarioRepository.createUsuario(db, username, nombre, password, activo)
          
       except Exception as ex:
          return {"error": f"No se pudo crear el usuario. {ex}"}
@@ -51,13 +48,11 @@ class Usuario_Service():
          idUsuario = data.get("idUsuario")
          nombre = data.get("nombre")
          activo = bool(data.get("activo"))
-         idDepartment = data.get("idDepartment")
          
          required_fields = {
                   "idUsuario": idUsuario, 
                   "nombre": nombre,
                   "activo": activo,
-                  "idDepartment": idDepartment,
                }
          
          missing_fields = [key for key, value in required_fields.items() if value is None or value == ""]
@@ -65,7 +60,7 @@ class Usuario_Service():
          if missing_fields:
                return {"error": f"Faltan campos obligatorios: {', '.join(missing_fields)}"}
          
-         return UsuarioRepository.updateUsuario(db, idUsuario, nombre, activo, idDepartment)
+         return UsuarioRepository.updateUsuario(db, idUsuario, nombre, activo)
       
       except Exception as ex:
          return {"error": f"No se pudo modificar la usuario. {ex}"}
@@ -125,16 +120,17 @@ class Usuario_Service():
       paths_usuario = UsuarioRepository.getUserPaths(db, usuario[0])
       permisos = UsuarioRepository.getUserPermissionsById(db, usuario[0])
       roles_usuario = UsuarioRepository.getUserRolesById(db, usuario[0])
+      departamentos = UsuarioRepository.getUserDepartmentsById(db, usuario[0])
 
       usuarioALoguear = Usuario_Rutas(
          usuario[0],
          usuario[1],
          usuario[2],
          usuario[4],
-         usuario[5],
          roles_usuario,
          permisos,
-         paths_usuario
+         paths_usuario,
+         departamentos,
          )
          
       if not usuarioALoguear.activo:
@@ -156,7 +152,7 @@ class Usuario_Service():
             "username": usuarioALoguear.username,
             "nombre": usuarioALoguear.nombre,
             "activo": usuarioALoguear.activo,
-            "usuarios": usuarioALoguear.paths,
+            "rutas": usuarioALoguear.paths,
             }  
          }
    
@@ -171,19 +167,22 @@ class Usuario_Service():
       if not usuario:
          return None
 
-      paths = UsuarioRepository.getUserPaths(db, usuario[0])
-      permisos = UsuarioRepository.getUserPermissionsById(db, usuario[0])
-      roles = UsuarioRepository.getUserRolesById(db, usuario[0])
+      idUsuarioEncontrado = usuario["idUsuario"]
+
+      paths = UsuarioRepository.getUserPaths(db, idUsuarioEncontrado)
+      permisos = UsuarioRepository.getUserPermissionsById(db, idUsuarioEncontrado)
+      roles = UsuarioRepository.getUserRolesById(db, idUsuarioEncontrado)
+      departamentos = UsuarioRepository.getUserDepartmentsById(db, idUsuarioEncontrado)
       
       user = Usuario_Rutas(
-         usuario[0],
-         usuario[1],
-         usuario[2],
-         usuario[4],
-         usuario[5],
+         usuario["idUsuario"],
+         usuario["username"],
+         usuario["nombre"],
+         usuario["activo"],
          roles,
          permisos,
-         paths
+         paths,
+         departamentos
       )
 
       return user

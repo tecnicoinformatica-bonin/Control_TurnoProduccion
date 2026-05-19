@@ -69,16 +69,6 @@ endblock %} {% block content %}
               </p>
             </th>
             <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(3)">
-                Departamento
-                <span class="arrow" data-type="darr" data-column="3"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="3"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
               <p class="title_column" onclick="ordenarTabla(4)">
                 Activo
                 <span class="arrow" data-type="darr" data-column="4"
@@ -108,6 +98,16 @@ endblock %} {% block content %}
                 >
               </p>
             </th>
+            <th scope="col">
+              <p class="title_column" onclick="ordenarTabla(7)">
+                Departamentos
+                <span class="arrow" data-type="darr" data-column="7"
+                  >&darr;</span
+                ><span class="arrow" data-type="uarr" data-column="7"
+                  >&uarr;</span
+                >
+              </p>
+            </th>
             <th scope="col"></th>
           </tr>
         </thead>
@@ -117,10 +117,6 @@ endblock %} {% block content %}
             <th scope="row">{{ u.idUsuario }}</th>
             <td class="record-name">{{ u.username }}</td>
             <td>{{ u.nombre }}</td>
-            <td>
-              {% for d in departamentos %} {% if d.idDepartment ==
-              u.idDepartment%} {{ d.name }} {% endif %} {% endfor %}
-            </td>
             <td>{% if u.activo == 1 %} Sí {% else %} No {% endif %}</td>
             <td>
               {% for ur in usuario_roles %} {% for r in roles %} {% if
@@ -132,6 +128,13 @@ endblock %} {% block content %}
               {% for up in usuario_permisos %} {% for p in permisos %} {% if
               u.idUsuario == up.idUsuario and p.idPermiso == up.idPermiso %}
               <p>{{ p.nombrePermiso }}</p>
+              {% endif %} {% endfor %} {% endfor %}
+            </td>
+            <td>
+              {% for ud in usuario_departamentos %} {% for d in departamentos %}
+              {% if u.idUsuario == ud.idUsuario and d.idDepartment ==
+              ud.idDepartment %}
+              <p>{{ d.name }}</p>
               {% endif %} {% endfor %} {% endfor %}
             </td>
             <td>
@@ -178,6 +181,21 @@ endblock %} {% block content %}
                 >
                   <img
                     src="/static/img/permission-icon.png"
+                    height="15px"
+                    width="15px"
+                  />
+                  <strong></strong>
+                </button>
+
+                <button
+                  type="button"
+                  title="Editar departamentos"
+                  class="btn btn-dark"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editDepartamentosModal{{ u.idUsuario }}"
+                >
+                  <img
+                    src="/static/img/department-icon.png"
                     height="15px"
                     width="15px"
                   />
@@ -287,32 +305,6 @@ endblock %} {% block content %}
                     required
                     value="{{ u.nombre }}"
                   />
-                </div>
-
-                <div class="form-group">
-                  <label for="idDepartment">Departamento</label>
-                  <select
-                    type="text"
-                    class="form-control select-department"
-                    id="idDepartment{{ u.idUsuario }}"
-                    name="idDepartment"
-                    title="Departamento al que pertenece el usuario"
-                    required
-                    data-empleado="{{ u.idUsuario }}"
-                  >
-                    <option disabled value="{{ None }}">
-                      -- Seleccione una opción --
-                    </option>
-
-                    {% for d in departamentos %} {% if d.idDepartment ==
-                    u.idDepartment %}
-                    <option value="{{ d.idDepartment }}" selected>
-                      {{ d.name }}
-                    </option>
-                    {% else %}
-                    <option value="{{ d.idDepartment }}">{{ d.name }}</option>
-                    {% endif %} {% endfor %}
-                  </select>
                 </div>
 
                 <div class="form-group mt-3">
@@ -632,6 +624,139 @@ endblock %} {% block content %}
       </div>
     </div>
 
+    <!-- Edit Departamentos -->
+    <div
+      class="modal fade"
+      id="editDepartamentosModal{{ u.idUsuario }}"
+      tabindex="-1"
+    >
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">
+              Departamentos del usuario {{ u.nombre }}
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <h2>Agregar departamento</h2>
+            <div>
+              <form
+                class="form"
+                role="form"
+                action="/web/usuario_departamento/crearUsuario_Departamento_web"
+                method="POST"
+              >
+                <div class="form-group">
+                  <label hidden for="idUsuario">ID del usuario</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="idUsuario"
+                    name="idUsuario"
+                    title="ID del usuario"
+                    min="1"
+                    hidden
+                    value="{{ u.idUsuario }}"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="idDepartment">Departamento</label>
+                  <select
+                    type="text"
+                    class="form-control"
+                    id="idDepartment"
+                    name="idDepartment"
+                    title="Permiso que desea asignar"
+                    required
+                  >
+                    <option disabled selected value="{{ None }}">
+                      -- Seleccione una opción --
+                    </option>
+                    {% for d in departamentos %}
+                    <option value="{{ d.idDepartment }}">{{ d.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="d-flex justify-content-end">
+                  <button
+                    type="submit"
+                    class="btn btn-success btn-lg btn-block m-1"
+                  >
+                    Confirmar
+                  </button>
+                </div>
+              </form>
+
+              <table class="table table-light table-hover">
+                <thead>
+                  <hr />
+                  <tr>
+                    <th scope="col">
+                      <p>ID Departamento</p>
+                    </th>
+                    <th scope="col">
+                      <p>Nombre del Departamento</p>
+                    </th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for ud in usuario_departamentos %} {% for d in
+                  departamentos %} {% if u.idUsuario == ud.idUsuario and
+                  d.idDepartment == ud.idDepartment %}
+                  <tr>
+                    <th scope="row">{{ d.idDepartment }}</th>
+                    <td>{{ d.name }}</td>
+                    <td>
+                      <button
+                        type="button"
+                        class="btn btn-danger btn-lg m-1 departamento__btn-delete"
+                        onclick="mostrarBotonesEliminarDepartamento(this)"
+                      >
+                        &times;
+                      </button>
+
+                      <div class="departamento__form__btn">
+                        <button
+                          onclick="submitDeleteDepartamento('{{ u.idUsuario }}', '{{ ud.idDepartment }}')"
+                          class="btn btn-danger btn-lg ms-3"
+                        >
+                          Confirmar
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-secondary btn-lg ms-3"
+                          onclick="cancelarEliminarDepartamento(this)"
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endif %} {% endfor %} {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary btn-lg"
+                data-bs-dismiss="modal"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Eliminar Modal -->
     <div class="modal fade" id="deleteModal{{ u.idUsuario }}" tabindex="-1">
       <div class="modal-dialog modal-xl">
@@ -771,6 +896,14 @@ endblock %} {% block content %}
 >
   <input type="hidden" name="idUsuario" id="delete_idUsuarioP" />
   <input type="hidden" name="idPermiso" id="delete_idPermiso" />
+</form>
+<form
+  id="deleteDepartamentoForm"
+  action="/web/usuario_departamento/eliminarUsuario_Departamento_web"
+  method="POST"
+>
+  <input type="hidden" name="idUsuario" id="delete_idUsuarioD" />
+  <input type="hidden" name="idDepartment" id="delete_idDepartment" />
 </form>
 
 {% endblock %}

@@ -7,7 +7,6 @@ from app.extensions.messages import FlashMessages
 
 # Services
 from app.api.usuario.usuario_service import Usuario_Service
-from app.api.departamento.departamento_service import Departamento_Service
 
 usuario_web_bp = Blueprint(
     "usuario_web", 
@@ -53,7 +52,6 @@ def crearUsuario_web():
             "nombre": request.form.get("nombre"),
             "password": request.form.get("password"),
             "activo": request.form.get("activo"),
-            "idDepartment": request.form.get("idDepartment"),
         }
 
         result = Usuario_Service.createUsuario_service(db, data)
@@ -70,7 +68,6 @@ def crearUsuario_web():
 @usuario_web_bp.route("/editarUsuario_web", methods=["GET", "POST"])
 @login_required
 def editarUsuario_web():
-    usuarios = Usuario_Service.getUsuarios_service(db)
     
     if request.method == "POST":
         data = {
@@ -79,7 +76,6 @@ def editarUsuario_web():
             "nombre": request.form.get("nombre"),
             "password": request.form.get("password"),
             "activo": request.form.get("activo"),
-            "idDepartment": request.form.get("idDepartment"),
         }
 
         result = Usuario_Service.updateUsuario_service(db, data)
@@ -102,8 +98,6 @@ def editarUsuario_web():
 @usuario_web_bp.route("/eliminarUsuario_web", methods=["GET", "POST"])
 @login_required
 def eliminarUsuario_web():
-    usuarios = Usuario_Service.getUsuarios_service(db)
-    
     if request.method == "POST":
         data = {
             "idUsuario": request.form.get("idUsuario"),
@@ -130,8 +124,6 @@ def eliminarUsuario_web():
 @usuario_web_bp.route("/cambiarPasswordUsuario_web", methods=["GET", "POST"])
 @login_required
 def cambiarPasswordUsuario_web():
-    usuarios = Usuario_Service.getUsuarios_service(db)
-    
     if request.method == "POST":
         data = {
             "idUsuario": request.form.get("idUsuario"),
