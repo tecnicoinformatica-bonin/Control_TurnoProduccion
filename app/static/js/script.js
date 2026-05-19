@@ -66,36 +66,6 @@ const activeArrow = function (colIndex, type) {
   });
 };
 
-const mostrarBotonesEliminarRol = function (btn) {
-  const contenedor = btn.closest("td");
-  const btnsRoles = contenedor.querySelector(".rol__form__btn");
-  const btnX = contenedor.querySelector(".rol__btn-delete");
-
-  // console.log(btnsRoles);
-
-  btnX.style.display = "none";
-  btnsRoles.style.display = "flex";
-};
-
-const cancelarEliminar = function (btn) {
-  const contenedor = btn.closest("td");
-  const btnsRoles = contenedor.querySelector(".rol__form__btn");
-  const btnX = contenedor.querySelector(".rol__btn-delete");
-
-  // console.log(btnsRoles);
-
-  btnX.style.display = "";
-  btnsRoles.style.display = "none";
-};
-
-function submitDeleteRol(idUsuario, idRol) {
-  // console.log("Hola submitDelete");
-
-  document.getElementById("delete_idUsuario").value = idUsuario;
-  document.getElementById("delete_idRol").value = idRol;
-  document.getElementById("deleteRolForm").submit();
-}
-
 function submitDeleteRuta(idRol, idRuta) {
   // console.log("Hola submitDelete");
 
@@ -172,6 +142,36 @@ async function confirmarFormCerrarProgramacion() {
   }
 }
 
+const mostrarBotonesEliminarRol = function (btn) {
+  const contenedor = btn.closest("td");
+  const btnsRoles = contenedor.querySelector(".rol__form__btn");
+  const btnX = contenedor.querySelector(".rol__btn-delete");
+
+  // console.log(btnsRoles);
+
+  btnX.style.display = "none";
+  btnsRoles.style.display = "flex";
+};
+
+const cancelarEliminarRol = function (btn) {
+  const contenedor = btn.closest("td");
+  const btnsRoles = contenedor.querySelector(".rol__form__btn");
+  const btnX = contenedor.querySelector(".rol__btn-delete");
+
+  // console.log(btnsRoles);
+
+  btnX.style.display = "";
+  btnsRoles.style.display = "none";
+};
+
+function submitDeleteRol(idUsuario, idRol) {
+  // console.log("Hola submitDelete");
+
+  document.getElementById("delete_idUsuario").value = idUsuario;
+  document.getElementById("delete_idRol").value = idRol;
+  document.getElementById("deleteRolForm").submit();
+}
+
 const mostrarBotonesEliminarPermiso = function (btn) {
   const contenedor = btn.closest("td");
   const btnsPermisos = contenedor.querySelector(".permiso__form__btn");
@@ -208,4 +208,34 @@ function submitDeletePermisoRol(idRol, idPermiso) {
   document.getElementById("delete_idRolP").value = idRol;
   document.getElementById("delete_idPermiso").value = idPermiso;
   document.getElementById("deletePermisoForm").submit();
+}
+
+const mostrarBotonesEliminarDepartamento = function (btn) {
+  const contenedor = btn.closest("td");
+  const btnsDepartamentos = contenedor.querySelector(
+    ".departamento__form__btn",
+  );
+  const btnX = contenedor.querySelector(".departamento__btn-delete");
+
+  btnX.style.display = "none";
+  btnsDepartamentos.style.display = "flex";
+};
+
+const cancelarEliminarDepartamento = function (btn) {
+  const contenedor = btn.closest("td");
+  const btnsDepartamentos = contenedor.querySelector(
+    ".departamento__form__btn",
+  );
+  const btnX = contenedor.querySelector(".departamento__btn-delete");
+
+  btnX.style.display = "";
+  btnsDepartamentos.style.display = "none";
+};
+
+function submitDeleteDepartamento(idUsuario, idDepartment) {
+  // console.log("Hola submitDelete");
+
+  document.getElementById("delete_idUsuarioD").value = idUsuario;
+  document.getElementById("delete_idDepartment").value = idDepartment;
+  document.getElementById("deleteDepartamentoForm").submit();
 }
