@@ -40,9 +40,9 @@ def generar_reporte_programacion(programacion, detalles):
 
         ws[f"A{fila_contador}"] = contador
 
-        ws[f"B{fila_contador}"] = detalle["idEmpleado"]
+        ws[f"B{fila_contador}"] = detalle["badgeNumber"]
         
-        ws[f"C{fila_contador}"] = detalle["badgeNumber"]
+        ws[f"C{fila_contador}"] = detalle["idEmpleado"]
 
         ws[f"D{fila_contador}"] =  detalle["nombreEmpleado"] #f"{detalle["firstName"]} {detalle["secondName"] or ""} {detalle["lastName"]} {detalle["lastName2"] or ""}"
 
