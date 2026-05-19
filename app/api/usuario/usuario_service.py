@@ -116,27 +116,31 @@ class Usuario_Service():
 
       if not usuario:
          return {"error": f"Usuario {username} no existe", "status": 404}
+      
+      idUsuarioEncontrado = usuario["idUsuario"]
          
-      paths_usuario = UsuarioRepository.getUserPaths(db, usuario[0])
-      permisos = UsuarioRepository.getUserPermissionsById(db, usuario[0])
-      roles_usuario = UsuarioRepository.getUserRolesById(db, usuario[0])
-      departamentos = UsuarioRepository.getUserDepartmentsById(db, usuario[0])
+      paths_usuario = UsuarioRepository.getUserPaths(db, idUsuarioEncontrado)
+      permisos = UsuarioRepository.getUserPermissionsById(db, idUsuarioEncontrado)
+      roles_usuario = UsuarioRepository.getUserRolesById(db, idUsuarioEncontrado)
+      departamentos = UsuarioRepository.getUserDepartmentsById(db, idUsuarioEncontrado)
 
       usuarioALoguear = Usuario_Rutas(
-         usuario[0],
-         usuario[1],
-         usuario[2],
-         usuario[4],
+         usuario["idUsuario"],
+         usuario["username"],
+         usuario["nombre"],
+         usuario["activo"],
          roles_usuario,
          permisos,
          paths_usuario,
          departamentos,
+         usuario["scope_departamentos_global"],
+         usuario["scope_permisos_global"],
          )
          
       if not usuarioALoguear.activo:
          return {"error": "Usuario inactivo.", "status": 403}
          
-      if not check_password_hash(usuario[3], password):
+      if not check_password_hash(usuario["password_hash"], password):
          return {"error": "Contraseña incorrecta.", "status": 401}
          
       if usuarioALoguear:
@@ -182,7 +186,9 @@ class Usuario_Service():
          roles,
          permisos,
          paths,
-         departamentos
+         departamentos,
+         usuario["scope_departamentos_global"],
+         usuario["scope_permisos_global"],
       )
 
       return user

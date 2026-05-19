@@ -29,10 +29,10 @@ class UsuarioRepository:
         cursor = None
 
         try:
-            cursor = db.connection.cursor()
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
 
             query = """
-            SELECT idUsuario, username, nombre, password_hash, activo
+            SELECT idUsuario, username, nombre, password_hash, activo, scope_departamentos_global, scope_permisos_global
 
             FROM turnos_usuario
             WHERE username = %s
@@ -57,7 +57,7 @@ class UsuarioRepository:
             cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
 
             query = """
-            SELECT idUsuario, username, nombre, password_hash, activo
+            SELECT idUsuario, username, nombre, password_hash, activo, scope_departamentos_global, scope_permisos_global
             FROM turnos_usuario
             WHERE idUsuario = %s
             """
