@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, abort, request, redirect, url_for
-from flask_login import login_required
+from flask_login import login_required, current_user
 
 # Extensions
 from app.extensions.db import db
@@ -77,6 +77,19 @@ def crearProgramacionPorDepartamentosUsuario_web():
             "elaborado_por": request.form.get("elaborado_por"),
             "departamentos": request.form.getlist("departamentos"),
         }
+
+        departamentos_usuario = [
+            str(d["idDepartment"])
+            for d in current_user.departamentos
+        ]
+
+        for depto in data["departamentos"]:
+            if depto not in departamentos_usuario:
+                FlashMessages.flash_error(
+                    "Intento de acceso no autorizado."
+                )
+
+                return redirect(url_for("home_template.index"))
 
         result = Programacion_Service.crearProgramacionPorDepartamentosUsuario(db, data)
 
