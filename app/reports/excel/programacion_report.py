@@ -94,9 +94,9 @@ def generar_reporte_programacion(programacion, detalles):
     ws.column_dimensions["K"].width = 16
     ws.column_dimensions["L"].width = 16
     ws.column_dimensions["M"].width = 15
-    ws.column_dimensions["N"].width = 15
-    ws.column_dimensions["O"].width = 15
-    ws.column_dimensions["P"].width = 15
+    ws.column_dimensions["N"].width = 45
+    ws.column_dimensions["O"].width = 20
+    ws.column_dimensions["P"].width = 20
 
     # =========================================================
     # PIE DE REPORTE
