@@ -33,7 +33,7 @@ endblock %} {% block content %}
   <div class="card-body">
     <div class="d-flex justify-content-between">
       <div class="d-flex justify-content-between">
-        <h3>Reportes pendientes de cerrar</h3>
+        <h3>Reportes abiertos</h3>
         <button
           type="button"
           class="btn btn-warning ms-3"
@@ -41,7 +41,7 @@ endblock %} {% block content %}
           data-bs-target="#crearProgramacionesAutomaticas"
         >
           <img src="/static/img/edit-icon.png" height="15px" width="15px" />
-          <strong>Crear reportes automáticamente</strong>
+          <strong>Crear reportes</strong>
         </button>
       </div>
       <form class="d-flex" role="search" onsubmit="return false;">
@@ -65,7 +65,7 @@ endblock %} {% block content %}
                 Fecha
                 <span class="arrow" data-type="darr" data-column="0"
                   ><strong>&darr;</strong></span
-                ><span class="arrow-active" data-type="uarr" data-column="0"
+                ><span class="arrow" data-type="uarr" data-column="0"
                   >&uarr;</span
                 >
               </p>
@@ -75,7 +75,10 @@ endblock %} {% block content %}
                 Departamento
                 <span class="arrow" data-type="darr" data-column="1"
                   ><strong>&darr;</strong></span
-                ><span class="arrow" data-type="uarr" data-column="1"
+                ><span
+                  class="arrow arrow-active"
+                  data-type="uarr"
+                  data-column="1"
                   >&uarr;</span
                 >
               </p>
@@ -93,9 +96,9 @@ endblock %} {% block content %}
             <th scope="col"></th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="tbody-list">
           {% for pb in programaciones_borrador %}
-          <tr class="record">
+          <tr class="record tr-list">
             <td>{{ pb.fecha }}</td>
             {% for d in departamentos %} {% if d.idDepartment == pb.idDepartment
             %}
@@ -131,10 +134,14 @@ endblock %} {% block content %}
         ></button>
       </div>
       <div class="modal-body">
+        <p>
+          Se crearan las programaciones para el día de hoy para los siguientes
+          departamentos:
+        </p>
         <p>Ingrese la fecha deseada para generar los reportes</p>
         <form
           id="formCreacionAutomaticaProgramacion"
-          action="/web/programacion/crearProgramacionAutomatica_web"
+          action="/web/programacion/crearProgramacionPorDepartamentosUsuario_web"
           method="POST"
         >
           <div class="col-12">
@@ -150,33 +157,54 @@ endblock %} {% block content %}
               <label for="fecha" class="form-label">Fecha</label>
             </div>
           </div>
+          <div hidden class="col-12">
+            <div class="form-floating mb-3">
+              <input
+                type="number"
+                class="form-control"
+                name="elaborado_por"
+                id="elaborado_por"
+                placeholder="elaborado_por"
+                required
+                value="{{ current_user.id }}"
+              />
+              <label for="elaborado_por" class="form-label"
+                >Elaborado por</label
+              >
+            </div>
+          </div>
+          <table class="table table-light table-hover">
+            <thead>
+              <hr />
+              <tr>
+                <th scope="col">
+                  <p>Seleccionar</p>
+                </th>
+                <th scope="col">
+                  <p>ID Departamento</p>
+                </th>
+                <th scope="col">
+                  <p>Nombre de departamento</p>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for depto in current_user.departamentos %}
+              <tr>
+                <td>
+                  <input
+                    type="checkbox"
+                    name="departamentos"
+                    value="{{ depto['idDepartment'] }}"
+                  />
+                </td>
+                <th scope="row">{{ depto["idDepartment"] }}</th>
+                <td>{{ depto["name"] }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </form>
-        <p>
-          Se crearan las programaciones para el día de hoy para los siguientes
-          departamentos:
-        </p>
-        <h2>Departamentos a los que aplican horas extra</h2>
-        <table class="table table-light table-hover">
-          <thead>
-            <hr />
-            <tr>
-              <th scope="col">
-                <p>ID Departamento</p>
-              </th>
-              <th scope="col">
-                <p>Nombre de departamento</p>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for depto in departamentos_aplica_horas_extra %}
-            <tr>
-              <th scope="row">{{ depto.idDepartment }}</th>
-              <td>{{ depto.name }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
       </div>
       <div class="modal-footer">
         <button
