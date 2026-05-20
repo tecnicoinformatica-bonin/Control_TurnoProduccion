@@ -335,6 +335,77 @@ endblock %} {% block content %}
                 </div>
 
                 <hr />
+
+                <p><strong>Características especiales del usuario</strong></p>
+                <div class="form-group mt-3 ms-3">
+                  <input
+                    type="hidden"
+                    name="scope_departamentos_global_hidden"
+                    value="0"
+                  />
+                  <div class="form-check form-switch">
+                    {% if u.scope_departamentos_global == 1 %}
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      name="scope_departamentos_global"
+                      id="scope_departamentos_global"
+                      value="1"
+                      checked
+                    />
+                    {% else %}
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      name="scope_departamentos_global"
+                      id="scope_departamentos_global"
+                      value="1"
+                    />
+                    {% endif %}
+                    <label
+                      class="form-check-label"
+                      for="scope_departamentos_global"
+                      >Usuario de RRHH</label
+                    >
+                  </div>
+                </div>
+
+                <div class="form-group mt-3 ms-3">
+                  <input
+                    type="hidden"
+                    name="scope_permisos_global_hidden"
+                    value="0"
+                  />
+                  <div class="form-check form-switch">
+                    {% if u.scope_permisos_global == 1 %}
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      name="scope_permisos_global"
+                      id="scope_permisos_global"
+                      value="1"
+                      checked
+                    />
+                    {% else %}
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      name="scope_permisos_global"
+                      id="scope_permisos_global"
+                      value="1"
+                    />
+                    {% endif %}
+                    <label class="form-check-label" for="scope_permisos_global"
+                      >Usuario administrador</label
+                    >
+                  </div>
+                </div>
+
+                <hr />
                 <div class="d-flex justify-content-end">
                   <button
                     type="button"
