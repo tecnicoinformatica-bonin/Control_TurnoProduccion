@@ -9,7 +9,7 @@ from app.api.usuario_departamento.usuario_departamento_model import Usuario_Depa
 from app.api.usuario_departamento.usuario_departamento_service import Usuario_Departamento_Service
 from app.api.usuario_permiso.usuario_permiso_service import Usuario_Permiso_Service
 from app.api.usuario_rol.usuario_rol_service import Usuario_Rol_Service
-from app.core.auth.rbca_decorator import ruta_requerida
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 from app.extensions.messages import FlashMessages
 
@@ -25,7 +25,6 @@ def login():
 
 @usuario_template_bp.route("/crearUsuario")
 @login_required
-@ruta_requerida()
 def crearUsuario_template():
     usuarios = Usuario_Service.getUsuarios_service(db)
     roles = Rol_Service.getRoles_service(db)
@@ -48,6 +47,7 @@ def crearUsuario_template():
 
 @usuario_template_bp.route("/listaUsuarios")
 @login_required
+@permiso_requerido("usuario.ver")
 def listaUsuarios_template():
     usuarios = Usuario_Service.getUsuarios_service(db)
     roles = Rol_Service.getRoles_service(db)

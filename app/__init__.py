@@ -1,5 +1,6 @@
 from flask import Flask, redirect, url_for, session, request
 from datetime import datetime, timedelta
+from app.extensions.error_handlers import register_error_handlers
 from config import DevelopmentConfig
 from flask_login import LoginManager, current_user
 from app.api.usuario.usuario_service import Usuario_Service
@@ -79,6 +80,8 @@ login_manager = LoginManager()
 def create_app():
     app = Flask(__name__)
     app.config.from_object(DevelopmentConfig)
+
+    register_error_handlers(app)
 
     init_swagger(app)
 
