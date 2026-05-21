@@ -80,7 +80,7 @@ endblock %} {% block content %}
             </th>
             <th scope="col">
               <p class="title_column" onclick="ordenarTabla(5)">
-                Roles
+                Permiso total
                 <span class="arrow" data-type="darr" data-column="5"
                   >&darr;</span
                 ><span class="arrow" data-type="uarr" data-column="5"
@@ -90,7 +90,7 @@ endblock %} {% block content %}
             </th>
             <th scope="col">
               <p class="title_column" onclick="ordenarTabla(6)">
-                Permisos
+                Alcance total
                 <span class="arrow" data-type="darr" data-column="6"
                   >&darr;</span
                 ><span class="arrow" data-type="uarr" data-column="6"
@@ -100,10 +100,30 @@ endblock %} {% block content %}
             </th>
             <th scope="col">
               <p class="title_column" onclick="ordenarTabla(7)">
-                Departamentos
+                Roles
                 <span class="arrow" data-type="darr" data-column="7"
                   >&darr;</span
                 ><span class="arrow" data-type="uarr" data-column="7"
+                  >&uarr;</span
+                >
+              </p>
+            </th>
+            <th scope="col">
+              <p class="title_column" onclick="ordenarTabla(8)">
+                Permisos
+                <span class="arrow" data-type="darr" data-column="8"
+                  >&darr;</span
+                ><span class="arrow" data-type="uarr" data-column="8"
+                  >&uarr;</span
+                >
+              </p>
+            </th>
+            <th scope="col">
+              <p class="title_column" onclick="ordenarTabla(9)">
+                Departamentos
+                <span class="arrow" data-type="darr" data-column="9"
+                  >&darr;</span
+                ><span class="arrow" data-type="uarr" data-column="9"
                   >&uarr;</span
                 >
               </p>
@@ -118,6 +138,13 @@ endblock %} {% block content %}
             <td class="record-name">{{ u.username }}</td>
             <td>{{ u.nombre }}</td>
             <td>{% if u.activo == 1 %} Sí {% else %} No {% endif %}</td>
+            <td>
+              {% if u.scope_permisos_global == 1 %} Sí {% else %} No {% endif %}
+            </td>
+            <td>
+              {% if u.scope_departamentos_global == 1 %} Sí {% else %} No {%
+              endif %}
+            </td>
             <td>
               {% for ur in usuario_roles %} {% for r in roles %} {% if
               u.idUsuario == ur.idUsuario and r.idRol == ur.idRol %}
