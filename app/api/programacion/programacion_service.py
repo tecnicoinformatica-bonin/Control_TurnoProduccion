@@ -2,6 +2,7 @@ from datetime import datetime
 
 from app.api.departamento.departamento_service import Departamento_Service
 from app.api.empleado.empleado_service import Empleado_Service
+from app.api.linea.linea_repository import LineaRepository
 from app.api.programacion.programacion_repository import ProgramacionRepository
 from app.api.registro.registro_repository import RegistroRepository
 from app.api.usuario.usuario_service import Usuario_Service
@@ -26,9 +27,29 @@ class Programacion_Service():
                     "cerrado_por": row[7], 
                     "fecha_reapertura": row[8],
                     "reabierto_por": row[9],
-                    "motivo_reapertura": row[10],                }
+                    "motivo_reapertura": row[10],
+                }
                 programaciones.append(programacion)
             return programaciones
+
+        except Exception as ex:
+            return {"error": f"No se pudieron obtener las programaciones en el servicio: {str(ex)}"}
+    
+    @staticmethod
+    def getCountsByLine_service(db, idProgramacion):
+        try:
+            data = ProgramacionRepository.getCountsByLine(db, idProgramacion)
+            detalles_linea = []
+            for row in data:
+                detalle = {
+                    "idLinea": row["idLinea"],
+                    "nameLinea": row["nameLinea"],
+                    "total_linea": row["total_linea"],
+                    "minimo_requerido": row["minimo_requerido"],
+                    "diferencia": row["diferencia"],
+                }
+                detalles_linea.append(detalle)
+            return detalles_linea
 
         except Exception as ex:
             return {"error": f"No se pudieron obtener las programaciones en el servicio: {str(ex)}"}
@@ -363,8 +384,7 @@ class Programacion_Service():
         
         except Exception as ex:
             return {"error": f"No se pudo eliminar el programacion. {str(ex)}"}
-        
-
+    
     @staticmethod
     def cerrar_programaciones_vencidas_service(db):
         return ProgramacionRepository.cerrar_programaciones_vencidas(db)

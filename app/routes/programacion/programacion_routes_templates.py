@@ -51,6 +51,7 @@ def editarProgramacion_template(idDepartment, fecha):
     usuarios = Usuario_Service.getUsuarios_service(db)
     programaciones_borrador = Programacion_Service.getProgramacionesEnBorrador_service(db)
     programacion_actual = Programacion_Service.getProgramacionByDateAndIdDepartment_service(db, fecha, idDepartment)
+    conteo_lineas = Programacion_Service.getCountsByLine_service(db, programacion_actual["idProgramacion"])
             
     return render_template(
         f"programacion/editarProgramacion.html", 
@@ -61,4 +62,5 @@ def editarProgramacion_template(idDepartment, fecha):
         idDepartment = int(idDepartment), 
         fecha = fecha,
         programacion_actual = programacion_actual,
+        conteo_lineas = conteo_lineas,
     )

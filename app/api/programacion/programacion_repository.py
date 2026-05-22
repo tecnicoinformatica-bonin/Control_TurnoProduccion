@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import MySQLdb
 import pytz
 
 class ProgramacionRepository:
@@ -22,6 +23,42 @@ class ProgramacionRepository:
         
         except Exception as ex:
             return {"error": f"No se pudo obtener la programación por ID en el repositorio: {str(ex)}"}
+
+        finally:
+            if cursor:
+                cursor.close()
+    
+    @staticmethod
+    def getCountsByLine(db, idProgramacion):
+        cursor = None
+
+        try:
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT 
+                T1.idLinea,
+                T1.nameLinea,
+                COUNT(T0.idLinea) AS total_linea,
+                T1.minimo_requerido,
+                T1.minimo_requerido - COUNT(T0.idLinea) AS diferencia
+            FROM turnos_linea AS T1
+            LEFT JOIN turnos_registro AS T0
+                ON T1.idLinea = T0.idLinea
+                AND T0.idProgramacion = %s
+            GROUP BY 
+                T1.idLinea,
+                T1.nameLinea,
+                T1.minimo_requerido
+            """
+
+            cursor.execute(query, (idProgramacion,))
+            detalles_total = cursor.fetchall()
+
+            return detalles_total
+        
+        except Exception as ex:
+            return {"error": f"No se pudo obtener el conteo ID programación en el repositorio: {str(ex)}"}
 
         finally:
             if cursor:

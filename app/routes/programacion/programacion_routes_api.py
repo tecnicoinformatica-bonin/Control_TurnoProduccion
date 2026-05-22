@@ -19,6 +19,21 @@ def getProgramaciones():
 
     return jsonify(programaciones)
 
+@programacion_api_bp.route("/getCountsByLine/<int:idProgramacion>", methods=["GET"])
+def getCountsByLine(idProgramacion):
+    """
+    Comprobar si cumple el mínimo por línea en la programación
+    ---
+    tags:
+      - Programacion
+    responses:
+      200:
+        description: Comprobación de mínimos por línea
+    """
+    programaciones = Programacion_Service.getCountsByLine_service(db, idProgramacion)
+
+    return jsonify(programaciones)
+
 @programacion_api_bp.route("/getDetallesProgramacionById/<int:idProgramacion>", methods=["GET"])
 def getDetallesProgramacionById(idProgramacion):
     """
