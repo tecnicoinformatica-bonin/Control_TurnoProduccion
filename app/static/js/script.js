@@ -5,7 +5,7 @@ const arrows = document.querySelectorAll(".arrow");
 const arrowsUp = document.querySelectorAll(".arrow__up");
 const arrowsDown = document.querySelectorAll(".arrow__down");
 
-inputBusqueda.addEventListener("keyup", function () {
+inputBusqueda?.addEventListener("keyup", function () {
   const texto = inputBusqueda.value.toLowerCase();
 
   filas.forEach((fila) => {
