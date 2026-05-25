@@ -22,6 +22,7 @@ def index():
     roles = Rol_Service.getRoles_service(db)
     usuario_roles = Usuario_Rol_Service.getUsuario_Roles_service(db)
     programaciones_borrador = Programacion_Service.getProgramacionesEnBorrador_service(db)
+    programaciones = Programacion_Service.getProgramaciones_service(db)
     fecha_actual = datetime.now()
 
     dept = 0
@@ -37,4 +38,5 @@ def index():
         fecha_actual = fecha_actual,
         programaciones_borrador = programaciones_borrador,
         dept = dept,
+        programaciones = programaciones,
         )

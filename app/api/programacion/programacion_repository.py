@@ -319,7 +319,7 @@ class ProgramacionRepository:
                 estado = 'CERRADO',
                 fecha_cierre = %s,
                 cerrado_por = 0
-            WHERE estado = 'BORRADOR'
+            WHERE estado = 'BORRADOR' OR estado = 'VERIFICADO'
             AND DATE_ADD(fecha, INTERVAL 1 DAY) + INTERVAL 15 HOUR <= %s
             """
 
@@ -332,6 +332,39 @@ class ProgramacionRepository:
         except Exception as e:
             db.connection.rollback()
             raise Exception(f"Error cerrando programaciones: {str(e)}")
+
+        finally:
+            if cursor:
+                cursor.close()
+    
+    @staticmethod
+    def confirmar_verificacion_programacion(db, idProgramacion, verificado_por):
+        cursor = None
+
+        try: 
+            cursor = db.connection.cursor()
+            
+            query = """
+                UPDATE turnos_programacion SET estado = 'VERIFICADO', verificado_por = %s
+                WHERE idProgramacion = %s
+                """
+            cursor.execute(query, (verificado_por, idProgramacion,))
+            
+            db.connection.commit()
+
+            programacion = {
+                "idProgramacion": idProgramacion, 
+                "verificado_por": verificado_por,  
+            }
+
+            return {
+                "mensaje": f"Programación verificada correctamente. ID: {programacion['idProgramacion']}, verificado_por: {programacion['verificado_por']}",
+                "programacion": programacion
+            }
+        
+        except Exception as ex:
+            db.connection.rollback()
+            raise Exception(f"No se pudo verificar programación. {str(ex)}")
 
         finally:
             if cursor:

@@ -30,6 +30,7 @@ class Programacion_Service():
                     "fecha_reapertura": row[8],
                     "reabierto_por": row[9],
                     "motivo_reapertura": row[10],
+                    "verificado_por": row[11],
                 }
                 programaciones.append(programacion)
             return programaciones
@@ -72,6 +73,7 @@ class Programacion_Service():
                 "fecha_reapertura": data[8],
                 "reabierto_por": data[9],
                 "motivo_reapertura": data[10],  
+                "verificado_por": data[11],  
             }
 
             return programacion
@@ -95,6 +97,7 @@ class Programacion_Service():
                 "fecha_reapertura": data[8],
                 "reabierto_por": data[9],
                 "motivo_reapertura": data[10],  
+                "verificado_por": data[11],  
             }
 
             return programacion
@@ -121,6 +124,7 @@ class Programacion_Service():
                 "fecha_reapertura": dataProgramacion[8],
                 "reabierto_por": dataProgramacion[9],
                 "motivo_reapertura": dataProgramacion[10],  
+                "verificado_por": dataProgramacion[11],
             }
 
             [_, month, day] = str(programacion["fecha"]).split("-")
@@ -165,7 +169,8 @@ class Programacion_Service():
                     "cerrado_por": row[7], 
                     "fecha_reapertura": row[8],
                     "reabierto_por": row[9],
-                    "motivo_reapertura": row[10],      
+                    "motivo_reapertura": row[10],
+                    "verificado_por": row[11],
                 }
                 programaciones.append(programacion)
             return programaciones
@@ -396,3 +401,30 @@ class Programacion_Service():
     @staticmethod
     def cerrar_programaciones_vencidas_service(db):
         return ProgramacionRepository.cerrar_programaciones_vencidas(db)
+    
+    @staticmethod
+    def confirmar_verificacion_programacion_service(db, data):
+        try:
+
+            idProgramacion = data.get("idProgramacion")
+            verificado_por = data.get("verificado_por")
+            
+            required_fields = {
+                    "idProgramacion": idProgramacion, 
+                    "verificado_por": verificado_por,
+                }
+            
+            programacion = Programacion_Service.getProgramacionByIdProgramacion_service(db, idProgramacion)
+
+            if programacion["estado"] == "CERRADO":
+                return {"error": "Programación ya está cerrada."}
+            
+            missing_fields = [key for key, value in required_fields.items() if value is None or value == ""]
+
+            if missing_fields:
+                return {"error": f"Faltan campos obligatorios: {', '.join(missing_fields)}"}
+            
+            return ProgramacionRepository.confirmar_verificacion_programacion(db, idProgramacion, verificado_por)
+        
+        except Exception as ex:
+            return {"error": f"No se pudo cerrar la programación. {str(ex)}"}

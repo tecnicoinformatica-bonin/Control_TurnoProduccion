@@ -217,4 +217,41 @@ def eliminarProgramacion_web():
         "programacion_template.listaProgramaciones_template", 
         programaciones = programaciones,
         programaciones_borrador = programaciones_borrador,
+    ))
+
+@programacion_web_bp.route("/confirmar_verificacion_programacion_web", methods=["GET", "POST"])
+@login_required
+@permiso_requerido("programacion.confirmarAsignaciones")
+def confirmar_verificacion_programacion_web():
+    if request.method == "POST":
+        data = {
+            "idProgramacion": request.form.get("idProgramacion"),
+            "verificado_por": request.form.get("verificado_por"),
+            "fecha": request.form.get("fecha"),
+            "idDepartment": request.form.get("idDepartment"),
+        }
+        fecha = data['fecha']
+        idDepartment = data['idDepartment']
+
+        result = Programacion_Service.confirmar_verificacion_programacion_service(db, data)
+
+        if "error" in result:
+            FlashMessages.flash_error(result["error"])
+            return redirect(url_for(
+                "programacion_template.editarProgramacion_template",
+                fecha = fecha,
+                idDepartment = idDepartment,
+                ))
+        else:
+            FlashMessages.flash_success(result["mensaje"])
+            return redirect(url_for(
+                "programacion_template.editarProgramacion_template",
+                fecha = fecha,
+                idDepartment = idDepartment,
+                ))
+
+    return redirect(url_for(
+        "programacion_template.editarProgramacion_template", 
+        fecha = fecha,
+        idDepartment = idDepartment,
     ))    
