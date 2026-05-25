@@ -17,8 +17,6 @@ linea_web_bp = Blueprint(
 @login_required
 @permiso_requerido("linea.crear")
 def crearLinea_web():
-    lineas = Linea_Service.getLineas_service(db)
-
     if request.method == "POST":
         data = {
             "nameLinea": request.form.get("nameLinea"),
@@ -35,15 +33,12 @@ def crearLinea_web():
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for("linea_template.crearLinea_template"))
 
-    return redirect(url_for("linea_template.crearLinea_template", lineas = lineas))
+    return redirect(url_for("linea_template.crearLinea_template",))
 
 @linea_web_bp.route("/editarLinea_web", methods=["GET", "POST"])
 @login_required
 @permiso_requerido("linea.editar")
 def editarLinea_web():
-    lineas = Linea_Service.getLineas_service(db)
-    departamentos = Departamento_Service.getDepartamentos_service(db);
-    
     if request.method == "POST":
         data = {
             "idLinea": request.form.get("idLinea"),
@@ -58,30 +53,21 @@ def editarLinea_web():
             FlashMessages.flash_error(result["error"])
             return redirect(url_for(
                 "linea_template.listaLineas_template", 
-                lineas = lineas, 
-                departamentos = departamentos,
             ))
         else:
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for(
                 "linea_template.listaLineas_template", 
-                lineas = lineas,
-                departamentos = departamentos,
             ))
 
     return redirect(url_for(
         "linea_template.listaLineas_template", 
-        lineas = lineas,
-        departamentos = departamentos,
     ))    
 
 @linea_web_bp.route("/eliminarLinea_web", methods=["GET", "POST"])
 @login_required
 @permiso_requerido("linea.eliminar")
 def eliminarLinea_web():
-    lineas = Linea_Service.getLineas_service(db)
-    departamentos = Departamento_Service.getDepartamentos_service(db);
-    
     if request.method == "POST":
         data = {
             "idLinea": request.form.get("idLinea"),
@@ -93,19 +79,13 @@ def eliminarLinea_web():
             FlashMessages.flash_error(result["error"])
             return redirect(url_for(
                 "linea_template.listaLineas_template",
-                lineas = lineas,
-                departamentos = departamentos,
             ))
         else:
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for(
                 "linea_template.listaLineas_template",
-                lineas = lineas,
-                departamentos = departamentos,
             ))
 
     return redirect(url_for(
         "linea_template.listaLineas_template", 
-        lineas = lineas,
-        departamentos = departamentos,
     ))    
