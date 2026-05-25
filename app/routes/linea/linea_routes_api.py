@@ -39,6 +39,9 @@ def createLinea():
             idDepartment:
               type: integer
               example: 1
+            minimo_requerido:
+              type: integer
+              example: 10
     responses:
       200:
         description: linea creada correctamente
@@ -78,6 +81,9 @@ def updateLinea():
             idDepartment:
               type: integer
               example: 1
+            minimo_requerido:
+              type: integer
+              example: 10
     responses:
       200:
         description: linea modificada correctamente

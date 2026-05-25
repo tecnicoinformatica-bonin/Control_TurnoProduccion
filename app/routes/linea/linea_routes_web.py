@@ -23,6 +23,7 @@ def crearLinea_web():
         data = {
             "nameLinea": request.form.get("nameLinea"),
             "idDepartment": request.form.get("idDepartment"),
+            "minimo_requerido": request.form.get("minimo_requerido"),
         }
 
         result = Linea_Service.createLinea_service(db, data)
@@ -48,6 +49,7 @@ def editarLinea_web():
             "idLinea": request.form.get("idLinea"),
             "nameLinea": request.form.get("nameLinea"),
             "idDepartment": request.form.get("idDepartment"),
+            "minimo_requerido": request.form.get("minimo_requerido"),
         }
 
         result = Linea_Service.updateLinea_service(db, data)

@@ -9,9 +9,10 @@ class Linea_Service():
             lineas = []
             for row in data:
                 linea = {
-                    "idLinea": row[0], 
-                    "nameLinea": row[1], 
-                    "idDepartment": row[2], 
+                    "idLinea": row[0],
+                    "nameLinea": row[1],
+                    "idDepartment": row[2],
+                    "minimo_requerido": row[3],
                 }
                 lineas.append(linea)
             return lineas
@@ -27,6 +28,7 @@ class Linea_Service():
                 "idLinea": data[0], 
                 "nameLinea": data[1], 
                 "idDepartment": data[2], 
+                "minimo_requerido": data[3],
             }
             
             return linea
@@ -39,21 +41,23 @@ class Linea_Service():
         try:
             nameLinea = data.get("nameLinea")
             idDepartment = data.get("idDepartment")
+            minimo_requerido = data.get("minimo_requerido")
             
             required_fields = {
-                    "nameLinea": nameLinea, 
-                    "idDepartment": idDepartment, 
-                }
+                "nameLinea": nameLinea, 
+                "idDepartment": idDepartment, 
+                "minimo_requerido": minimo_requerido, 
+            }
             
             missing_fields = [key for key, value in required_fields.items() if value is None or value == ""]
 
             if missing_fields:
                 return {"error": f"Faltan campos obligatorios: {', '.join(missing_fields)}"}
             
-            return LineaRepository.createLinea(db, nameLinea, idDepartment)
+            return LineaRepository.createLinea(db, nameLinea, idDepartment, minimo_requerido)
         
         except Exception as ex:
-            return {"error": f"No se pudo crear la línea. {ex}"}
+            return {"error": f"No se pudo crear la línea en el servicio. {str(ex)}"}
         
     @staticmethod
     def updateLinea_service(db, data):
@@ -61,11 +65,13 @@ class Linea_Service():
             idLinea = data.get("idLinea")
             nameLinea = data.get("nameLinea")
             idDepartment = data.get("idDepartment")
+            minimo_requerido = data.get("minimo_requerido")
 
             required_fields = {
                     "idLinea": idLinea, 
                     "nameLinea": nameLinea, 
                     "idDepartment": idDepartment, 
+                    "minimo_requerido": minimo_requerido, 
                 }
             
             missing_fields = [key for key, value in required_fields.items() if value is None or value == ""]
@@ -73,10 +79,10 @@ class Linea_Service():
             if missing_fields:
                 return {"error": f"Faltan campos obligatorios: {', '.join(missing_fields)}"}
             
-            return LineaRepository.updateLinea(db, idLinea, nameLinea, idDepartment)
+            return LineaRepository.updateLinea(db, idLinea, nameLinea, idDepartment, minimo_requerido)
         
         except Exception as ex:
-            return {"error": f"No se pudo modificar la línea. {ex}"}
+            return {"error": f"No se pudo modificar la línea. {str(ex)}"}
         
     @staticmethod
     def deleteLinea_service(db, data):
