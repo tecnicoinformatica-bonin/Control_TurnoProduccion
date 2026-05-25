@@ -909,6 +909,20 @@ message in messages %}
       updatingTotals = false;
     }
   }
+
+  document
+    .querySelector(".card-tabla-totales")
+    .addEventListener("mouseenter", function () {
+      table2.setHeight("350px");
+      table2.redraw(true);
+    });
+
+  document
+    .querySelector(".card-tabla-totales")
+    .addEventListener("mouseleave", function () {
+      table2.setHeight("140px");
+      table2.redraw(true);
+    });
 </script>
 
 {% endblock %}

@@ -303,13 +303,13 @@
   font-weight: bold;
 }
 
-.encabezado__text-yellow {
-  /* background-color: #fbff0259; */
-  /* padding: 0px 2px; */
-}
+/* .encabezado__text-yellow { 
+  /* background-color: #fbff0259; 
+  /* padding: 0px 2px; 
+} 
 
 .encabezado__text-horario {
-}
+} */
 
 .red-row {
   color: black !important;
@@ -324,4 +324,24 @@
 .bg-tabla-totales {
   border: 1px solid white;
 }
+
 /* tabulator */
+.card-tabla-totales {
+  position: relative;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+
+  transform-origin: center;
+}
+
+.card-tabla-totales:hover {
+  transform: translateY(-4px);
+
+  box-shadow:
+    0 0 12px rgba(133, 133, 133, 0.15),
+    0 0 30px rgba(143, 143, 143, 0.45);
+
+  z-index: 100;
+}
