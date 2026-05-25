@@ -97,7 +97,7 @@ endblock %} {% block content %}
           </tr>
         </thead>
         <tbody class="tbody-list">
-          {% for pb in programaciones_borrador %}
+          {% for pb in programaciones %}
           <tr class="record tr-list">
             <td>{{ pb.fecha }}</td>
             {% for d in departamentos %} {% if d.idDepartment == pb.idDepartment

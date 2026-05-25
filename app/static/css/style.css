@@ -270,19 +270,27 @@
 }
 
 .estado-text__programacion {
-  grid-row: span 2 / span 2;
   grid-column-start: 3;
   grid-row-start: 5;
 }
 
 .estado-data__programacion {
-  grid-row: span 2 / span 2;
   grid-column-start: 4;
   grid-row-start: 5;
 }
 
+.verificado_por-text {
+  grid-column-start: 3;
+  grid-row-start: 6;
+}
+
+.verificado_por-data {
+  grid-column-start: 4;
+  grid-row-start: 6;
+}
+
 .card-tabla-totales {
-  margin: 0 8px;
+  margin: 0 0 0 8px;
   grid-column: span 3 / span 3;
   grid-row: span 7 / span 7;
   grid-column-start: 5;

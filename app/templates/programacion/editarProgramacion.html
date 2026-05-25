@@ -115,6 +115,14 @@ message in messages %}
       <div class="encabezado__text estado-data__programacion">
         {{ programacion_actual.estado }}
       </div>
+      <div class="encabezado__text encabezado__text-bold verificado_por-text">
+        Verificado por
+      </div>
+      <div class="encabezado__text verificado_por-data">
+        {% for u in usuarios %} {% if u.idUsuario ==
+        programacion_actual.verificado_por %} {{ u.nombre }} {% endif %} {%
+        endfor %}
+      </div>
       <div class="card card-tabla-totales card-outline-white bg-dark">
         <div class="card-body">
           <h5 class="text-light">Resumen de empleados asignados por línea</h5>
@@ -124,50 +132,110 @@ message in messages %}
       </div>
     </div>
   </div>
-  <div>
-    <button
-      onclick="descargarExcel('{{ programacion_actual.idProgramacion}}')"
-      id="descargar-excel"
-      class="btn btn-success m-3"
-    >
-      Descargar Excel
-    </button>
-    <button
-      onclick="descargarPDF('{{ programacion_actual.idProgramacion}}')"
-      id="descargar-pdf"
-      class="btn btn-danger m-3"
-    >
-      Descargar PDF
-    </button>
+  <div class="d-flex justify-content-between gap-3 m-3">
+    <div class="d-flex justify-content-between gap-3">
+      <button
+        onclick="descargarExcel('{{ programacion_actual.idProgramacion}}')"
+        id="descargar-excel"
+        class="btn btn-success"
+      >
+        Descargar Excel
+      </button>
+      <button
+        onclick="descargarPDF('{{ programacion_actual.idProgramacion}}')"
+        id="descargar-pdf"
+        class="btn btn-danger"
+      >
+        Descargar PDF
+      </button>
+    </div>
+    <div>
+      <button
+        type="button"
+        data-bs-toggle="modal"
+        data-bs-target="#validarAsignacionesModal"
+        id="btn-validar"
+        class="btn btn-warning"
+      >
+        <strong>Validar empleados asignados</strong>
+      </button>
+    </div>
   </div>
 
   <div id="tabla-registros"></div>
 </div>
-<form hidden id="formCerrarProgramacion" method="PUT">
+<!-- validarAsignacionesModal -->
+<div
+  class="modal fade"
+  id="validarAsignacionesModal"
+  tabindex="-1"
+  aria-labelledby="validarAsignacionesModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="validarAsignacionesModalLabel">
+          Validación de empleados asignados a cada línea
+        </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div id="tabla-confirmacion"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Seguir asignando
+        </button>
+        <button
+          onclick="confirmarAsignacionesForm_submit()"
+          type="button"
+          class="btn btn-success"
+        >
+          Confirmar verificación
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form
+  hidden
+  id="confirmarAsignacionesForm"
+  action="/web/programacion/confirmar_verificacion_programacion_web"
+  method="POST"
+>
   <input
     type="number"
     name="idProgramacion"
+    id="idProgramacion_asignacion"
     value="{{ programacion_actual.idProgramacion }}"
   />
   <input
-    id="input__elaborado_por"
     type="number"
-    name="elaborado_por"
-    value=""
-  />
-  <input id="input__idDepartment" type="number" name="idDepartment" value="" />
-  <input id="input__estado" type="text" name="estado" value="CERRADO" />
-  <input id="input__fecha_cierre" type="text" name="fecha_cierre" value="" />
-  <input id="input__fecha" type="text" name="fecha" value="" />
-  <input
-    id="input__cerrado_por"
-    type="number"
-    name="cerrado_por"
+    name="verificado_por"
+    id="verificado_por_asignacion"
     value="{{ current_user.id }}"
   />
+  <input
+    type="number"
+    name="idDepartment"
+    id="idDepartment_asignacion"
+    value="{{ idDepartment }}"
+  />
+  <input type="text" name="fecha" id="fecha_asignacion" value="{{ fecha }}" />
 </form>
 
 <script>
+  function confirmarAsignacionesForm_submit() {
+    document.getElementById("confirmarAsignacionesForm").submit();
+  }
+
   /* Formato a fecha del encabezado */
   const diaFecha = document.querySelector(".dia-fecha-data__programacion");
   const fechaSinFormato = new Date(Date.parse(diaFecha.dataset.fecha));
@@ -923,6 +991,60 @@ message in messages %}
       table2.setHeight("140px");
       table2.redraw(true);
     });
+
+  function mostrarModalValidacion() {
+    const myModal = document.getElementById("myModal");
+    const myInput = document.getElementById("myInput");
+
+    myModal.addEventListener("shown.bs.modal", () => {
+      myInput.focus();
+    });
+  }
+
+  const tableConfirmacion = new Tabulator("#tabla-confirmacion", {
+    theme: "site-dark",
+    height: "fitData",
+    layout: "fitColumns",
+
+    ajaxURL: `/json/programacion/get_counts_by_line/${idProgramacion}`,
+    ajaxConfig: "GET",
+
+    columns: [
+      {
+        title: "ID",
+        field: "idLinea",
+        editor: false,
+      },
+      {
+        title: "Línea",
+        field: "nameLinea",
+        editor: false,
+      },
+      {
+        title: "Mínimo Requerido",
+        field: "minimo_requerido",
+        editor: false,
+      },
+      {
+        title: "Total actual",
+        field: "total_linea",
+        editor: false,
+      },
+      {
+        title: "Diferencia",
+        field: "diferencia",
+        editor: false,
+      },
+    ],
+    rowFormatter: function (row) {
+      const el = row.getElement();
+      el.classList.remove("red-row");
+
+      if (row.getData().diferencia > 0) {
+        row.getElement().classList.add("red-row");
+      }
+    },
+  });
 </script>
 
 {% endblock %}
