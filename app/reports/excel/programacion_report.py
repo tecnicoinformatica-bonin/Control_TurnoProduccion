@@ -19,6 +19,7 @@ def generar_reporte_programacion(programacion, detalles):
     ws["G4"] = programacion["fecha"]
     ws["G5"] = programacion["nombreDepartamento"]
     ws["G6"] = programacion["nombre_elaborado_por"]
+    ws["P6"] = programacion["esFeriado"]
     
     # =========================================================
     # DETALLE EMPLEADOS

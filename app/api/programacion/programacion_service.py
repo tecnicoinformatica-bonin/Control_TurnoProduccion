@@ -7,7 +7,9 @@ from app.api.programacion.programacion_repository import ProgramacionRepository
 from app.api.registro.registro_repository import RegistroRepository
 from app.api.usuario.usuario_service import Usuario_Service
 from app.api.usuario_departamento.usuario_departamento_service import Usuario_Departamento_Service
+
 from app.extensions.slugify import Slugify
+from app.extensions.beneficios import *
 
 class Programacion_Service():
     @staticmethod
@@ -120,6 +122,12 @@ class Programacion_Service():
                 "reabierto_por": dataProgramacion[9],
                 "motivo_reapertura": dataProgramacion[10],  
             }
+
+            [_, month, day] = str(programacion["fecha"]).split("-")
+
+            es_feriado = f"{month}-{day}" in FERIADOS_GT
+
+            programacion["esFeriado"] = "SÍ" if es_feriado else "NO";
 
             for row in dataDepartamento:
                 if row["idDepartment"] == programacion["idDepartment"]:
