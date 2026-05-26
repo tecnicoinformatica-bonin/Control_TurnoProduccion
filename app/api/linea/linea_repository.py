@@ -136,7 +136,9 @@ class LineaRepository:
 
             """  Row[2] is the idDepartment an row[1] es el nameLinea """
             exists = any(
-                int(row[2]) != idDepartment and Slugify.slugify(row[1]) == slugNameLinea
+                int(row[0]) != idLinea 
+                and int(row[2]) == idDepartment 
+                and Slugify.slugify(row[1]) == slugNameLinea
                 for row in data
             )
 
