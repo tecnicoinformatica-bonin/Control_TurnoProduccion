@@ -1,3 +1,5 @@
+from flask_login import current_user
+
 from app.api.centro_de_costo.centro_de_costo_service import Centro_de_costo_Service
 from app.api.empleado.empleado_service import Empleado_Service
 from app.api.linea.linea_service import Linea_Service
@@ -6,7 +8,9 @@ from app.api.programacion.programacion_service import Programacion_Service
 from app.api.registro.registro_repository import RegistroRepository
 
 import traceback
+from app.api.registro_log.registro_log_service import Registro_log_Service
 from app.extensions.beneficios import calcular_beneficios
+from app.extensions.logs import compare_values_in_logs
 
 class Registro_Service():
     @staticmethod
@@ -326,15 +330,15 @@ class Registro_Service():
             fecha = data.get("fecha")
             idCentro = data.get("idCentro")
             badgeNumber = data.get("badgeNumber")
-
+            
             required_fields = {
-                    "idRegistro": idRegistro, 
-                    "idEmpleado": idEmpleado, 
-                    "hora_inicio": hora_inicio,
-                    "hora_fin": hora_fin,
-                    "idLinea": idLinea,
-                    "idProceso": idProceso,
-                }
+                "idRegistro": idRegistro, 
+                "idEmpleado": idEmpleado, 
+                "hora_inicio": hora_inicio,
+                "hora_fin": hora_fin,
+                "idLinea": idLinea,
+                "idProceso": idProceso,
+            }            
             
             missing_fields = [key for key, value in required_fields.items() if value is None or value == ""]
 
@@ -350,21 +354,42 @@ class Registro_Service():
             aplica_almuerzo = beneficios["aplica_almuerzo"]
             aplica_cena = beneficios["aplica_cena"]
             cena_con_costo = beneficios["cena_con_costo"]
-            
+                                    
+            datos_nuevos = {
+                "idEmpleado": idEmpleado, 
+                "hora_inicio": hora_inicio,
+                "hora_fin": hora_fin,
+                "idLinea": idLinea,
+                "idProceso": idProceso,
+            }
+
             registro = RegistroRepository.getRegistroById(db, idRegistro)
-
+            registro_actual = Registro_Service.getRegistroById_service(db, idRegistro)
+            logs = compare_values_in_logs(registro_actual, datos_nuevos)
             programacion = Programacion_Service.getProgramacionByIdProgramacion_service(db, registro[1])
-
+            
             if programacion["estado"] == "CERRADO":
                 return { "error": "La programación ya se encuentra cerrada." }
             
             RegistroRepository.updateRegistro(db, idRegistro, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber, cena_con_costo)
-
-            print("FECHA:", fecha)
-            print("INICIO:", hora_inicio)
-            print("FIN:", hora_fin)
-            print("CENA CALCULADA:", cena_con_costo)
             
+            for log in logs:
+                data = {
+                    "idRegistro": idRegistro,
+                    "idUsuario": current_user.id,
+                    "campo_modificado": log["campo"],
+                    "valor_anterior": str(log["anterior"]),
+                    "valor_nuevo": str(log["nuevo"])
+                }
+                print("\n --------------DATA-------------")
+                print(f"DATA: {data}")
+                print("---------------------------\n")
+                
+                log_insertado = Registro_log_Service.createRegistro_log_service(db, data)
+                print("\n --------------LOG-------------")
+                print(f"LOG: {log_insertado}")
+                print("---------------------------\n")
+
             return {
                 "success": True,
                 "idRegistro": idRegistro,
