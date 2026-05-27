@@ -108,8 +108,8 @@ endblock %} {% block content %}
           <th scope="row">{{ e.idEmpleado }}</th>
           <td>{{ e.badgeNumber }}</td>
           <td class="record-name">
-            {{ e.firstName }} {{ e.secondName }} {{ e.lastName }} {{ e.lastName2
-            }}
+            {{ e.firstName }} {{ "" if e.secondname == None else e.secondName }}
+            {{ e.lastName }} {{ "" if e.lastName2 == None else e.lastName2 }}
           </td>
           <td>{{ e.position }}</td>
           <td>
