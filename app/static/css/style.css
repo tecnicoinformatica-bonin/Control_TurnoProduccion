@@ -329,6 +329,26 @@
   background-color: rgb(214, 24, 24) !important;
 }
 
+.green-row {
+  color: black !important;
+  background-color: rgba(43, 255, 0, 0.363) !important;
+}
+
+.green-row:hover {
+  color: black !important;
+  background-color: rgb(26, 151, 1) !important;
+}
+
+.yellow-row {
+  color: black !important;
+  background-color: rgba(255, 230, 0, 0.568) !important;
+}
+
+.yellow-row:hover {
+  color: black !important;
+  background-color: rgba(255, 196, 0, 0.89) !important;
+}
+
 .bg-tabla-totales {
   border: 1px solid white;
 }

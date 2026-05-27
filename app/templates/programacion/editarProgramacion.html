@@ -350,7 +350,7 @@ message in messages %}
     const table = new Tabulator("#tabla-registros", {
       theme: "site-dark",
       height: "500px",
-      layout: "fitColumns",
+      layout: "fitData",
 
       ajaxURL: `/json/registro/get_registros/${idProgramacion}`,
       ajaxConfig: "GET",
@@ -358,10 +358,147 @@ message in messages %}
       columns: [
         /* { title: "ID", field: "idRegistro", width: 80 }, */
         {
+          title: "Estado",
+          field: "_saveStatus",
+          hozAlign: "center",
+
+          formatter: function (cell) {
+            const value = cell.getValue();
+
+            switch (value) {
+              case "draft":
+                return "🟡 Borrador";
+
+              case "saving":
+                return "💾 Guardando";
+
+              case "saved":
+                return "🟢 Guardado";
+
+              case "editing":
+                return "📝 Editando";
+
+              case "error":
+                return "🔴 Error";
+
+              default:
+                return "✅ Confirmado";
+            }
+          },
+        },
+        {
+          title: "Guardar",
+          hozAlign: "center",
+
+          formatter: function () {
+            if (!canEdit) {
+              return "";
+            }
+
+            if (!tienePermiso("registro.editar")) {
+              return "";
+            }
+
+            return `
+              <button class="btn btn-success btn-sm">
+                💾
+              </button>
+            `;
+          },
+
+          visible: tienePermiso("registro.editar") && canEdit ? true : false,
+
+          cellClick: async function (e, cell) {
+            const row = cell.getRow();
+            const data = row.getData();
+
+            // VALIDACIÓN
+            if (
+              !data.idEmpleado ||
+              !data.hora_inicio ||
+              !data.hora_fin ||
+              !data.idLinea ||
+              !data.idProceso
+            ) {
+              row.update({
+                _saveStatus: "error",
+              });
+              alert("Complete los campos obligatorios");
+              return;
+            }
+
+            if (!canEdit) return;
+
+            row.update({
+              _saveStatus: "saving",
+            });
+
+            try {
+              let response;
+
+              // CREATE
+              if (data._isNew) {
+                if (!data.idRegistro && !data._isNew) {
+                  alert("Fila sin ID válido");
+                  return;
+                }
+                response = await fetch("/json/registro/create_registro", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(data),
+                });
+              } else {
+                // UPDATE
+                response = await fetch(
+                  `/json/registro/update_registro/${data.idRegistro}`,
+                  {
+                    method: "PUT",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(data),
+                  },
+                );
+              }
+
+              const resp = await response.json();
+              refreshRowAndTotals(resp, row);
+
+              if (resp.error) {
+                row.update({
+                  _saveStatus: "error",
+                });
+                throw new Error(resp.error);
+              } else {
+                await actualizarTotalesPorLinea();
+                row.update({
+                  ...resp,
+
+                  _isNew: false,
+                  _isDirty: false,
+                  _saveStatus: "saved",
+                });
+              }
+
+              recalcularTotales();
+            } catch (error) {
+              console.error(error);
+
+              row.update({
+                _saveStatus: "error",
+              });
+
+              // alert(error.message);
+            }
+          },
+        },
+        {
           title: "Fecha",
           field: "fecha",
           editor: false,
-          visible: true,
+          visible: false,
         },
         {
           title: "ID empleado",
@@ -468,6 +605,18 @@ message in messages %}
           },
         },
         {
+          title: "Transporte",
+          field: "aplica_transporte",
+          hozAlign: "center",
+          editor: canEdit && tienePermiso("registro.editar") ? true : false,
+          formatter: "tickCross",
+        },
+        {
+          title: "Dirección",
+          field: "observacion_transporte",
+          editor: "input",
+        },
+        {
           title: "Almuerzo",
           field: "aplica_almuerzo",
           hozAlign: "center",
@@ -499,18 +648,6 @@ message in messages %}
               ? "<span style='color:lime;'>&check;</span>"
               : "<span style='color:red;'>&cross;</span>";
           },
-        },
-        {
-          title: "Transporte",
-          field: "aplica_transporte",
-          hozAlign: "center",
-          editor: canEdit && tienePermiso("registro.editar") ? true : false,
-          formatter: "tickCross",
-        },
-        {
-          title: "Observación de transporte",
-          field: "observacion_transporte",
-          editor: "input",
         },
         {
           title: "Última modificación",
@@ -568,129 +705,6 @@ message in messages %}
               .then(() => row.delete());
           },
         }, */
-        {
-          title: "Estado",
-          field: "_saveStatus",
-          hozAlign: "center",
-
-          formatter: function (cell) {
-            const value = cell.getValue();
-
-            switch (value) {
-              case "draft":
-                return "🟡 Borrador";
-
-              case "saving":
-                return "💾 Guardando";
-
-              case "saved":
-                return "🟢 Guardado";
-
-              case "editing":
-                return "📝 Editando";
-
-              case "error":
-                return "🔴 Error";
-
-              default:
-                return "✅ Confirmado";
-            }
-          },
-        },
-        {
-          title: "Guardar",
-          hozAlign: "center",
-
-          formatter: function () {
-            if (!canEdit) {
-              return "";
-            }
-
-            if (!tienePermiso("registro.editar")) {
-              return "";
-            }
-
-            return `
-              <button class="btn btn-success btn-sm">
-                💾
-              </button>
-            `;
-          },
-
-          cellClick: async function (e, cell) {
-            const row = cell.getRow();
-            const data = row.getData();
-
-            // VALIDACIÓN
-            if (!data.idEmpleado || !data.hora_inicio || !data.hora_fin) {
-              alert("Complete los campos obligatorios");
-              return;
-            }
-
-            if (!canEdit) return;
-
-            row.update({
-              _saveStatus: "saving",
-            });
-
-            try {
-              let response;
-
-              // CREATE
-
-              if (data._isNew) {
-                if (!data.idRegistro && !data._isNew) {
-                  alert("Fila sin ID válido");
-                  return;
-                }
-                response = await fetch("/json/registro/create_registro", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(data),
-                });
-              } else {
-                // UPDATE
-                response = await fetch(
-                  `/json/registro/update_registro/${data.idRegistro}`,
-                  {
-                    method: "PUT",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(data),
-                  },
-                );
-              }
-
-              const resp = await response.json();
-              refreshRowAndTotals(resp, row);
-
-              if (resp.error) {
-                throw new Error(resp.error);
-              }
-
-              row.update({
-                ...resp,
-
-                _isNew: false,
-                _isDirty: false,
-                _saveStatus: "saved",
-              });
-
-              recalcularTotales();
-            } catch (error) {
-              console.error(error);
-
-              row.update({
-                _saveStatus: "error",
-              });
-
-              alert(error.message);
-            }
-          },
-        },
       ],
 
       dataLoaded: function () {
@@ -704,13 +718,31 @@ message in messages %}
       rowDeleted: function () {
         recalcularTotales();
       },
+
+      rowFormatter: function (row) {
+        const el = row.getElement();
+        el.classList.remove("red-row");
+        el.classList.remove("green-row");
+        el.classList.remove("yellow-row");
+
+        const { idLinea, idProceso, hora_inicio, hora_fin, _saveStatus } =
+          row.getData();
+
+        if (row.getData()._saveStatus === "error") {
+          el.classList.add("red-row");
+        } else if (row.getData()._saveStatus === "editing") {
+          el.classList.add("yellow-row");
+        } else if (idLinea && idProceso && hora_inicio && hora_fin) {
+          el.classList.add("green-row");
+        }
+      },
     });
 
     let updateTimeouts = {};
 
     table.on("dataChanged", recalcularTotales);
 
-    table.on("cellEdited", function (cell) {
+    table.on("cellEdited", async function (cell) {
       const row = cell.getRow();
       const data = row.getData();
 
@@ -722,20 +754,31 @@ message in messages %}
 
       const field = cell.getField();
 
-      if (field === "idLinea") {
-        // actualizarTotalesPorLinea();
-      }
-
       const id = data.idRegistro;
 
       if (!id) return;
 
-      if (updateTimeouts[id]) {
-        clearTimeout(updateTimeouts[id]);
+      const el = row.getElement();
+      el.classList.remove("red-row");
+      el.classList.remove("green-row");
+      el.classList.remove("yellow-row");
+
+      if (row.getData()._saveStatus === "editing") {
+        row.getElement().classList.add("yellow-row");
+      } else if (row.getData()._saveStatus === "error") {
+        row.getElement().classList.add("red-row");
+      } else if (row.getData()._saveStatus === "saved") {
+        row.getElement().classList.add("green-row");
       }
 
+      await actualizarTotalesPorLinea();
+
+      /* if (updateTimeouts[id]) {
+        clearTimeout(updateTimeouts[id]);
+      } */
+
       // Espera 800ms antes de guardar (debounce)
-      updateTimeouts[id] = setTimeout(async () => {
+      /* updateTimeouts[id] = setTimeout(async () => {
         try {
           const response = await fetch(`/json/registro/update_registro/${id}`, {
             method: "PUT",
@@ -747,11 +790,10 @@ message in messages %}
             console.error(resp.error);
             return;
           }
-          await actualizarTotalesPorLinea();
         } catch (error) {
           console.error(error);
         }
-      }, 800);
+      }, 800); */
     });
 
     table.on("tableBuilt", function () {
@@ -801,7 +843,8 @@ message in messages %}
       const field = cell.getField();
 
       if (field === "hora_inicio" || field === "hora_fin") {
-        const row = cell.getRow();
+        recalcularTotales();
+        /* const row = cell.getRow();
         const data = row.getData();
 
         if (!data.idRegistro) return;
@@ -825,12 +868,11 @@ message in messages %}
             aplica_almuerzo: resp.aplica_almuerzo,
             aplica_cena: resp.aplica_cena,
             cena_con_costo: resp.cena_con_costo,
-          });
+          }); 
 
-          recalcularTotales();
         } catch (error) {
           console.error(error);
-        }
+        }*/
       }
     }
 
@@ -945,7 +987,7 @@ message in messages %}
     );
   }
 
-  const table2 = new Tabulator("#tabla-totales", {
+  const tableTotales = new Tabulator("#tabla-totales", {
     theme: "site-dark",
     height: "140px",
     layout: "fitColumns",
@@ -983,9 +1025,15 @@ message in messages %}
     rowFormatter: function (row) {
       const el = row.getElement();
       el.classList.remove("red-row");
+      el.classList.remove("green-row");
+      el.classList.remove("yellow-row");
 
       if (row.getData().diferencia > 0) {
         row.getElement().classList.add("red-row");
+      } else if (row.getData().diferencia == 0) {
+        row.getElement().classList.add("green-row");
+      } else if (row.getData().diferencia < 0) {
+        row.getElement().classList.add("yellow-row");
       }
     },
   });
@@ -998,7 +1046,10 @@ message in messages %}
     updatingTotals = true;
 
     try {
-      await table2.replaceData(
+      await tableTotales.replaceData(
+        `/json/programacion/get_counts_by_line/${idProgramacion}`,
+      );
+      await tableConfirmacion.replaceData(
         `/json/programacion/get_counts_by_line/${idProgramacion}`,
       );
     } catch (error) {
@@ -1011,25 +1062,16 @@ message in messages %}
   document
     .querySelector(".card-tabla-totales")
     .addEventListener("mouseenter", function () {
-      table2.setHeight("350px");
-      table2.redraw(true);
+      tableTotales.setHeight("350px");
+      tableTotales.redraw(true);
     });
 
   document
     .querySelector(".card-tabla-totales")
     .addEventListener("mouseleave", function () {
-      table2.setHeight("140px");
-      table2.redraw(true);
+      tableTotales.setHeight("140px");
+      tableTotales.redraw(true);
     });
-
-  function mostrarModalValidacion() {
-    const myModal = document.getElementById("myModal");
-    const myInput = document.getElementById("myInput");
-
-    myModal.addEventListener("shown.bs.modal", () => {
-      myInput.focus();
-    });
-  }
 
   const tableConfirmacion = new Tabulator("#tabla-confirmacion", {
     theme: "site-dark",
@@ -1072,6 +1114,10 @@ message in messages %}
 
       if (row.getData().diferencia > 0) {
         row.getElement().classList.add("red-row");
+      } else if (row.getData().diferencia == 0) {
+        row.getElement().classList.add("green-row");
+      } else if (row.getData().diferencia < 0) {
+        row.getElement().classList.add("yellow-row");
       }
     },
   });
