@@ -495,7 +495,7 @@ message in messages %}
 
                   _isNew: false,
                   _isDirty: false,
-                  _saveStatus: "saved",
+                  _saveStatus: "unassigned",
                 });
               }
 
@@ -519,10 +519,25 @@ message in messages %}
 
           formatter: function (cell) {
             const value = cell.getValue();
+            const row = cell.getRow();
+            const data = row.getData();
+
+            if (
+              !data.idEmpleado &&
+              !data.hora_inicio &&
+              !data.hora_fin &&
+              !data.idLinea &&
+              !data.idProceso
+            ) {
+              value = "unassigned";
+            }
 
             switch (value) {
               case "draft":
                 return "🟡 Borrador";
+
+              case "unassigned":
+                return "⬜ Sin asignación";
 
               case "saving":
                 return "💾 Guardando";

@@ -84,7 +84,6 @@ class Registro_Service():
                     "idRegistro": row[0],
                     "idProgramacion": row[1],
                     "idEmpleado": row[2],
-                    # "hora_inicio": str(row[3]) if row[3] else None,
                     "hora_inicio": str(row[3]) if row[3] is not None else None,
                     "hora_fin": str(row[4]) if row[4] is not None else None,
                     "idLinea": row[5],
@@ -100,6 +99,16 @@ class Registro_Service():
                     "ultima_modificacion": None if row[15] == None else str(row[15].isoformat()).replace("T", " "),
                     "usuario_modificacion": row[16],
                 }
+                if(
+                    registro["idLinea"] is None or
+                    registro["idProceso"] is None or
+                    registro["hora_inicio"] is None or
+                    registro["hora_fin"] is None
+                ):
+                    registro["_saveStatus"] = "unassigned"
+                else:
+                    registro["_saveStatus"] = "saved"
+                    
                 registros.append(registro)
             return registros
 
