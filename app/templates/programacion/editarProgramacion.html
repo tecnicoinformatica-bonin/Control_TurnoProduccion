@@ -435,9 +435,87 @@ message in messages %}
       columns: [
         /* { title: "ID", field: "idRegistro", width: 80 }, */
         {
+          title: "Desasignar",
+          hozAlign: "center",
+          visible: tienePermiso("registro.editar") && canEdit ? true : false,
+
+          formatter: () => {
+            if (!canEdit) {
+              return "";
+            }
+
+            if (!tienePermiso("registro.editar")) {
+              return "";
+            }
+
+            return "<button class='btn btn-danger'>&cross;</button>";
+          },
+          cellClick: async function (e, cell) {
+            let row = cell.getRow();
+            let data = row.getData();
+
+            if (!canEdit) return;
+            if (!tienePermiso("registro.editar")) return;
+
+            /* if (!data.idRegistro) {
+              row.delete();
+              return;
+            } */
+            try {
+              const resp = await apiFetch(
+                `/json/registro/update_registro_to_nulls/${data.idRegistro}`,
+                {
+                  method: "PUT",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(data),
+                },
+              );
+
+              if (!resp) {
+                row.update({
+                  _saveStatus: "error",
+                });
+
+                return;
+              }
+
+              refreshRowAndTotals(resp, row);
+
+              if (resp.error) {
+                row.update({
+                  _saveStatus: "error",
+                });
+                throw new Error(resp.error);
+              } else {
+                await actualizarTotalesPorLinea();
+                row.update({
+                  ...resp,
+
+                  _isNew: false,
+                  _isDirty: false,
+                  _saveStatus: "saved",
+                });
+              }
+
+              recalcularTotales();
+            } catch (error) {
+              console.error(error);
+
+              row.update({
+                _saveStatus: "error",
+              });
+
+              // alert(error.message);
+            }
+          },
+        },
+        {
           title: "Estado",
           field: "_saveStatus",
           hozAlign: "center",
+          visible: tienePermiso("registro.editar") && canEdit ? true : false,
 
           formatter: function (cell) {
             const value = cell.getValue();
@@ -757,39 +835,6 @@ message in messages %}
             values: usuarios,
           },
         },
-        /* {
-          title: "❌",
-          hozAlign: "center",
-          formatter: () => {
-            if (!canEdit) {
-              return "";
-            }
-
-            if (!tienePermiso("registro.editar")) {
-              return "";
-            }
-
-            return "<button class='btn btn-danger'>&cross;</button>";
-          },
-          cellClick: function (e, cell) {
-            let row = cell.getRow();
-            let data = row.getData();
-
-            if (!canEdit) return;
-            if (!tienePermiso("registro.editar")) return;
-
-            if (!data.idRegistro) {
-              row.delete();
-              return;
-            }
-
-            fetch(`/json/registro/delete_registro/${data.idRegistro}`, {
-              method: "DELETE",
-            })
-              .then((res) => res.json())
-              .then(() => row.delete());
-          },
-        }, */
       ],
 
       dataLoaded: function () {

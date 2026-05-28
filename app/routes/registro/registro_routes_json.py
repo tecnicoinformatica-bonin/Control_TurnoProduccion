@@ -39,6 +39,18 @@ def update_registro(idRegistro):
     result = Registro_Service.updateRegistro_service(db, data)
     return jsonify(result), 200
 
+@registro_json_bp.route("/update_registro_to_nulls/<int:idRegistro>", methods=["PUT", "POST"])
+@login_required
+@permiso_requerido("registro.editar")
+def update_registro_to_nulls(idRegistro):
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No se enviaron datos"}), 400
+    
+    data["idRegistro"] = idRegistro
+    result = Registro_Service.updateRegistroToNulls_service(db, data)
+    return jsonify(result), 200
+
 @registro_json_bp.route("/delete_registro/<int:idRegistro>", methods=["DELETE"])
 @login_required
 @permiso_requerido("registro.eliminar")

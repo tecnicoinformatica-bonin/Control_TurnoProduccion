@@ -435,3 +435,99 @@ class Registro_Service():
         
         except Exception as ex:
             return {"error": f"No se pudo eliminar el registro desde el servicio. {str(ex)}"}
+    
+    @staticmethod
+    def updateRegistroToNulls_service(db, data):
+        try:
+            idRegistro = data.get("idRegistro")
+            idEmpleado = data.get("idEmpleado")
+            hora_inicio = None
+            hora_fin = None
+            idLinea = None
+            idProceso = None
+            aplica_transporte = 0
+            observacion_transporte = ""
+            fecha = data.get("fecha")
+            idCentro = data.get("idCentro")
+            badgeNumber = data.get("badgeNumber")
+            
+            aplica_almuerzo = 0
+            aplica_cena = 0
+            cena_con_costo = 0
+                                    
+            datos_nuevos = {
+                "idEmpleado": idEmpleado, 
+                "hora_inicio": hora_inicio,
+                "hora_fin": hora_fin,
+                "idLinea": idLinea,
+                "idProceso": idProceso,
+                "aplica_transporte": aplica_transporte,
+                "observacion_transporte": observacion_transporte,
+                "aplica_almuerzo": aplica_almuerzo,
+                "aplica_cena": aplica_cena,
+                "cena_con_costo": cena_con_costo,
+            }
+
+            registro = RegistroRepository.getRegistroById(db, idRegistro)
+            registro_actual = Registro_Service.getRegistroById_service(db, idRegistro)
+            logs = compare_values_in_logs(registro_actual, datos_nuevos)
+            programacion = Programacion_Service.getProgramacionByIdProgramacion_service(db, registro[1])
+            
+            if programacion["estado"] == "CERRADO":
+                return { "error": "La programación ya se encuentra cerrada." }
+            
+            dataUpdated = RegistroRepository.updateRegistro(db, idRegistro, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber, cena_con_costo)
+            
+            for log in logs:
+                data = {
+                    "idRegistro": idRegistro,
+                    "idUsuario": current_user.id,
+                    "campo_modificado": log["campo"],
+                    "valor_anterior": str(log["anterior"]),
+                    "valor_nuevo": str(log["nuevo"])
+                }
+                log_insertado = Registro_log_Service.createRegistro_log_service(db, data)
+
+            return {
+                "success": True,
+                "idRegistro": idRegistro,
+                "aplica_almuerzo": aplica_almuerzo,
+                "aplica_cena": aplica_cena,
+                "cena_con_costo": cena_con_costo,
+                "idEmpleado": idEmpleado,
+                "hora_inicio": hora_inicio,
+                "hora_fin": hora_fin,
+                "idLinea": idLinea,
+                "idProceso": idProceso,
+                "aplica_transporte": aplica_transporte,
+                "observacion_transporte": observacion_transporte,
+                "fecha": fecha,
+                "idCentro": idCentro,
+                "badgeNumber": badgeNumber,
+                "ultima_modificacion": dataUpdated["ultima_modificacion"],
+                "usuario_modificacion": dataUpdated["usuario_modificacion"],
+            }
+        
+        except Exception as ex:
+            return {"error": f"No se pudo modificar el registro desde el servicio. {str(ex)}"}
+        
+    @staticmethod
+    def deleteRegistro_service(db, data):
+        try:
+            idRegistro = data.get("idRegistro")
+
+            if not idRegistro:
+                return {"error": "ID del registro es requerido."}
+            
+            registro = RegistroRepository.getRegistroById(db, idRegistro)
+
+            programacion = Programacion_Service.getProgramacionByIdProgramacion_service(db, registro[1])
+
+            if programacion["estado"] == "CERRADO":
+                return { "error": "La programación ya se encuentra cerrada." }
+            
+            
+            return RegistroRepository.deleteRegistro(db, idRegistro)
+        
+        except Exception as ex:
+            return {"error": f"No se pudo eliminar el registro desde el servicio. {str(ex)}"}
