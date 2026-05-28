@@ -15,123 +15,158 @@ message in messages %}
 {% endfor %} {% endwith %}
 <div class="card card-outline-secondary bg-dark text-light mt-3">
   <div class="card-body">
-    <div class="programacion-parent">
-      <div
-        class="encabezado__text encabezado__text-bold dia-fecha-text__programacion"
-      >
-        Día y Fecha
-      </div>
-      <div
-        class="encabezado__text encabezado__text-bold departamento-text__programacion"
-      >
-        Departamento
-      </div>
-      <div
-        class="encabezado__text encabezado__text-bold elaborado-por__programacion"
-      >
-        Elaborado por
-      </div>
-      <div
-        class="encabezado__text encabezado__text-bold cena-sin-costo-text__programacion"
-      >
-        Total cenas sin costo
-      </div>
-      <div
-        class="encabezado__text encabezado__text-bold cena-con-costo-text__programacion"
-      >
-        Total cenas con costo
-      </div>
-      <div
-        class="encabezado__text encabezado__text-bold almuerzos-sin-costo-text__programacion"
-      >
-        Total almuerzos
-      </div>
-      <div class="encabezado__text cena-sin-costo-data__programacion">0</div>
-      <div class="encabezado__text cena-con-costo-data__programacion">0</div>
-      <div class="encabezado__text almuerzos-sin-costo-data__programacion">
-        0
-      </div>
-      <div
-        class="encabezado__text encabezado__text-yellow dia-fecha-data__programacion"
-        data-fecha="{{ fecha }}"
-      ></div>
-      <div
-        class="encabezado__text encabezado__text-yellow departamento-data__programacion"
-        data-id-department="{{ idDepartment }}"
-      >
-        {% for d in departamentos %} {% if d.idDepartment == idDepartment %} {{
-        d.name }} {% endif %} {% endfor %}
-      </div>
-      <div
-        class="encabezado__text encabezado__text-yellow elaborado-por-data__programacion"
-      >
-        {% for u in usuarios %} {% if u.idUsuario ==
-        programacion_actual.elaborado_por%} {{ u.nombre }} {% endif %} {% endfor
-        %}
-        <label name="encabezado__text elaborado_por" id="elaborado_por">
-        </label>
-      </div>
-      <div
-        class="encabezado__text encabezado__text-horario encabezado__text-sin-costo encabezado__text-bold horario-diurno-text__programacion"
-      >
-        Aplica cena sin costo
-      </div>
-      <div
-        class="encabezado__text encabezado__text-horario encabezado__text-sin-costo horario-diurno-data__programacion"
-      >
-        Horario de 7:00 a 20:00 / 21:00 horas
-      </div>
-      <div
-        class="encabezado__text encabezado__text-horario encabezado__text-con-costo encabezado__text-bold horario-nocturno-text__programacion"
-      >
-        Aplica cena con costo
-      </div>
-      <div
-        class="encabezado__text encabezado__text-horario encabezado__text-con-costo horario-nocturno-data__programacion"
-      >
-        Horario de 18:00 a 06:00
-      </div>
-      <div
-        class="encabezado__text encabezado__text-horario encabezado__text-bus encabezado__text-bold horario-bus-text__programacion"
-      >
-        Aplica bus
-      </div>
-      <div
-        class="encabezado__text encabezado__text-horario encabezado__text-bus horario-bus-data__programacion"
-      >
-        21:00 (únicamente)
-      </div>
-      <div
-        class="encabezado__text encabezado__text-bold asueto-text__programacion"
-      >
-        Asueto
-      </div>
-      <div class="encabezado__text asueto-data__programacion"></div>
-      <div
-        class="encabezado__text encabezado__text-bold estado-text__programacion"
-      >
-        Estado
-      </div>
-      <div class="encabezado__text estado-data__programacion">
-        {{ programacion_actual.estado }}
-      </div>
-      <div class="encabezado__text encabezado__text-bold verificado_por-text">
-        Verificado por
-      </div>
-      <div class="encabezado__text verificado_por-data">
-        {% for u in usuarios %} {% if u.idUsuario ==
-        programacion_actual.verificado_por %} {{ u.nombre }} {% endif %} {%
-        endfor %}
-      </div>
-      <div class="card card-tabla-totales card-outline-white bg-dark">
-        <div class="card-body">
-          <h5 class="text-light">Resumen de empleados asignados por línea</h5>
-          <hr />
-          <div id="tabla-totales"></div>
+    <div class="accordion accordion-flush" id="accordionFlushExample">
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#flush-collapseOne"
+            aria-expanded="false"
+            aria-controls="flush-collapseOne"
+          >
+            Detalles
+          </button>
+        </h2>
+        <div
+          id="flush-collapseOne"
+          class="accordion-collapse collapse"
+          data-bs-parent="#accordionFlushExample"
+        >
+          <div class="accordion-body">
+            <div class="programacion-parent">
+              <div
+                class="encabezado__text encabezado__text-bold dia-fecha-text__programacion"
+              >
+                Día y Fecha
+              </div>
+              <div
+                class="encabezado__text encabezado__text-bold departamento-text__programacion"
+              >
+                Departamento
+              </div>
+              <div
+                class="encabezado__text encabezado__text-bold elaborado-por__programacion"
+              >
+                Elaborado por
+              </div>
+              <div
+                class="encabezado__text encabezado__text-bold cena-sin-costo-text__programacion"
+              >
+                Total cenas sin costo
+              </div>
+              <div
+                class="encabezado__text encabezado__text-bold cena-con-costo-text__programacion"
+              >
+                Total cenas con costo
+              </div>
+              <div
+                class="encabezado__text encabezado__text-bold almuerzos-sin-costo-text__programacion"
+              >
+                Total almuerzos
+              </div>
+              <div class="encabezado__text cena-sin-costo-data__programacion">
+                0
+              </div>
+              <div class="encabezado__text cena-con-costo-data__programacion">
+                0
+              </div>
+              <div
+                class="encabezado__text almuerzos-sin-costo-data__programacion"
+              >
+                0
+              </div>
+              <div
+                class="encabezado__text encabezado__text-yellow dia-fecha-data__programacion"
+                data-fecha="{{ fecha }}"
+              ></div>
+              <div
+                class="encabezado__text encabezado__text-yellow departamento-data__programacion"
+                data-id-department="{{ idDepartment }}"
+              >
+                {% for d in departamentos %} {% if d.idDepartment ==
+                idDepartment %} {{ d.name }} {% endif %} {% endfor %}
+              </div>
+              <div
+                class="encabezado__text encabezado__text-yellow elaborado-por-data__programacion"
+              >
+                {% for u in usuarios %} {% if u.idUsuario ==
+                programacion_actual.elaborado_por%} {{ u.nombre }} {% endif %}
+                {% endfor %}
+                <label name="encabezado__text elaborado_por" id="elaborado_por">
+                </label>
+              </div>
+              <div
+                class="encabezado__text encabezado__text-horario encabezado__text-sin-costo encabezado__text-bold horario-diurno-text__programacion"
+              >
+                Aplica cena sin costo
+              </div>
+              <div
+                class="encabezado__text encabezado__text-horario encabezado__text-sin-costo horario-diurno-data__programacion"
+              >
+                Horario de 7:00 a 20:00 / 21:00 horas
+              </div>
+              <div
+                class="encabezado__text encabezado__text-horario encabezado__text-con-costo encabezado__text-bold horario-nocturno-text__programacion"
+              >
+                Aplica cena con costo
+              </div>
+              <div
+                class="encabezado__text encabezado__text-horario encabezado__text-con-costo horario-nocturno-data__programacion"
+              >
+                Horario de 18:00 a 06:00
+              </div>
+              <div
+                class="encabezado__text encabezado__text-horario encabezado__text-bus encabezado__text-bold horario-bus-text__programacion"
+              >
+                Aplica bus
+              </div>
+              <div
+                class="encabezado__text encabezado__text-horario encabezado__text-bus horario-bus-data__programacion"
+              >
+                21:00 (únicamente)
+              </div>
+              <div
+                class="encabezado__text encabezado__text-bold asueto-text__programacion"
+              >
+                Asueto
+              </div>
+              <div class="encabezado__text asueto-data__programacion"></div>
+              <div
+                class="encabezado__text encabezado__text-bold estado-text__programacion"
+              >
+                Estado
+              </div>
+              <div class="encabezado__text estado-data__programacion">
+                {{ programacion_actual.estado }}
+              </div>
+              <div
+                class="encabezado__text encabezado__text-bold verificado_por-text"
+              >
+                Verificado por
+              </div>
+              <div class="encabezado__text verificado_por-data">
+                {% for u in usuarios %} {% if u.idUsuario ==
+                programacion_actual.verificado_por %} {{ u.nombre }} {% endif %}
+                {% endfor %}
+              </div>
+              <div class="card card-tabla-totales card-outline-white bg-dark">
+                <div class="card-body">
+                  <h5 class="text-light">
+                    Resumen de empleados asignados por línea
+                  </h5>
+                  <hr />
+                  <div id="tabla-totales"></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
   <div class="d-flex justify-content-between gap-3 m-3">
     <div class="d-flex justify-content-between gap-3">
       <button
@@ -418,7 +453,7 @@ message in messages %}
 
     const table = new Tabulator("#tabla-registros", {
       theme: "site-dark",
-      height: "500px",
+      maxHeight: "650px",
       layout: "fitData",
 
       ajaxURL: `/json/registro/get_registros/${idProgramacion}`,
@@ -438,6 +473,7 @@ message in messages %}
           title: "Desasignar",
           hozAlign: "center",
           visible: tienePermiso("registro.editar") && canEdit ? true : false,
+          frozen: true,
 
           formatter: () => {
             if (!canEdit) {
@@ -516,6 +552,7 @@ message in messages %}
           field: "_saveStatus",
           hozAlign: "center",
           visible: tienePermiso("registro.editar") && canEdit ? true : false,
+          frozen: true,
 
           formatter: function (cell) {
             const value = cell.getValue();
@@ -559,6 +596,8 @@ message in messages %}
         {
           title: "Guardar",
           hozAlign: "center",
+          visible: tienePermiso("registro.editar") && canEdit ? true : false,
+          frozen: true,
 
           formatter: function () {
             if (!canEdit) {
@@ -575,8 +614,6 @@ message in messages %}
               </button>
             `;
           },
-
-          visible: tienePermiso("registro.editar") && canEdit ? true : false,
 
           cellClick: async function (e, cell) {
             const row = cell.getRow();
@@ -673,26 +710,23 @@ message in messages %}
           },
         },
         {
-          title: "Fecha",
-          field: "fecha",
-          editor: false,
-          visible: false,
-        },
-        {
           title: "ID empleado",
           field: "idEmpleado",
           editor: false,
           visible: true,
+          frozen: true,
         },
         {
           title: "Badge",
           field: "badgeNumber",
           editor: false,
           visible: true,
+          frozen: true,
         },
         {
           title: "Empleado",
           field: "idEmpleado",
+          frozen: true,
 
           formatter: function (cell) {
             return (
@@ -781,6 +815,12 @@ message in messages %}
           editorParams: {
             format: "HH:mm:ss",
           },
+        },
+        {
+          title: "Fecha",
+          field: "fecha",
+          editor: false,
+          visible: false,
         },
         {
           title: "Transporte",

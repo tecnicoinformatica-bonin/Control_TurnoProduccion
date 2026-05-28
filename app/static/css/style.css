@@ -321,7 +321,7 @@
 
 .red-row {
   color: black !important;
-  background-color: rgba(255, 0, 0, 0.568) !important;
+  background-color: rgba(190, 0, 0, 0.877) !important;
 }
 
 .red-row:hover {
@@ -331,7 +331,7 @@
 
 .green-row {
   color: black !important;
-  background-color: rgba(43, 255, 0, 0.363) !important;
+  background-color: rgba(22, 131, 0, 0.87) !important;
 }
 
 .green-row:hover {
@@ -341,12 +341,12 @@
 
 .yellow-row {
   color: black !important;
-  background-color: rgba(255, 230, 0, 0.568) !important;
+  background-color: rgba(255, 174, 0, 0.911) !important;
 }
 
 .yellow-row:hover {
   color: black !important;
-  background-color: rgba(255, 196, 0, 0.89) !important;
+  background-color: rgb(163, 125, 0) !important;
 }
 
 .bg-tabla-totales {
@@ -378,4 +378,26 @@ a {
   text-decoration: none;
   margin: 0 !important;
   color: white;
+}
+
+.accordion-item,
+.accordion-button,
+.accordion-body {
+  background-color: #212529 !important;
+  color: #f8f9fa !important;
+  border: 1px solid #f8f9fa91;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: #343a40 !important;
+  color: #fff !important;
+}
+
+.accordion-button:focus {
+  box-shadow: none;
+  border-color: transparent;
+}
+
+.accordion-button::after {
+  filter: invert(1);
 }
