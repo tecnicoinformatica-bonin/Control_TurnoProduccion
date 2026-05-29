@@ -7,6 +7,7 @@ from app.api.departamento.departamento_service import Departamento_Service
 from app.api.rol_permiso.rol_permiso_service import Rol_Permiso_Service
 from app.api.rol_ruta.rol_ruta_service import Rol_Ruta_Service
 from app.api.ruta.ruta_service import Ruta_Service
+from app.api.usuario.usuario_service import Usuario_Service
 from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 
@@ -25,6 +26,7 @@ def crearRol_template():
     permisos = Permiso_Service.getPermisos_service(db)
     rol_rutas = Rol_Ruta_Service.getRol_Rutas_service(db)
     rol_permisos = Rol_Permiso_Service.getRol_Permisos_service(db)
+    usuarios = Usuario_Service.getUsuarios_service(db)
         
     return render_template(
         f"rol/crearRol.html", 
@@ -33,6 +35,7 @@ def crearRol_template():
         permisos = permisos,
         rol_rutas = rol_rutas,
         rol_permisos = rol_permisos,
+        usuarios = usuarios,
     )
 
 @rol_template_bp.route("/listaRoles")
@@ -44,6 +47,7 @@ def listaRoles_template():
     permisos = Permiso_Service.getPermisos_service(db)
     rol_rutas = Rol_Ruta_Service.getRol_Rutas_service(db)
     rol_permisos = Rol_Permiso_Service.getRol_Permisos_service(db)
+    usuarios = Usuario_Service.getUsuarios_service(db)
             
     return render_template(
         f"rol/listaRoles.html", 
@@ -52,5 +56,6 @@ def listaRoles_template():
         permisos = permisos,
         rol_rutas = rol_rutas,
         rol_permisos = rol_permisos,
+        usuarios = usuarios,
     )
 

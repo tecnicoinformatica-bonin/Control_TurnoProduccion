@@ -46,8 +46,6 @@ def logout():
 @login_required
 @permiso_requerido("usuario.crear")
 def crearUsuario_web():
-    usuarios = Usuario_Service.getUsuarios_service(db)
-
     if request.method == "POST":
         data = {
             "username": request.form.get("username"),
@@ -67,13 +65,12 @@ def crearUsuario_web():
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for("usuario_template.crearUsuario_template"))
 
-    return redirect(url_for("usuario_template.crearUsuario_template", usuarios = usuarios))
+    return redirect(url_for("usuario_template.crearUsuario_template"))
 
 @usuario_web_bp.route("/editarUsuario_web", methods=["GET", "POST"])
 @login_required
 @permiso_requerido("usuario.editar")
 def editarUsuario_web():
-    
     if request.method == "POST":
         data = {
             "idUsuario": request.form.get("idUsuario"),

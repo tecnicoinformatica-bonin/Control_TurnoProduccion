@@ -20,8 +20,6 @@ registro_web_bp = Blueprint(
 @login_required
 @permiso_requerido("registro.crear")
 def crearRegistro_web():
-    registros = Registro_Service.getRegistros_service(db)
-
     if request.method == "POST":
         data = {
             "idProgramacion": request.form.get("idProgramacion"),
@@ -65,15 +63,12 @@ def crearRegistro_web():
                 "programacion_template.editarProgramacion_template",
                 fecha = fecha,
                 idDepartment = idDepartment,
-                registros = registros
             ))
 
 @registro_web_bp.route("/editarRegistro_web", methods=["GET", "POST"])
 @login_required
 @permiso_requerido("registro.editar")
 def editarRegistro_web():
-    registros = Registro_Service.getRegistros_service(db)
-    
     if request.method == "POST":
         data = {
             "idRegistro": request.form.get("idRegistro"),
@@ -105,7 +100,6 @@ def editarRegistro_web():
                 "programacion_template.editarProgramacion_template",
                 fecha = fecha,
                 idDepartment = idDepartment,
-                registros = registros
             ))
         else:
             FlashMessages.flash_success(result["mensaje"])
@@ -113,22 +107,18 @@ def editarRegistro_web():
                 "programacion_template.editarProgramacion_template",
                 fecha = fecha,
                 idDepartment = idDepartment,
-                registros = registros
             ))
 
     return redirect(url_for(
         "programacion_template.editarProgramacion_template",
         fecha = fecha,
         idDepartment = idDepartment,
-        registros = registros
     ))    
 
 @registro_web_bp.route("/eliminarRegistro_web", methods=["GET", "POST"])
 @login_required
 @permiso_requerido("registro.eliminar")
 def eliminarRegistro_web():
-    registros = Registro_Service.getRegistros_service(db)
-    
     if request.method == "POST":
         data = {
             "idRegistro": request.form.get("idRegistro"),
@@ -147,7 +137,6 @@ def eliminarRegistro_web():
                 "programacion_template.editarProgramacion_template",
                 fecha = fecha,
                 idDepartment = idDepartment,
-                registros = registros,
             ))
         else:
             FlashMessages.flash_success(result["mensaje"])
@@ -155,12 +144,10 @@ def eliminarRegistro_web():
                 "programacion_template.editarProgramacion_template",
                 fecha = fecha,
                 idDepartment = idDepartment,
-                registros = registros,
             ))
 
     return redirect(url_for(
         "programacion_template.editarProgramacion_template",
         fecha = fecha,
         idDepartment = idDepartment,
-        registros = registros,
     ))    

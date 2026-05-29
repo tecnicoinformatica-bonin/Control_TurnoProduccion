@@ -46,8 +46,6 @@ def crearEmpleado_web():
 @login_required
 @permiso_requerido("empleado.editar")
 def editarEmpleado_web():
-    empleados = Empleado_Service.getEmpleados_service(db)
-    
     if request.method == "POST":
         data = {
             "idEmpleado": request.form.get("idEmpleado"),

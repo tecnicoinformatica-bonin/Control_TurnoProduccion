@@ -17,9 +17,6 @@ programacion_web_bp = Blueprint(
 @login_required
 @permiso_requerido("programacion.crear")
 def crearProgramacion_web():
-    programaciones = Programacion_Service.getProgramaciones_service(db)
-    programaciones_borrador = Programacion_Service.getProgramacionesEnBorrador_service(db)
-
     if request.method == "POST":
         data = {
             "fecha": request.form.get("fecha"),
@@ -37,17 +34,12 @@ def crearProgramacion_web():
 
     return redirect(url_for(
         "programacion_template.crearProgramacion_template", 
-        programaciones = programaciones,
-        programaciones_borrador = programaciones_borrador,
         ))    
 
 @programacion_web_bp.route("/crearProgramacionAutomatica_web", methods=["GET", "POST"])
 @login_required
 @permiso_requerido("programacion.crear")
 def crearProgramacionAutomatica_web():
-    programaciones = Programacion_Service.getProgramaciones_service(db)
-    programaciones_borrador = Programacion_Service.getProgramacionesEnBorrador_service(db)
-
     if request.method == "POST":
         data = {
             "fecha": request.form.get("fecha"),
@@ -64,17 +56,12 @@ def crearProgramacionAutomatica_web():
 
     return redirect(url_for(
         "home_template.index", 
-        programaciones = programaciones,
-        programaciones_borrador = programaciones_borrador,
         ))    
 
 @programacion_web_bp.route("/crearProgramacionPorDepartamentosUsuario_web", methods=["GET", "POST"])
 @login_required
 @permiso_requerido("programacion.crear")
 def crearProgramacionPorDepartamentosUsuario_web():
-    programaciones = Programacion_Service.getProgramaciones_service(db)
-    programaciones_borrador = Programacion_Service.getProgramacionesEnBorrador_service(db)
-
     if request.method == "POST":
         data = {
             "fecha": request.form.get("fecha"),
@@ -106,8 +93,6 @@ def crearProgramacionPorDepartamentosUsuario_web():
 
     return redirect(url_for(
         "home_template.index", 
-        programaciones = programaciones,
-        programaciones_borrador = programaciones_borrador,
         )
     )
 
@@ -115,9 +100,6 @@ def crearProgramacionPorDepartamentosUsuario_web():
 @login_required
 @permiso_requerido("programacion.editar")
 def cerrarProgramacion_web():
-    programaciones = Programacion_Service.getProgramaciones_service(db)
-    programaciones_borrador = Programacion_Service.getProgramacionesEnBorrador_service(db)
-    
     if request.method == "POST":
         data = {
             "idProgramacion": request.form.get("idProgramacion"),
@@ -146,25 +128,18 @@ def cerrarProgramacion_web():
                 "programacion_template.editarProgramacion_template",
                 fecha = fecha,
                 idDepartment = idDepartment,
-                programaciones = programaciones,
-                programaciones_borrador = programaciones_borrador,
                 ))
 
     return redirect(url_for(
         "programacion_template.editarProgramacion_template", 
         fecha = fecha,
         idDepartment = idDepartment,
-        programaciones = programaciones,
-        programaciones_borrador = programaciones_borrador,
     ))    
 
 @programacion_web_bp.route("/reOpenProgramacion_web", methods=["GET", "POST"])
 @login_required
 @permiso_requerido("programacion.editar")
 def reOpenProgramacion_web():
-    programaciones = Programacion_Service.getProgramaciones_service(db)
-    programaciones_borrador = Programacion_Service.getProgramacionesEnBorrador_service(db)
-    
     if request.method == "POST":
         data = {
             "fecha": request.form.get("fecha"),
@@ -182,23 +157,16 @@ def reOpenProgramacion_web():
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for(
                 "programacion_template.listaProgramaciones_template",
-                programaciones = programaciones,
-                programaciones_borrador = programaciones_borrador,
                 ))
 
     return redirect(url_for(
         "programacion_template.listaProgramaciones_template", 
-        programaciones = programaciones,
-        programaciones_borrador = programaciones_borrador,
     ))    
 
 @programacion_web_bp.route("/eliminarProgramacion_web", methods=["GET", "POST"])
 @login_required
 @permiso_requerido("programacion.eliminar")
 def eliminarProgramacion_web():
-    programaciones = Programacion_Service.getProgramaciones_service(db)
-    programaciones_borrador = Programacion_Service.getProgramacionesEnBorrador_service(db)
-
     if request.method == "POST":
         data = {
             "idProgramacion": request.form.get("idProgramacion"),
@@ -215,8 +183,6 @@ def eliminarProgramacion_web():
 
     return redirect(url_for(
         "programacion_template.listaProgramaciones_template", 
-        programaciones = programaciones,
-        programaciones_borrador = programaciones_borrador,
     ))
 
 @programacion_web_bp.route("/confirmar_verificacion_programacion_web", methods=["GET", "POST"])

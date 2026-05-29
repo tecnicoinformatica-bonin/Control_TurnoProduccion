@@ -3,6 +3,7 @@ from flask_login import login_required
 
 from app.api.programacion.programacion_service import Programacion_Service
 from app.api.departamento.departamento_service import Departamento_Service
+from app.api.registro.registro_service import Registro_Service
 from app.api.usuario.usuario_service import Usuario_Service
 from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
@@ -53,6 +54,7 @@ def editarProgramacion_template(idDepartment, fecha):
     programaciones_borrador = Programacion_Service.getProgramacionesEnBorrador_service(db)
     programacion_actual = Programacion_Service.getProgramacionByDateAndIdDepartment_service(db, fecha, idDepartment)
     conteo_lineas = Programacion_Service.getCountsByLine_service(db, programacion_actual["idProgramacion"])
+    registros = Registro_Service.getRegistros_service(db)
             
     return render_template(
         f"programacion/editarProgramacion.html", 
@@ -64,4 +66,5 @@ def editarProgramacion_template(idDepartment, fecha):
         fecha = fecha,
         programacion_actual = programacion_actual,
         conteo_lineas = conteo_lineas,
+        registros = registros
     )

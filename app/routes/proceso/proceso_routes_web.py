@@ -17,8 +17,6 @@ proceso_web_bp = Blueprint(
 @login_required
 @permiso_requerido("proceso.crear")
 def crearProceso_web():
-    procesos = Proceso_Service.getProcesos_service(db)
-
     if request.method == "POST":
         data = {
             "proceso": request.form.get("proceso"),
@@ -34,15 +32,12 @@ def crearProceso_web():
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for("proceso_template.crearProceso_template"))
 
-    return redirect(url_for("proceso_template.crearProceso_template", procesos = procesos))
+    return redirect(url_for("proceso_template.crearProceso_template"))
 
 @proceso_web_bp.route("/editarProceso_web", methods=["GET", "POST"])
 @login_required
 @permiso_requerido("proceso.editar")
 def editarProceso_web():
-    procesos = Proceso_Service.getProcesos_service(db)
-    departamentos = Departamento_Service.getDepartamentos_service(db);
-    
     if request.method == "POST":
         data = {
             "idProceso": request.form.get("idProceso"),
@@ -56,30 +51,21 @@ def editarProceso_web():
             FlashMessages.flash_error(result["error"])
             return redirect(url_for(
                 "proceso_template.listaProcesos_template", 
-                procesos = procesos, 
-                departamentos = departamentos,
             ))
         else:
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for(
                 "proceso_template.listaProcesos_template", 
-                procesos = procesos,
-                departamentos = departamentos,
             ))
 
     return redirect(url_for(
         "proceso_template.listaProcesos_template", 
-        procesos = procesos,
-        departamentos = departamentos,
     ))    
 
 @proceso_web_bp.route("/eliminarProceso_web", methods=["GET", "POST"])
 @login_required
 @permiso_requerido("proceso.eliminar")
 def eliminarProceso_web():
-    procesos = Proceso_Service.getProcesos_service(db)
-    departamentos = Departamento_Service.getDepartamentos_service(db);
-    
     if request.method == "POST":
         data = {
             "idProceso": request.form.get("idProceso"),
@@ -91,19 +77,13 @@ def eliminarProceso_web():
             FlashMessages.flash_error(result["error"])
             return redirect(url_for(
                 "proceso_template.listaProcesos_template",
-                procesos = procesos,
-                departamentos = departamentos,
             ))
         else:
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for(
                 "proceso_template.listaProcesos_template",
-                procesos = procesos,
-                departamentos = departamentos,
             ))
 
     return redirect(url_for(
         "proceso_template.listaProcesos_template", 
-        procesos = procesos,
-        departamentos = departamentos,
     ))    

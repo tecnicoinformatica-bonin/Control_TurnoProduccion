@@ -22,10 +22,6 @@ rol_ruta_web_bp = Blueprint(
 @login_required
 @permiso_requerido("rol_ruta.crear")
 def crearRol_Ruta_web():
-    usuarios = Usuario_Service.getUsuarios_service(db)
-    rol_rutas = Rol_Ruta_Service.getRol_Rutas_service(db)
-    roles = Rol_Service.getRoles_service(db)
-
     if request.method == "POST":
         data = {
             "idRol": request.form.get("idRol"),
@@ -38,34 +34,21 @@ def crearRol_Ruta_web():
             FlashMessages.flash_error(result["error"])
             return redirect(url_for(
                 "rol_template.listaRoles_template",
-                usuarios = usuarios,
-                roles = roles,
-                rol_rutas = rol_rutas,
                 ))
         else:
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for(
                 "rol_template.listaRoles_template",
-                usuarios = usuarios,
-                roles = roles,
-                rol_rutas = rol_rutas,
                 ))
 
     return redirect(url_for(
         "rol_template.crearUsuario_template",
-        usuarios = usuarios,
-        roles = roles,
-        rol_rutas = rol_rutas,
         ))
 
 @rol_ruta_web_bp.route("/editarRol_Ruta_web", methods=["GET", "POST"])
 @login_required
 @permiso_requerido("rol_ruta.editar")
 def editarRol_Ruta_web():
-    usuarios = Usuario_Service.getUsuarios_service(db)
-    rol_rutas = Rol_Ruta_Service.getRol_Rutas_service(db)
-    roles = Rol_Service.getRoles_service(db)
-
     if request.method == "POST":
         data = {
             "idRol": request.form.get("idRol"),
@@ -78,34 +61,21 @@ def editarRol_Ruta_web():
             FlashMessages.flash_error(result["error"])
             return redirect(url_for(
                 "rol_template.listaRoles_template", 
-                usuarios = usuarios,
-                roles = roles,
-                rol_rutas = rol_rutas, 
             ))
         else:
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for(
                 "rol_template.listaRoles_template", 
-                usuarios = usuarios,
-                roles = roles,
-                rol_rutas = rol_rutas, 
             ))
 
     return redirect(url_for(
         "rol_template.listaRoles_template", 
-        usuarios = usuarios,
-        roles = roles,
-        rol_rutas = rol_rutas,
     ))    
 
 @rol_ruta_web_bp.route("/eliminarRol_Ruta_web", methods=["GET", "POST"])
 @login_required
 @permiso_requerido("rol_ruta.eliminar")
 def eliminarRol_Ruta_web():
-    usuarios = Usuario_Service.getUsuarios_service(db)
-    roles = Rol_Service.getRoles_service(db)
-    rol_rutas = Rol_Ruta_Service.getRol_Rutas_service(db)
-    
     if request.method == "POST":
         data = {
             "idRol": request.form.get("idRol"),
@@ -118,22 +88,13 @@ def eliminarRol_Ruta_web():
             FlashMessages.flash_error(result["error"])
             return redirect(url_for(
                 "rol_template.listaRoles_template",
-                usuarios = usuarios,
-                roles = roles,
-                rol_rutas = rol_rutas,
             ))
         else:
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for(
                 "rol_template.listaRoles_template",
-                usuarios = usuarios,
-                roles = roles,
-                rol_rutas = rol_rutas,
             ))
 
     return redirect(url_for(
         "rol_template.listaRoles_template", 
-        usuarios = usuarios,
-        roles = roles,
-        rol_rutas = rol_rutas,
     ))    

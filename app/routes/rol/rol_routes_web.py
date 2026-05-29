@@ -17,8 +17,6 @@ rol_web_bp = Blueprint(
 @login_required
 @permiso_requerido("rol.crear")
 def crearRol_web():
-    roles = Rol_Service.getRoles_service(db)
-
     if request.method == "POST":
         data = {
             "nombre": request.form.get("nombre"),
@@ -34,14 +32,12 @@ def crearRol_web():
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for("rol_template.crearRol_template"))
 
-    return redirect(url_for("rol_template.crearRol_template", roles = roles))
+    return redirect(url_for("rol_template.crearRol_template"))
 
 @rol_web_bp.route("/editarRol_web", methods=["GET", "POST"])
 @login_required
 @permiso_requerido("rol.editar")
 def editarRol_web():
-    roles = Rol_Service.getRoles_service(db)
-    
     if request.method == "POST":
         data = {
             "idRol": request.form.get("idRol"),
@@ -55,26 +51,21 @@ def editarRol_web():
             FlashMessages.flash_error(result["error"])
             return redirect(url_for(
                 "rol_template.listaRoles_template", 
-                roles = roles, 
             ))
         else:
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for(
                 "rol_template.listaRoles_template", 
-                roles = roles,
             ))
 
     return redirect(url_for(
         "rol_template.listaRoles_template", 
-        roles = roles,
     ))    
 
 @rol_web_bp.route("/eliminarRol_web", methods=["GET", "POST"])
 @login_required
 @permiso_requerido("rol.eliminar")
 def eliminarRol_web():
-    roles = Rol_Service.getRoles_service(db)
-    
     if request.method == "POST":
         data = {
             "idRol": request.form.get("idRol"),
@@ -86,16 +77,13 @@ def eliminarRol_web():
             FlashMessages.flash_error(result["error"])
             return redirect(url_for(
                 "rol_template.listaRoles_template",
-                roles = roles,
             ))
         else:
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for(
                 "rol_template.listaRoles_template",
-                roles = roles,
             ))
 
     return redirect(url_for(
         "rol_template.listaRoles_template", 
-        roles = roles,
     ))    

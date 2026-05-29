@@ -21,10 +21,6 @@ usuario_permiso_web_bp = Blueprint(
 @login_required
 @permiso_requerido("usuario_permiso.crear")
 def crearUsuario_Permiso_web():
-    usuarios = Usuario_Service.getUsuarios_service(db)
-    usuario_permisos = Usuario_Permiso_Service.getUsuario_Permisos_service(db)
-    permisos = Permiso_Service.getPermisos_service(db)
-
     if request.method == "POST":
         data = {
             "idUsuario": request.form.get("idUsuario"),
@@ -37,34 +33,21 @@ def crearUsuario_Permiso_web():
             FlashMessages.flash_error(result["error"])
             return redirect(url_for(
                 "usuario_template.listaUsuarios_template",
-                usuarios = usuarios,
-                permisos = permisos,
-                usuario_permisos = usuario_permisos,
                 ))
         else:
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for(
                 "usuario_template.listaUsuarios_template",
-                usuarios = usuarios,
-                permisos = permisos,
-                usuario_permisos = usuario_permisos,
                 ))
 
     return redirect(url_for(
         "usuario_template.crearUsuario_template",
-        usuarios = usuarios,
-        permisos = permisos,
-        usuario_permisos = usuario_permisos,
         ))
 
 @usuario_permiso_web_bp.route("/editarUsuario_Permiso_web", methods=["GET", "POST"])
 @login_required
 @permiso_requerido("usuario_permiso.editar")
 def editarUsuario_Permiso_web():
-    usuarios = Usuario_Service.getUsuarios_service(db)
-    usuario_permisos = Usuario_Permiso_Service.getUsuario_Permisos_service(db)
-    permisos = Permiso_Service.getPermisos_service(db)
-
     if request.method == "POST":
         data = {
             "idUsuario": request.form.get("idUsuario"),
@@ -80,9 +63,6 @@ def editarUsuario_Permiso_web():
             FlashMessages.flash_error(result["error"])
             return redirect(url_for(
                 "usuario_template.listaUsuarios_template", 
-                usuarios = usuarios, 
-                permisos = permisos,
-                usuario_permisos = usuario_permisos,
             ))
         else:
             FlashMessages.flash_success(result["mensaje"])
@@ -92,18 +72,12 @@ def editarUsuario_Permiso_web():
 
     return redirect(url_for(
         "usuario_template.listaUsuarios_template", 
-        usuarios = usuarios,
-        permisos = permisos,
-        usuario_permisos = usuario_permisos,
     ))    
 
 @usuario_permiso_web_bp.route("/eliminarUsuario_Permiso_web", methods=["GET", "POST"])
 @login_required
 @permiso_requerido("usuario_permiso.eliminar")
 def eliminarUsuario_Permiso_web():
-    usuarios = Usuario_Service.getUsuarios_service(db)
-    permisos = Permiso_Service.getPermisos_service(db)
-    
     if request.method == "POST":
         data = {
             "idUsuario": request.form.get("idUsuario"),
@@ -116,19 +90,13 @@ def eliminarUsuario_Permiso_web():
             FlashMessages.flash_error(result["error"])
             return redirect(url_for(
                 "usuario_template.listaUsuarios_template",
-                usuarios = usuarios,
-                permisos = permisos,
             ))
         else:
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for(
                 "usuario_template.listaUsuarios_template",
-                usuarios = usuarios,
-                permisos = permisos,
             ))
 
     return redirect(url_for(
         "usuario_template.listaUsuarios_template", 
-        usuarios = usuarios,
-        permisos = permisos,
     ))    

@@ -16,8 +16,6 @@ ruta_web_bp = Blueprint(
 @login_required
 @permiso_requerido("ruta.crear")
 def crearRuta_web():
-    rutas = Ruta_Service.getRutas_service(db)
-
     if request.method == "POST":
         data = {
             "nombre": request.form.get("nombre"),
@@ -33,14 +31,12 @@ def crearRuta_web():
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for("ruta_template.crearRuta_template"))
 
-    return redirect(url_for("ruta_template.crearRuta_template", rutas = rutas))
+    return redirect(url_for("ruta_template.crearRuta_template"))
 
 @ruta_web_bp.route("/editarRuta_web", methods=["GET", "POST"])
 @login_required
 @permiso_requerido("ruta.editar")
 def editarRuta_web():
-    rutas = Ruta_Service.getRutas_service(db)
-    
     if request.method == "POST":
         data = {
             "idRuta": request.form.get("idRuta"),
@@ -54,26 +50,21 @@ def editarRuta_web():
             FlashMessages.flash_error(result["error"])
             return redirect(url_for(
                 "ruta_template.listaRutas_template", 
-                rutas = rutas, 
             ))
         else:
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for(
                 "ruta_template.listaRutas_template", 
-                rutas = rutas,
             ))
 
     return redirect(url_for(
         "ruta_template.listaRutas_template", 
-        rutas = rutas,
     ))    
 
 @ruta_web_bp.route("/eliminarRuta_web", methods=["GET", "POST"])
 @login_required
 @permiso_requerido("ruta.eliminar")
 def eliminarRuta_web():
-    rutas = Ruta_Service.getRutas_service(db)
-    
     if request.method == "POST":
         data = {
             "idRuta": request.form.get("idRuta"),
@@ -85,16 +76,13 @@ def eliminarRuta_web():
             FlashMessages.flash_error(result["error"])
             return redirect(url_for(
                 "ruta_template.listaRutas_template",
-                rutas = rutas,
             ))
         else:
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for(
                 "ruta_template.listaRutas_template",
-                rutas = rutas,
             ))
 
     return redirect(url_for(
         "ruta_template.listaRutas_template", 
-        rutas = rutas,
     ))    
