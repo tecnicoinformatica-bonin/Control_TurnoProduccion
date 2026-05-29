@@ -60,6 +60,7 @@ class PermisoRepository:
             query = """
             SELECT * 
             FROM turnos_permiso
+            ORDER BY nombrePermiso
             """
             cursor.execute(query)
 
