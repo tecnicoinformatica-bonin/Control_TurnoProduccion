@@ -17,6 +17,8 @@ class Empleado_Service():
                 "idDepartment": data[7],
                 "activo": data[8],
                 "idCentro": data[9],
+                "idLinea": data[10],
+                "idProceso": data[11],
             }
             
             return empleado
@@ -31,16 +33,18 @@ class Empleado_Service():
             empleados = []
             for row in data:
                 empleado = {
-                    "idEmpleado": row[0], 
-                    "badgeNumber": row[1], 
-                    "firstName": row[2], 
-                    "secondName": row[3], 
-                    "lastName": row[4], 
-                    "lastName2": row[5],
-                    "position": row[6], 
-                    "idDepartment": row[7],
-                    "activo": row[8],
-                    "idCentro": row[9],
+                    "idEmpleado": row["idEmpleado"],
+                    "badgeNumber": row["badgeNumber"],
+                    "firstName": row["firstName"],
+                    "secondName": row["secondName"],
+                    "lastName": row["lastName"],
+                    "lastName2": row["lastName2"],
+                    "position": row["position"],
+                    "idDepartment": row["idDepartment"],
+                    "activo": row["activo"],
+                    "idCentro": row["idCentro"],
+                    "idLinea": row["idLinea"],
+                    "idProceso": row["idProceso"],
                 }
                 empleados.append(empleado)
             return empleados
@@ -65,6 +69,8 @@ class Empleado_Service():
                     "idDepartment": row["idDepartment"],
                     "activo": row["activo"],
                     "idCentro": row["idCentro"],
+                    "idLinea": row["idLinea"],
+                    "idProceso": row["idProceso"],
                 }
                 empleados.append(empleado)
             return empleados
@@ -85,6 +91,8 @@ class Empleado_Service():
             idDepartment = data.get("idDepartment")
             activo = bool(data.get("activo"))
             idCentro = data.get("idCentro")
+            idLinea = data.get("idLinea")
+            idProceso = data.get("idProceso")
 
             required_fields = {
                     "idEmpleado": idEmpleado, 
@@ -101,7 +109,7 @@ class Empleado_Service():
             if missing_fields:
                 return {"error": f"Faltan campos obligatorios: {', '.join(missing_fields)}"}
             
-            return EmpleadoRepository.createEmpleado(db, idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro)
+            return EmpleadoRepository.createEmpleado(db, idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, idLinea, idProceso)
         
         except Exception as ex:
             return {"error": f"No se pudo crear el empleado en el servicio: {str(ex)}"}
@@ -121,6 +129,8 @@ class Empleado_Service():
             idDepartment = data.get("idDepartment")
             activo = bool(data.get("activo"))
             idCentro = data.get("idCentro")
+            idLinea = data.get("idLinea")
+            idProceso = data.get("idProceso")
 
             required_fields = {
                     "idEmpleado": idEmpleado, 
@@ -139,7 +149,7 @@ class Empleado_Service():
             if missing_fields:
                 return {"error": f"Faltan campos obligatorios: {', '.join(missing_fields)}"}
             
-            return EmpleadoRepository.updateEmpleado(db, idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, oldIdEmpleado, oldBadgeNumber)
+            return EmpleadoRepository.updateEmpleado(db, idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, oldIdEmpleado, idLinea, idProceso, oldBadgeNumber)
         
         except Exception as ex:
             return {"error": f"No se pudo modificar el empleado en el servicio: {str(ex)}"}

@@ -20,7 +20,7 @@ class EmpleadoRepository:
             return empleado
         
         except Exception as ex:
-            return {"error": f"No se pudo obtener empleado por ID en el repositorio: {str(ex)}"}
+            raise Exception (f"No se pudo obtener empleado por ID en el repositorio: {str(ex)}")
 
         finally:
             if cursor:
@@ -44,7 +44,7 @@ class EmpleadoRepository:
             return empleado
         
         except Exception as ex:
-            return {"error": f"No se pudo obtener empleado por badge en el repositorio: {str(ex)}"}
+            raise Exception (f"No se pudo obtener empleado por badge en el repositorio: {str(ex)}")
 
         finally:
             if cursor:
@@ -55,7 +55,7 @@ class EmpleadoRepository:
         cursor = None
         
         try: 
-            cursor = db.connection.cursor()
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
 
             query = """
             SELECT * 
@@ -68,7 +68,7 @@ class EmpleadoRepository:
             return empleados
         
         except Exception as ex:
-            return {"error": f"No se pudo obtener empleados en el repositorio: {str(ex)}"}
+            raise Exception ("No se pudo obtener empleados en el repositorio: {str(ex)}")
 
         finally:
             if cursor:
@@ -93,14 +93,14 @@ class EmpleadoRepository:
             return empleados
         
         except Exception as ex:
-            return {"error": f"No se pudo obtener empleados activos en el repositorio: {str(ex)}"}
+            raise Exception (f"No se pudo obtener empleados activos en el repositorio: {str(ex)}")
 
         finally:
             if cursor:
                 cursor.close()
 
     @staticmethod
-    def createEmpleado(db, idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro):
+    def createEmpleado(db, idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, idLinea, idProceso):
         cursor = None
 
         try: 
@@ -113,10 +113,10 @@ class EmpleadoRepository:
             cursor = db.connection.cursor()
             
             query = """
-                INSERT INTO turnos_empleado(idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO turnos_empleado(idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, idLinea, idProceso)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """
-            cursor.execute(query, (idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro,))
+            cursor.execute(query, (idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, idLinea, idProceso,))
             
             db.connection.commit()
 
@@ -130,23 +130,27 @@ class EmpleadoRepository:
                 "position": position, 
                 "idDepartment": idDepartment,
                 "activo": activo,                
-                "idCentro": idCentro,                
+                "idCentro": idCentro,
+                "idLinea": idLinea,
+                "idProceso": idProceso,
             }
 
-            return {"mensaje": f"Empleado creado correctamente. ID: {newEmpleado['idEmpleado']}, Badge: {newEmpleado['badgeNumber']}, Nombre: {newEmpleado['firstName']} {newEmpleado['lastName']}, , Activo: {newEmpleado['activo']}"}
+            return {"mensaje": f"Empleado creado correctamente.",
+                    "Empleado": newEmpleado
+            }
 
         
         except Exception as ex:
             db.connection.rollback()
             
-            return {"error": f"No se pudo crear empleado en el repositorio: {str(ex)}"}
+            raise Exception (f"No se pudo crear empleado en el repositorio: {str(ex)}")
 
         finally:
             if cursor:
                 cursor.close()
 
     @staticmethod
-    def updateEmpleado(db, idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, oldIdEmpleado, oldBadgeNumber):
+    def updateEmpleado(db, idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, oldIdEmpleado, idLinea, idProceso, oldBadgeNumber):
         cursor = None
 
         try: 
@@ -162,11 +166,11 @@ class EmpleadoRepository:
             cursor = db.connection.cursor()
             
             query = """
-                UPDATE turnos_empleado SET idEmpleado = %s, badgeNumber = %s, firstName = %s, secondName = %s, lastName = %s, lastName2 = %s, position = %s, idDepartment = %s, activo = %s, idCentro = %s
+                UPDATE turnos_empleado SET idEmpleado = %s, badgeNumber = %s, firstName = %s, secondName = %s, lastName = %s, lastName2 = %s, position = %s, idDepartment = %s, activo = %s, idCentro = %s, idLinea = %s, idProceso = %s
                 WHERE idEmpleado = %s
                 """
             
-            cursor.execute(query, (idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, oldIdEmpleado))
+            cursor.execute(query, (idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, idLinea, idProceso, oldIdEmpleado))
             
             db.connection.commit()
 
@@ -183,12 +187,15 @@ class EmpleadoRepository:
                 "idCentro": idCentro,             
             }
 
-            return {"mensaje": f"Empleado modificado correctamente. ID: {editedEmpleado['idEmpleado']}, Badge: {editedEmpleado['badgeNumber']}, Nombre: {editedEmpleado['firstName']} {editedEmpleado['lastName']}, Activo: {editedEmpleado['activo']}"}
+            return {
+                "mensaje": f"Empleado modificado correctamente.",
+                "Empleado": editedEmpleado
+            }
         
         except Exception as ex:
             db.connection.rollback()
             
-            return {"error": f"No se pudo modificar empleado en el repositorio: {str(ex)}"}
+            raise Exception (f"No se pudo modificar empleado en el repositorio: {str(ex)}")
 
         finally:
             if cursor:
@@ -213,8 +220,7 @@ class EmpleadoRepository:
         
         except Exception as ex:
             db.connection.rollback()
-            print(ex)
-            return {"error": str(ex)}
+            raise Exception (f"error {str(ex)}")
 
         finally:
             if cursor:

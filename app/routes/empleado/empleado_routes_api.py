@@ -78,6 +78,12 @@ def createEmpleado():
             idCentro:
               type: integer
               example: 1
+            idLinea:
+              type: integer
+              example: 1
+            idProceso:
+              type: integer
+              example: 1
     responses:
       200:
         description: empleado creado correctamente
@@ -142,6 +148,12 @@ def updateEmpleado():
               type: boolean
               example: 1
             idCentro:
+              type: integer
+              example: 1
+            idLinea:
+              type: integer
+              example: 1
+            idProceso:
               type: integer
               example: 1
     responses:

@@ -29,6 +29,8 @@ def crearEmpleado_web():
             "idDepartment": request.form.get("idDepartment"),
             "activo": request.form.get("activo"),
             "idCentro": request.form.get("idCentro"),
+            "idLinea": request.form.get("idLinea"),
+            "idProceso": request.form.get("idProceso"),
         }
 
         result = Empleado_Service.createEmpleado_service(db, data)
@@ -58,6 +60,8 @@ def editarEmpleado_web():
             "idDepartment": request.form.get("idDepartment"),
             "activo": request.form.get("activo"),
             "idCentro": request.form.get("idCentro"),
+            "idLinea": request.form.get("idLinea"),
+            "idProceso": request.form.get("idProceso"),
             "oldIdEmpleado": request.form.get("oldIdEmpleado"),
             "oldBadgeNumber": request.form.get("oldBadgeNumber"),
         }

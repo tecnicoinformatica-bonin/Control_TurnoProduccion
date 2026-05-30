@@ -152,6 +152,38 @@
           </select>
         </div>
 
+        <div class="form-group">
+          <label for="idLinea">Línea asignada</label>
+          <select
+            type="text"
+            class="form-control"
+            id="idLinea"
+            name="idLinea"
+            title="Línea a la que pertenece el empleado"
+            required
+          >
+            <option selected disabled value="{{ None }}">
+              -- Seleccione una opción --
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="idProceso">Proceso</label>
+          <select
+            type="text"
+            class="form-control"
+            id="idProceso"
+            name="idProceso"
+            title="Proceso asignado al empleado"
+            required
+          >
+            <option selected disabled value="{{ None }}">
+              -- Seleccione una opción --
+            </option>
+          </select>
+        </div>
+
         <div class="form-group mt-3">
           <input type="hidden" name="activo_hidden" value="0" />
           <div class="form-check form-switch">
@@ -189,35 +221,71 @@
     'select[name="idDepartment"]',
   );
   const selectCentro = document.querySelector('select[name="idCentro"]');
+  const selectLinea = document.querySelector('select[name="idLinea"]');
+  const selectProceso = document.querySelector('select[name="idProceso"]');
 
-  let html = selectCentro.innerHTML;
+  let htmlCentro = selectCentro.innerHTML;
+  let htmlLinea = selectLinea.innerHTML;
+  let htmlProceso = selectProceso.innerHTML;
 
   selectDepartment.addEventListener("change", function () {
     let idDepartment = this.value;
 
     selectCentro.innerHTML = "";
+    selectLinea.innerHTML = "";
+    selectProceso.innerHTML = "";
 
-    obtenerCentros(idDepartment);
+    obtenerCentrosLineasAndProcesos(idDepartment);
   });
 
-  async function obtenerCentros(idDepartment) {
+  async function obtenerCentrosLineasAndProcesos(idDepartment) {
     try {
-      const centrosRes = await fetch(
-        `/json/centro_de_costo/get_centros_de_costo_byDepartment_json/${idDepartment}`,
-      );
-      data = await centrosRes.json();
+      const [centrosRes, lineasRes, procesosRes] = await Promise.all([
+        fetch(
+          `/json/centro_de_costo/get_centros_de_costo_byDepartment_json/${idDepartment}`,
+        ),
+        fetch(`/json/linea/get_lineas_by_department/${idDepartment}`),
+        fetch(`/json/proceso/get_procesos_by_department/${idDepartment}`),
+      ]);
 
-      html =
+      /* Centros de costo */
+      dataCentros = await centrosRes.json();
+      htmlCentro =
         '<option selected disabled value="{{ None }}">-- Seleccione una opción --</option>';
       selectCentro.innerHTML = "";
 
-      data.forEach((centro) => {
-        html += `
+      dataCentros.forEach((centro) => {
+        htmlCentro += `
             <option value="${centro.idCentro}">${centro.nombreCentro}</option>
           `;
       });
+      selectCentro.insertAdjacentHTML("beforeend", htmlCentro);
 
-      selectCentro.insertAdjacentHTML("beforeend", html);
+      /* Líneas */
+      dataLineas = await lineasRes.json();
+      htmlLinea =
+        '<option selected disabled value="{{ None }}">-- Seleccione una opción --</option>';
+      selectLinea.innerHTML = "";
+      dataLineas.forEach((linea) => {
+        htmlLinea += `
+            <option value="${linea.idLinea}">${linea.nameLinea}</option>
+          `;
+      });
+      selectLinea.insertAdjacentHTML("beforeend", htmlLinea);
+
+      /* Procesos */
+      dataProcesos = await procesosRes.json();
+      htmlProceso =
+        '<option selected disabled value="{{ None }}">-- Seleccione una opción --</option>';
+      selectProceso.innerHTML = "";
+
+      dataProcesos.forEach((proceso) => {
+        htmlProceso += `
+            <option value="${proceso.idProceso}">${proceso.proceso}</option>
+          `;
+      });
+
+      selectProceso.insertAdjacentHTML("beforeend", htmlProceso);
     } catch (error) {
       console.error("error:", error);
     }
