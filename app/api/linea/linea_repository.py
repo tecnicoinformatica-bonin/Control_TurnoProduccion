@@ -1,3 +1,5 @@
+import MySQLdb
+
 from app.extensions.slugify import Slugify
 
 class LineaRepository:
@@ -64,6 +66,33 @@ class LineaRepository:
             FROM turnos_linea
             """
             cursor.execute(query)
+
+            lineas = cursor.fetchall()
+
+            return lineas
+        
+        except Exception as ex:
+            print(ex)
+            return None
+
+        finally:
+            if cursor:
+                cursor.close()
+    
+    @staticmethod
+    def getLineasByDepartment(db, idDepartment):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT * 
+            FROM turnos_linea
+            WHERE idDepartment = %s
+            ORDER BY nameLinea
+            """
+            cursor.execute(query, (idDepartment,))
 
             lineas = cursor.fetchall()
 

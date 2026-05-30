@@ -16,8 +16,13 @@ linea_template_bp = Blueprint(
 @login_required
 @permiso_requerido("linea.crear")
 def crearLinea_template():
+    lineas = Linea_Service.getLineas_service(db)
+    departamentos = Departamento_Service.getDepartamentos_service(db);
+
     return render_template(
         f"linea/crearLinea.html", 
+        lineas = lineas,
+        departamentos = departamentos,
     )
 
 @linea_template_bp.route("/listaLineas")

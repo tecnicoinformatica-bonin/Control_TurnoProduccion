@@ -14,3 +14,12 @@ def get_lineas():
         return jsonify([]), 200
 
     return jsonify(data), 200
+
+@linea_json_bp.route("/get_lineas_by_department/<int:idDepartment>", methods=["GET"])
+@login_required
+def getLineasByDepartment(idDepartment):
+    data = Linea_Service.getLineasByDepartment_service(db, idDepartment)
+    if not data:
+        return jsonify([]), 200
+
+    return jsonify(data), 200

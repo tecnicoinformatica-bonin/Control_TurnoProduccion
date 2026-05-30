@@ -21,6 +21,24 @@ class Linea_Service():
             return {"error": f"No se pudo obtener líneas en servicio: {str(ex)}"}
     
     @staticmethod
+    def getLineasByDepartment_service(db, idDepartment):
+        try:
+            data = LineaRepository.getLineasByDepartment(db, idDepartment)
+            lineas = []
+            for row in data:
+                linea = {
+                    "idLinea": row["idLinea"],
+                    "nameLinea": row["nameLinea"],
+                    "idDepartment": row["idDepartment"],
+                    "minimo_requerido": row["minimo_requerido"],
+                }
+                lineas.append(linea)
+            return lineas
+
+        except Exception as ex:
+            return {"error": f"No se pudo obtener líneas en servicio: {str(ex)}"}
+    
+    @staticmethod
     def getLineaById_service(db, idLinea):
         try:
             data = LineaRepository.getLineaById(db, idLinea)
