@@ -82,9 +82,10 @@ class EmpleadoRepository:
             cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
 
             query = """
-            SELECT * 
-            FROM turnos_empleado
-            WHERE activo = 1 AND idDepartment = %s
+            SELECT e.idEmpleado, e.badgeNumber, e.firstName, e.secondName, e.lastName, e.lastName2, e.position, e.idDepartment, e.activo, e.idCentro, e.idLinea, e.idProceso, h.hora_inicio, h.hora_fin
+            FROM turnos_empleado AS e
+            INNER JOIN turnos_horario AS h ON e.idHorario = h.idHorario 
+            WHERE e.activo = 1 AND e.idDepartment = %s
             """
             cursor.execute(query, (idDepartment,))
 

@@ -499,7 +499,7 @@ class RegistroRepository:
                 cursor.close()
     
     @staticmethod
-    def createRegistroAutomatico(db, idProgramacion, idEmpleado, idLinea, idProceso, fecha, idCentro, badgeNumber):
+    def createRegistroAutomatico(db, idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, fecha, idCentro, badgeNumber):
         cursor = None
 
         try:
@@ -513,10 +513,10 @@ class RegistroRepository:
             cursor = db.connection.cursor()
             
             query = """
-                INSERT INTO turnos_registro(idProgramacion, idEmpleado, idLinea, idProceso, fecha, idCentro, badgeNumber)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO turnos_registro(idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, fecha, idCentro, badgeNumber)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """
-            cursor.execute(query, (idProgramacion, idEmpleado, idLinea, idProceso, fecha, idCentro, badgeNumber,))
+            cursor.execute(query, (idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, fecha, idCentro, badgeNumber,))
             
             db.connection.commit()
 
@@ -524,6 +524,8 @@ class RegistroRepository:
                 "idRegistro": cursor.lastrowid, 
                 "idProgramacion": idProgramacion,
                 "idEmpleado": idEmpleado,
+                "hora_inicio": hora_inicio,
+                "hora_fin": hora_fin,
                 "fecha": fecha,
                 "idCentro": idCentro,
                 "idLinea": idLinea,

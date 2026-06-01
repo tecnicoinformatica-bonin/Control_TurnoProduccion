@@ -71,6 +71,8 @@ class Empleado_Service():
                     "idCentro": row["idCentro"],
                     "idLinea": row["idLinea"],
                     "idProceso": row["idProceso"],
+                    "hora_inicio": row["hora_inicio"],
+                    "hora_fin": row["hora_fin"],
                 }
                 empleados.append(empleado)
             return empleados

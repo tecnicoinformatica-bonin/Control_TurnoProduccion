@@ -278,7 +278,7 @@ class Programacion_Service():
                 empleados = Empleado_Service.getActiveEmpleadosByDepartment_service(db, idDepartment)
 
                 for e in empleados:
-                    RegistroRepository.createRegistroAutomatico(db, idProgramacion, e["idEmpleado"], e["idLinea"], e["idProceso"], fecha, e["idCentro"], e["badgeNumber"])
+                    RegistroRepository.createRegistroAutomatico(db, idProgramacion, e["idEmpleado"], e["hora_inicio"], e["hora_fin"], e["idLinea"], e["idProceso"], fecha, e["idCentro"], e["badgeNumber"])
 
                 creados += 1    
                 
