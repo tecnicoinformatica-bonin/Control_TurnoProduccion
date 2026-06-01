@@ -320,8 +320,9 @@ class ProgramacionRepository:
                 estado = 'CERRADO',
                 fecha_cierre = %s,
                 cerrado_por = 0
-            WHERE estado = 'BORRADOR' OR estado = 'VERIFICADO'
-            AND DATE_ADD(fecha, INTERVAL 1 DAY) + INTERVAL 15 HOUR <= %s
+            WHERE 
+                estado in ('BORRADOR', 'VERIFICADO')
+                AND DATE_ADD(fecha, INTERVAL 1 DAY) + INTERVAL 15 HOUR <= %s
             """
 
             cursor.execute(query, (ahora, ahora))
