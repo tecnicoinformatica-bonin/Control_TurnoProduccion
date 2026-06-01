@@ -407,7 +407,7 @@ message in messages %}
       .map(Number);
     const fecha = new Date(year, month - 1, day);
     const canEdit = "{{ programacion_actual.estado }}" !== "CERRADO";
-    console.log(fecha);
+    let applyForTransport = false;
 
     let empleados = {};
     let empleadosDataMap = {};
@@ -826,13 +826,33 @@ message in messages %}
           title: "Transporte",
           field: "aplica_transporte",
           hozAlign: "center",
-          editor: canEdit && tienePermiso("registro.editar") ? true : false,
           formatter: "tickCross",
+          editor: true,
+
+          editable: function (cell) {
+            const data = cell.getRow().getData();
+
+            return (
+              canEdit &&
+              tienePermiso("registro.editar") &&
+              aplicaTransporteHorario(data)
+            );
+          },
         },
         {
           title: "Dirección",
           field: "observacion_transporte",
           editor: "input",
+
+          editable: function (cell) {
+            const data = cell.getRow().getData();
+
+            return (
+              canEdit &&
+              tienePermiso("registro.editar") &&
+              aplicaTransporteHorario(data)
+            );
+          },
         },
         {
           title: "Almuerzo",
@@ -934,6 +954,7 @@ message in messages %}
       updateAlmuerzoOrCenaField(cell);
       updateIdEmpleadoAndBadgeField(cell);
       changeRowState(cell);
+      puedeSolicitarTransporte(cell);
 
       recalcularTotales();
 
@@ -986,6 +1007,40 @@ message in messages %}
         recalcularTotales();
       }, 0);
     });
+
+    function aplicaTransporteHorario(data) {
+      console.log(
+        data.hora_inicio &&
+          data.hora_fin &&
+          data.hora_inicio < "15:00:00" &&
+          data.hora_fin >= "21:00:00",
+      );
+
+      return (
+        data.hora_inicio &&
+        data.hora_fin &&
+        data.hora_inicio < "15:00:00" &&
+        data.hora_fin >= "21:00:00"
+      );
+    }
+
+    function puedeSolicitarTransporte(cell) {
+      const field = cell.getField();
+
+      if (field !== "hora_inicio" && field !== "hora_fin") {
+        return;
+      }
+
+      const row = cell.getRow();
+      const data = row.getData();
+
+      if (!aplicaTransporteHorario(data)) {
+        row.update({
+          aplica_transporte: false,
+          observacion_transporte: "",
+        });
+      }
+    }
 
     function refreshRowAndTotals(resp, row) {
       row.update(resp);
