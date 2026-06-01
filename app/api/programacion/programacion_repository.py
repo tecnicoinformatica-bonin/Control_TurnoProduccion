@@ -29,7 +29,7 @@ class ProgramacionRepository:
                 cursor.close()
     
     @staticmethod
-    def getCountsByLine(db, idProgramacion):
+    def getCountsByLine(db, idProgramacion, idDepartment):
         cursor = None
 
         try:
@@ -46,13 +46,14 @@ class ProgramacionRepository:
             LEFT JOIN turnos_registro AS T0
                 ON T1.idLinea = T0.idLinea
                 AND T0.idProgramacion = %s
+            WHERE T1.idDepartment = %s
             GROUP BY 
                 T1.idLinea,
                 T1.nameLinea,
                 T1.minimo_requerido
             """
 
-            cursor.execute(query, (idProgramacion,))
+            cursor.execute(query, (idProgramacion, idDepartment,))
             detalles_total = cursor.fetchall()
 
             return detalles_total

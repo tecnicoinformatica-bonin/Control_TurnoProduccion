@@ -39,9 +39,9 @@ class Programacion_Service():
             return {"error": f"No se pudieron obtener las programaciones en el servicio: {str(ex)}"}
     
     @staticmethod
-    def getCountsByLine_service(db, idProgramacion):
+    def getCountsByLine_service(db, idProgramacion, idDepartment):
         try:
-            data = ProgramacionRepository.getCountsByLine(db, idProgramacion)
+            data = ProgramacionRepository.getCountsByLine(db, idProgramacion, idDepartment)
             detalles_linea = []
             for row in data:
                 detalle = {

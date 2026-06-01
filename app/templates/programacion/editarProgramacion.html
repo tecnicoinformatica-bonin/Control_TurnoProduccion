@@ -1177,7 +1177,7 @@ message in messages %}
     height: "140px",
     layout: "fitColumns",
 
-    ajaxURL: `/json/programacion/get_counts_by_line/${idProgramacion}`,
+    ajaxURL: `/json/programacion/get_counts_by_line/${idProgramacion}/${idDepartmentProgramacion}`,
     ajaxConfig: "GET",
     ajaxResponse: function (url, params, response) {
       if (response.session_expired) {
@@ -1240,10 +1240,10 @@ message in messages %}
 
     try {
       await tableTotales.replaceData(
-        `/json/programacion/get_counts_by_line/${idProgramacion}`,
+        `/json/programacion/get_counts_by_line/${idProgramacion}/${idDepartmentProgramacion}`,
       );
       await tableConfirmacion.replaceData(
-        `/json/programacion/get_counts_by_line/${idProgramacion}`,
+        `/json/programacion/get_counts_by_line/${idProgramacion}/${idDepartmentProgramacion}`,
       );
     } catch (error) {
       console.error(error);
@@ -1271,7 +1271,7 @@ message in messages %}
     height: "fitData",
     layout: "fitColumns",
 
-    ajaxURL: `/json/programacion/get_counts_by_line/${idProgramacion}`,
+    ajaxURL: `/json/programacion/get_counts_by_line/${idProgramacion}/${idDepartmentProgramacion}`,
     ajaxConfig: "GET",
     ajaxResponse: function (url, params, response) {
       if (response.session_expired) {

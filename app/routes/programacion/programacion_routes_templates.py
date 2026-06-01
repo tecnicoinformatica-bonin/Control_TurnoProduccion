@@ -53,7 +53,7 @@ def editarProgramacion_template(idDepartment, fecha):
     usuarios = Usuario_Service.getUsuarios_service(db)
     programaciones_borrador = Programacion_Service.getProgramacionesEnBorrador_service(db)
     programacion_actual = Programacion_Service.getProgramacionByDateAndIdDepartment_service(db, fecha, idDepartment)
-    conteo_lineas = Programacion_Service.getCountsByLine_service(db, programacion_actual["idProgramacion"])
+    conteo_lineas = Programacion_Service.getCountsByLine_service(db, programacion_actual["idProgramacion"], programacion_actual["idDepartment"])
     registros = Registro_Service.getRegistros_service(db)
             
     return render_template(
