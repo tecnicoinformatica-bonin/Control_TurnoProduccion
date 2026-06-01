@@ -499,7 +499,7 @@ class RegistroRepository:
                 cursor.close()
     
     @staticmethod
-    def createRegistroAutomatico(db, idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, fecha, idCentro, badgeNumber):
+    def createRegistroAutomatico(db, idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, cena_con_costo, fecha, idCentro, badgeNumber):
         cursor = None
 
         try:
@@ -513,10 +513,10 @@ class RegistroRepository:
             cursor = db.connection.cursor()
             
             query = """
-                INSERT INTO turnos_registro(idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, fecha, idCentro, badgeNumber)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO turnos_registro(idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, cena_con_costo, fecha, idCentro, badgeNumber)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """
-            cursor.execute(query, (idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, fecha, idCentro, badgeNumber,))
+            cursor.execute(query, (idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, cena_con_costo, fecha, idCentro, badgeNumber,))
             
             db.connection.commit()
 
@@ -530,6 +530,9 @@ class RegistroRepository:
                 "idCentro": idCentro,
                 "idLinea": idLinea,
                 "idProceso": idProceso,
+                "aplica_almuerzo": aplica_almuerzo,
+                "aplica_cena": aplica_cena,
+                "cena_con_costo": cena_con_costo,
                 "badgeNumber": badgeNumber,
             }
 

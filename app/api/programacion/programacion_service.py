@@ -278,7 +278,24 @@ class Programacion_Service():
                 empleados = Empleado_Service.getActiveEmpleadosByDepartment_service(db, idDepartment)
 
                 for e in empleados:
-                    RegistroRepository.createRegistroAutomatico(db, idProgramacion, e["idEmpleado"], e["hora_inicio"], e["hora_fin"], e["idLinea"], e["idProceso"], fecha, e["idCentro"], e["badgeNumber"])
+                    if e["idLinea"] is not None:
+                        beneficios = calcular_beneficios(
+                            fecha,
+                            e["hora_inicio"],
+                            e["hora_fin"]
+                        )
+
+                        aplica_almuerzo = beneficios["aplica_almuerzo"] if beneficios else False
+                        aplica_cena = beneficios["aplica_cena"] if beneficios else False
+                        cena_con_costo = beneficios["cena_con_costo"] if beneficios else False
+                    else:
+                        aplica_almuerzo = False
+                        aplica_cena = False
+                        cena_con_costo = False
+                        e["hora_inicio"] = None
+                        e["hora_fin"] = None
+
+                    RegistroRepository.createRegistroAutomatico(db, idProgramacion, e["idEmpleado"], e["hora_inicio"], e["hora_fin"], e["idLinea"], e["idProceso"], aplica_almuerzo, aplica_cena, cena_con_costo, fecha, e["idCentro"], e["badgeNumber"])
 
                 creados += 1    
                 
