@@ -41,7 +41,7 @@ def update_registro(idRegistro):
 
 @registro_json_bp.route("/update_registro_to_nulls/<int:idRegistro>", methods=["PUT", "POST"])
 @login_required
-@permiso_requerido("registro.editar")
+@permiso_requerido("registro.desasignarTurno")
 def update_registro_to_nulls(idRegistro):
     data = request.get_json()
     if not data:

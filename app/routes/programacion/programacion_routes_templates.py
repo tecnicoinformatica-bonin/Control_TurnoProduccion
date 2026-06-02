@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, abort
 from flask_login import login_required
 
+from app.api.motivo_desasignacion.motivo_desasignacion_service import Motivo_desasignacion_Service
 from app.api.programacion.programacion_service import Programacion_Service
 from app.api.departamento.departamento_service import Departamento_Service
 from app.api.registro.registro_service import Registro_Service
@@ -55,6 +56,7 @@ def editarProgramacion_template(idDepartment, fecha):
     programacion_actual = Programacion_Service.getProgramacionByDateAndIdDepartment_service(db, fecha, idDepartment)
     conteo_lineas = Programacion_Service.getCountsByLine_service(db, programacion_actual["idProgramacion"], programacion_actual["idDepartment"])
     registros = Registro_Service.getRegistros_service(db)
+    motivos = Motivo_desasignacion_Service.getMotivos_desasignacion_service(db)
             
     return render_template(
         f"programacion/editarProgramacion.html", 
@@ -66,5 +68,6 @@ def editarProgramacion_template(idDepartment, fecha):
         fecha = fecha,
         programacion_actual = programacion_actual,
         conteo_lineas = conteo_lineas,
-        registros = registros
+        registros = registros,
+        motivos = motivos
     )

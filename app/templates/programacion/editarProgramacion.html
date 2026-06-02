@@ -207,6 +207,7 @@ message in messages %}
 
   <div id="tabla-registros"></div>
 </div>
+
 <!-- validarAsignacionesModal -->
 <div
   class="modal fade"
@@ -274,6 +275,7 @@ message in messages %}
   <input type="text" name="fecha" id="fecha_asignacion" value="{{ fecha }}" />
 </form>
 
+<!-- Session expired Modal -->
 <div
   class="modal fade"
   id="sessionExpiredModal"
@@ -307,6 +309,64 @@ message in messages %}
         </div>
 
         <button type="submit" class="btn btn-primary">Renovar sesión</button>
+      </form>
+
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Motivo Desasignacion Modal -->
+<div
+  class="modal fade"
+  id="desasignacionModal"
+  tabindex="-1"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-light">
+      <div class="modal-header">
+        <h5 class="modal-title">Motivo de de desasignación</h5>
+      </div>
+
+      <div class="modal-body">
+        Seleccione el motivo por el cual se está desasignando este turno
+      </div>
+      <hr />
+      <form id="desasignacionForm" class="p-4">
+        <div class="mb-3">
+          <label class="form-label">Motivo Desasignación</label>
+
+          <select
+            type="number"
+            class="form-control"
+            id="idMotivo"
+            title="Departamento"
+            required
+            name="idMotivo"
+          >
+            <option selected disabled value="{{ None }}">
+              -- Seleccione una opción --
+            </option>
+            {% for m in motivos %}
+            <option value="{{ m.idMotivo }}">{{ m.descripcion }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">idRegistro</label>
+
+          <input
+            type="number"
+            class="form-control"
+            id="idRegistroDesasignacion"
+            name="idRegistro"
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn btn-danger">Desasignar turno</button>
       </form>
 
       <div class="modal-footer"></div>
@@ -480,7 +540,8 @@ message in messages %}
         {
           title: "Desasignar",
           hozAlign: "center",
-          visible: tienePermiso("registro.editar") && canEdit ? true : false,
+          visible:
+            tienePermiso("registro.desasignarTurno") && canEdit ? true : false,
           frozen: true,
 
           formatter: () => {
@@ -488,7 +549,7 @@ message in messages %}
               return "";
             }
 
-            if (!tienePermiso("registro.editar")) {
+            if (!tienePermiso("registro.desasignarTurno")) {
               return "";
             }
 
@@ -497,15 +558,27 @@ message in messages %}
           cellClick: async function (e, cell) {
             let row = cell.getRow();
             let data = row.getData();
+            let resp;
+            let tieneMotivo = false;
 
             if (!canEdit) return;
-            if (!tienePermiso("registro.editar")) return;
+            if (!tienePermiso("registro.desasignarTurno")) return;
 
             /* if (!data.idRegistro) {
               row.delete();
               return;
-            } */
+              } */
             try {
+              if (tieneRol("Control de RRHH")) {
+                tieneMotivo = mostrarMotivoDesasignacionModal(data.idRegistro);
+              }
+
+              if (!tieneRol("Control de RRHH")) {
+                tieneMotivo = true;
+              }
+
+              if (!tieneMotivo) return;
+
               const resp = await apiFetch(
                 `/json/registro/update_registro_to_nulls/${data.idRegistro}`,
                 {
@@ -544,6 +617,7 @@ message in messages %}
               }
 
               recalcularTotales();
+              tieneMotivo = false;
             } catch (error) {
               console.error(error);
 
@@ -774,7 +848,10 @@ message in messages %}
             return lineas[cell.getValue()] || "—";
           },
 
-          editor: canEdit && tienePermiso("registro.editar") ? "list" : false,
+          editor:
+            canEdit && tienePermiso("registro.asignarLineaOProceso")
+              ? "list"
+              : false,
 
           editorParams: {
             values: lineas,
@@ -789,7 +866,10 @@ message in messages %}
             return procesos[cell.getValue()] || "—";
           },
 
-          editor: canEdit && tienePermiso("registro.editar") ? "list" : false,
+          editor:
+            canEdit && tienePermiso("registro.asignarLineaOProceso")
+              ? "list"
+              : false,
 
           editorParams: {
             values: procesos,
@@ -799,7 +879,8 @@ message in messages %}
         {
           title: "Hora Inicio",
           field: "hora_inicio",
-          editor: canEdit && tienePermiso("registro.editar") ? "time" : false,
+          editor:
+            canEdit && tienePermiso("registro.asignarHorario") ? "time" : false,
 
           formatterParams: {
             inputFormat: "HH:mm:ss",
@@ -813,7 +894,8 @@ message in messages %}
         {
           title: "Hora Fin",
           field: "hora_fin",
-          editor: canEdit && tienePermiso("registro.editar") ? "time" : false,
+          editor:
+            canEdit && tienePermiso("registro.asignarHorario") ? "time" : false,
           // formatter: "datetime",
           formatterParams: {
             inputFormat: "HH:mm:ss",
@@ -835,7 +917,10 @@ message in messages %}
           field: "aplica_transporte",
           hozAlign: "center",
           formatter: "tickCross",
-          editor: true,
+          editor:
+            canEdit && tienePermiso("registro.asignarTransporte")
+              ? true
+              : false,
 
           editable: function (cell) {
             const data = cell.getRow().getData();
@@ -850,7 +935,10 @@ message in messages %}
         {
           title: "Dirección",
           field: "observacion_transporte",
-          editor: "input",
+          editor:
+            canEdit && tienePermiso("registro.asignarTransporte")
+              ? "input"
+              : false,
 
           editable: function (cell) {
             const data = cell.getRow().getData();
@@ -1016,19 +1104,20 @@ message in messages %}
       }, 0);
     });
 
+    function horaASegundos(hora) {
+      const [h, m, s] = hora.split(":").map(Number);
+
+      return h * 3600 + m * 60 + s;
+    }
+
     function aplicaTransporteHorario(data) {
-      console.log(
-        data.hora_inicio &&
-          data.hora_fin &&
-          data.hora_inicio < "15:00:00" &&
-          data.hora_fin >= "21:00:00",
-      );
+      if (!data.hora_inicio || !data.hora_fin) {
+        return false;
+      }
 
       return (
-        data.hora_inicio &&
-        data.hora_fin &&
-        data.hora_inicio < "15:00:00" &&
-        data.hora_fin >= "21:00:00"
+        horaASegundos(data.hora_inicio) < horaASegundos("15:00:00") &&
+        horaASegundos(data.hora_fin) >= horaASegundos("21:00:00")
       );
     }
 
@@ -1231,6 +1320,10 @@ message in messages %}
     return window.USER_CONTEXT.permisos.includes(permiso);
   }
 
+  function tieneRol(rol) {
+    return window.USER_CONTEXT.roles.includes(rol);
+  }
+
   function puedeVerDepartamento(idDepartment) {
     if (window.USER_CONTEXT.scopeGlobal) {
       return true;
@@ -1399,8 +1492,6 @@ message in messages %}
 
     sessionModalVisible = true;
 
-    const usernameInput = document.getElementById("reauthUser");
-
     const modal = new bootstrap.Modal(
       document.getElementById("sessionExpiredModal"),
       {
@@ -1457,6 +1548,62 @@ message in messages %}
       console.error(error);
     }
   });
+
+  function mostrarMotivoDesasignacionModal(idRegistro) {
+    return new Promise((resolve) => {
+      const idRegistroInput = document.getElementById(
+        "idRegistroDesasignacion",
+      );
+      idRegistroInput.value = idRegistro;
+
+      const modal = new bootstrap.Modal(
+        document.getElementById("desasignacionModal"),
+        {
+          backdrop: "static",
+          keyboard: false,
+        },
+      );
+
+      modal.show();
+
+      const form = document.getElementById("desasignacionForm");
+
+      const submitHandler = async (e) => {
+        e.preventDefault();
+
+        const idMotivo = document.getElementById("idMotivo").value;
+
+        const response = await fetch(
+          "/json/registro_motivo_desasignacion/createRegistro_registro_motivo_desasignacion",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              idRegistro,
+              idMotivo,
+            }),
+          },
+        );
+
+        const resp = await response.json();
+
+        if (!resp.success) {
+          alert("No se pudo registrar el motivo");
+          return;
+        }
+
+        form.removeEventListener("submit", submitHandler);
+
+        modal.hide();
+
+        resolve(true);
+      };
+
+      form.addEventListener("submit", submitHandler);
+    });
+  }
 </script>
 
 {% endblock %}
