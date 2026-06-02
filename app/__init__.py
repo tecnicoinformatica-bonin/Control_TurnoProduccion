@@ -19,6 +19,7 @@ from app.routes.permiso.permiso_routes_api import permiso_api_bp
 from app.routes.proceso.proceso_routes_api import proceso_api_bp
 from app.routes.programacion.programacion_routes_api import programacion_api_bp
 from app.routes.registro.registro_routes_api import registro_api_bp
+from app.routes.registro_motivo_desasignacion.registro_motivo_desasignacion_routes_api import registro_motivo_desasignacion_api_bp
 from app.routes.rol.rol_routes_api import rol_api_bp
 from app.routes.rol_permiso.rol_permiso_routes_api import rol_permiso_api_bp
 from app.routes.rol_ruta.rol_ruta_routes_api import rol_ruta_api_bp
@@ -38,6 +39,7 @@ from app.routes.permiso.permiso_routes_templates import permiso_template_bp
 from app.routes.proceso.proceso_routes_templates import proceso_template_bp
 from app.routes.programacion.programacion_routes_templates import programacion_template_bp
 from app.routes.registro.registro_routes_templates import registro_template_bp
+from app.routes.registro_motivo_desasignacion.registro_motivo_desasignacion_routes_templates import registro_motivo_desasignacion_template_bp
 from app.routes.rol.rol_routes_templates import rol_template_bp
 from app.routes.rol_permiso.rol_permiso_routes_templates import rol_permiso_template_bp
 from app.routes.rol_ruta.rol_ruta_routes_templates import rol_ruta_template_bp
@@ -58,6 +60,7 @@ from app.routes.permiso.permiso_routes_web import permiso_web_bp
 from app.routes.proceso.proceso_routes_web import proceso_web_bp
 from app.routes.programacion.programacion_routes_web import programacion_web_bp
 from app.routes.registro.registro_routes_web import registro_web_bp
+from app.routes.registro_motivo_desasignacion.registro_motivo_desasignacion_routes_web import registro_motivo_desasignacion_web_bp
 from app.routes.rol.rol_routes_web import rol_web_bp
 from app.routes.rol_permiso.rol_permiso_routes_web import rol_permiso_web_bp
 from app.routes.rol_ruta.rol_ruta_routes_web import rol_ruta_web_bp
@@ -76,6 +79,7 @@ from app.routes.permiso.permiso_routes_json import permiso_json_bp
 from app.routes.proceso.proceso_routes_json import proceso_json_bp
 from app.routes.programacion.programacion_routes_json import programacion_json_bp
 from app.routes.registro.registro_routes_json import registro_json_bp
+from app.routes.registro_motivo_desasignacion.registro_motivo_desasignacion_routes_json import registro_motivo_desasignacion_json_bp
 from app.routes.reports.reports_routes_json import reports_json_bp
 from app.routes.usuario.usuario_routes_json import usuario_json_bp
 
@@ -154,6 +158,7 @@ def create_app():
     app.register_blueprint(proceso_api_bp, url_prefix="/api/proceso")
     app.register_blueprint(programacion_api_bp, url_prefix="/api/programacion")
     app.register_blueprint(registro_api_bp, url_prefix="/api/registro")
+    app.register_blueprint(registro_motivo_desasignacion_api_bp, url_prefix="/api/registro_motivo_desasignacion")
     app.register_blueprint(rol_api_bp, url_prefix="/api/rol")
     app.register_blueprint(rol_permiso_api_bp, url_prefix="/api/rol_permiso")
     app.register_blueprint(rol_ruta_api_bp, url_prefix="/api/rol_ruta")
@@ -173,6 +178,7 @@ def create_app():
     app.register_blueprint(proceso_template_bp, url_prefix="/template/proceso")
     app.register_blueprint(programacion_template_bp, url_prefix="/template/programacion")
     app.register_blueprint(registro_template_bp, url_prefix="/template/registro")
+    app.register_blueprint(registro_motivo_desasignacion_template_bp, url_prefix="/template/registro_motivo_desasignacion")
     app.register_blueprint(rol_template_bp, url_prefix="/template/rol")
     app.register_blueprint(rol_permiso_template_bp, url_prefix="/template/rol_permiso")
     app.register_blueprint(rol_ruta_template_bp, url_prefix="/template/rol_ruta")
@@ -193,6 +199,7 @@ def create_app():
     app.register_blueprint(proceso_web_bp, url_prefix="/web/proceso")
     app.register_blueprint(programacion_web_bp, url_prefix="/web/programacion")
     app.register_blueprint(registro_web_bp, url_prefix="/web/registro")
+    app.register_blueprint(registro_motivo_desasignacion_web_bp, url_prefix="/web/registro_motivo_desasignacion")
     app.register_blueprint(rol_web_bp, url_prefix="/web/rol")
     app.register_blueprint(rol_permiso_web_bp, url_prefix="/web/rol_permiso")
     app.register_blueprint(rol_ruta_web_bp, url_prefix="/web/rol_ruta")
@@ -211,6 +218,7 @@ def create_app():
     app.register_blueprint(programacion_json_bp, url_prefix="/json/programacion")
     app.register_blueprint(proceso_json_bp, url_prefix="/json/proceso")
     app.register_blueprint(registro_json_bp, url_prefix="/json/registro")
+    app.register_blueprint(registro_motivo_desasignacion_json_bp, url_prefix="/json/registro_motivo_desasignacion")
     app.register_blueprint(reports_json_bp, url_prefix="/json/reports")
     app.register_blueprint(usuario_json_bp, url_prefix="/json/usuario")
 
