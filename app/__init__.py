@@ -14,6 +14,7 @@ from app.routes.centro_de_costo.centro_de_costo_routes_api import centro_de_cost
 from app.routes.departamento.departamento_routes_api import departamento_api_bp
 from app.routes.empleado.empleado_routes_api import empleado_api_bp
 from app.routes.linea.linea_routes_api import linea_api_bp
+from app.routes.motivo_desasignacion.motivo_desasignacion_routes_api import motivo_desasignacion_api_bp
 from app.routes.permiso.permiso_routes_api import permiso_api_bp
 from app.routes.proceso.proceso_routes_api import proceso_api_bp
 from app.routes.programacion.programacion_routes_api import programacion_api_bp
@@ -32,6 +33,7 @@ from app.routes.centro_de_costo.centro_de_costo_routes_templates import centro_d
 from app.routes.departamento.departamento_routes_templates import departamento_template_bp
 from app.routes.empleado.empleado_routes_templates import empleado_template_bp
 from app.routes.linea.linea_routes_templates import linea_template_bp
+from app.routes.motivo_desasignacion.motivo_desasignacion_routes_templates import motivo_desasignacion_template_bp
 from app.routes.permiso.permiso_routes_templates import permiso_template_bp
 from app.routes.proceso.proceso_routes_templates import proceso_template_bp
 from app.routes.programacion.programacion_routes_templates import programacion_template_bp
@@ -51,6 +53,7 @@ from app.routes.centro_de_costo.centro_de_costo_routes_web import centro_de_cost
 from app.routes.departamento.departamento_routes_web import departamento_web_bp
 from app.routes.empleado.empleado_routes_web import empleado_web_bp
 from app.routes.linea.linea_routes_web import linea_web_bp
+from app.routes.motivo_desasignacion.motivo_desasignacion_routes_web import motivo_desasignacion_web_bp
 from app.routes.permiso.permiso_routes_web import permiso_web_bp
 from app.routes.proceso.proceso_routes_web import proceso_web_bp
 from app.routes.programacion.programacion_routes_web import programacion_web_bp
@@ -68,6 +71,7 @@ from app.routes.usuario_rol.usuario_rol_routes_web import usuario_rol_web_bp
 from app.routes.centro_de_costo.centro_de_costo_routes_json import centro_de_costo_json_bp
 from app.routes.empleado.empleado_routes_json import empleado_json_bp
 from app.routes.linea.linea_routes_json import linea_json_bp
+from app.routes.motivo_desasignacion.motivo_desasignacion_routes_json import motivo_desasignacion_json_bp
 from app.routes.permiso.permiso_routes_json import permiso_json_bp
 from app.routes.proceso.proceso_routes_json import proceso_json_bp
 from app.routes.programacion.programacion_routes_json import programacion_json_bp
@@ -145,6 +149,7 @@ def create_app():
     app.register_blueprint(departamento_api_bp, url_prefix="/api/departamento")
     app.register_blueprint(empleado_api_bp, url_prefix="/api/empleado")
     app.register_blueprint(linea_api_bp, url_prefix="/api/linea")
+    app.register_blueprint(motivo_desasignacion_api_bp, url_prefix="/api/motivo_desasignacion")
     app.register_blueprint(permiso_api_bp, url_prefix="/api/permiso")
     app.register_blueprint(proceso_api_bp, url_prefix="/api/proceso")
     app.register_blueprint(programacion_api_bp, url_prefix="/api/programacion")
@@ -163,6 +168,7 @@ def create_app():
     app.register_blueprint(departamento_template_bp, url_prefix="/template/departamento")
     app.register_blueprint(empleado_template_bp, url_prefix="/template/empleado")
     app.register_blueprint(linea_template_bp, url_prefix="/template/linea")
+    app.register_blueprint(motivo_desasignacion_template_bp, url_prefix="/template/motivo_desasignacion")
     app.register_blueprint(permiso_template_bp, url_prefix="/template/permiso")
     app.register_blueprint(proceso_template_bp, url_prefix="/template/proceso")
     app.register_blueprint(programacion_template_bp, url_prefix="/template/programacion")
@@ -182,6 +188,7 @@ def create_app():
     app.register_blueprint(departamento_web_bp, url_prefix="/web/departamento")
     app.register_blueprint(empleado_web_bp, url_prefix="/web/empleado")
     app.register_blueprint(linea_web_bp, url_prefix="/web/linea")
+    app.register_blueprint(motivo_desasignacion_web_bp, url_prefix="/web/motivo_desasignacion")
     app.register_blueprint(permiso_web_bp, url_prefix="/web/permiso")
     app.register_blueprint(proceso_web_bp, url_prefix="/web/proceso")
     app.register_blueprint(programacion_web_bp, url_prefix="/web/programacion")
@@ -199,6 +206,7 @@ def create_app():
     app.register_blueprint(centro_de_costo_json_bp, url_prefix="/json/centro_de_costo")
     app.register_blueprint(empleado_json_bp, url_prefix="/json/empleado")
     app.register_blueprint(linea_json_bp, url_prefix="/json/linea")
+    app.register_blueprint(motivo_desasignacion_json_bp, url_prefix="/json/motivo_desasignacion")
     app.register_blueprint(permiso_json_bp, url_prefix="/json/permiso")
     app.register_blueprint(programacion_json_bp, url_prefix="/json/programacion")
     app.register_blueprint(proceso_json_bp, url_prefix="/json/proceso")
