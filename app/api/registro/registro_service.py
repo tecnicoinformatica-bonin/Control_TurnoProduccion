@@ -9,6 +9,7 @@ from app.api.registro.registro_repository import RegistroRepository
 
 import traceback
 from app.api.registro_log.registro_log_service import Registro_log_Service
+from app.api.usuario.usuario_service import Usuario_Service
 from app.extensions.beneficios import calcular_beneficios
 from app.extensions.logs import compare_values_in_logs
 
@@ -96,7 +97,7 @@ class Registro_Service():
                     "idCentro": row[12],
                     "badgeNumber": row[13],
                     "cena_con_costo": row[14],
-                    "ultima_modificacion": None if row[15] == None else str(row[15].isoformat()).replace("T", " "),
+                    "ultima_modificacion": str(row[15]) if row[15] else "",
                     "usuario_modificacion": row[16],
                 }
                 if(
@@ -164,12 +165,24 @@ class Registro_Service():
                 dataLinea = Linea_Service.getLineaById_service(db, registro["idLinea"])
                 dataProceso = Proceso_Service.getProcesoById_service(db, registro["idProceso"])
                 dataCentro = Centro_de_costo_Service.getCentros_de_costoById_service(db, registro["idCentro"])
+                dataModificacion = RegistroRepository.getRegistroLastModification(db, registro["idProgramacion"])
+                
+                if registro["usuario_modificacion"]:
+                    dataUsuario = Usuario_Service.getUsuarioById_service(db, registro["usuario_modificacion"])
+                else:
+                    dataUsuario = {
+                        "nombre": None
+                    }
                 
                 registro["nombreEmpleado"] = f"{dataEmpleado["firstName"]} {dataEmpleado["secondName"] or ""} {dataEmpleado["lastName"]} {dataEmpleado["lastName2"] or ""}"
                 registro["nombreLinea"] = dataLinea["nameLinea"]
                 registro["nombreProceso"] = dataProceso["proceso"]
                 registro["nombreCentro"] = dataCentro["nombreCentro"]
+                registro["nombre_usuario_modificacion"] = dataUsuario["nombre"] if dataUsuario["nombre"] is not None else "-----"
+                registro["ultima_modificacion_programacion"] = dataModificacion["ultima_modificacion"]
+                registro["nombreUsuarioModificacion_programacion"] = dataModificacion["nombreUsuarioModificacion"]
 
+                print (f"{registro["nombre_usuario_modificacion"]} \n")
                 registros.append(registro)
                 # print("---------------------------")
                 # print(f"idRegistro: {registro["idRegistro"]}")
@@ -192,6 +205,7 @@ class Registro_Service():
                 # print(f"nombreLinea: {registro["nombreLinea"]}")
                 # print(f"nombreProceso: {registro["nombreProceso"]}")
                 # print(f"nombreCentro: {registro["nombreCentro"]}")
+                # print(f"nombreUsuarioModificaion: {registro["nombreUsuarioModificacion"]}")
             return registros
 
         except Exception as ex:

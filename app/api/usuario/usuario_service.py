@@ -29,6 +29,23 @@ class Usuario_Service():
          return {"error": f"No se puede listar los usuarios. {ex}"}
       
    @staticmethod
+   def getUsuarioById_service(db, idUsuario):
+      try:
+         data = UsuarioRepository.getUsuarioById(db, idUsuario)
+         usuario =  {
+            "idUsuario": data["idUsuario"],
+            "username": data["username"],
+            "nombre": data["nombre"],
+            "activo": data["activo"],
+            "scope_departamentos_global": data["scope_departamentos_global"],
+            "scope_permisos_global": data["scope_permisos_global"],
+         }
+
+         return usuario
+      except Exception as ex:
+         return {"error": f"No se puede listar los usuarios. {ex}"}
+      
+   @staticmethod
    def createUsuario_service(db, data):
       try:
          username = data.get("username")

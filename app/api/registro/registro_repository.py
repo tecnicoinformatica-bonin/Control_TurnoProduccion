@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import MySQLdb
 from flask_login import current_user
 import pytz
 
@@ -46,6 +47,37 @@ class RegistroRepository:
 
             cursor.execute(query, (idProgramacion,))
             registros = cursor.fetchall()
+
+            return registros
+        
+        except Exception as ex:
+            return {"error": f"No se puede encontrar por idProgramacion en repositorio: {str(ex)}"}
+
+        finally:
+            if cursor:
+                cursor.close()
+    
+    @staticmethod
+    def getRegistroLastModification(db, idProgramacion):
+        cursor = None
+
+        try:
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT r.ultima_modificacion, u.nombre AS nombreUsuarioModificacion
+            FROM turnos_registro r
+            LEFT JOIN turnos_usuario u
+                ON r.usuario_modificacion = u.idUsuario
+            WHERE 
+                r.ultima_modificacion IS NOT NULL 
+                AND r.idProgramacion = %s
+            ORDER BY r.ultima_modificacion DESC
+            LIMIT 1;
+            """
+
+            cursor.execute(query, (idProgramacion,))
+            registros = cursor.fetchone()
 
             return registros
         

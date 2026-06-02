@@ -25,9 +25,9 @@ def generar_reporte_programacion(programacion, detalles):
     # DETALLE EMPLEADOS
     # =========================================================
 
-    fila_inicio = 11
+    fila_inicio = 13
     fila_contador = fila_inicio
-    fila_plantilla = 11
+    fila_plantilla = 13
 
     contador = 1
 
@@ -67,16 +67,22 @@ def generar_reporte_programacion(programacion, detalles):
         
         ws[f"N{fila_contador}"] = detalle["observacion_transporte"] if detalle["observacion_transporte"] else "----"
 
+        ws[f"Q{fila_contador}"] = detalle["ultima_modificacion"] if detalle["ultima_modificacion"] else "----"
+
+        ws[f"R{fila_contador}"] = detalle["nombre_usuario_modificacion"] if detalle["nombre_usuario_modificacion"] else "----"
+
         fila_contador += 1
         contador += 1
 
     ws[f"J{fila_contador}"] = f'=COUNTIF(J{fila_inicio}:J{fila_contador - 1},"SÍ")'
     ws[f"K{fila_contador}"] = f'=COUNTIF(K{fila_inicio}:K{fila_contador - 1},"SÍ")'
     ws[f"L{fila_contador}"] = f'=COUNTIF(L{fila_inicio}:L{fila_contador - 1},"SÍ")'
+    ws[f"M{fila_contador}"] = f'=COUNTIF(M{fila_inicio}:M{fila_contador - 1},"SÍ")'
 
     ws["E6"] = f"=K{fila_contador}"
     ws["E7"] = f"=L{fila_contador}"
     ws["E8"] = f"=J{fila_contador}"
+    ws["E9"] = f"=M{fila_contador}"
 
     # =========================================================
     # ANCHO COLUMNAS
@@ -98,6 +104,8 @@ def generar_reporte_programacion(programacion, detalles):
     ws.column_dimensions["N"].width = 45
     ws.column_dimensions["O"].width = 20
     ws.column_dimensions["P"].width = 20
+    ws.column_dimensions["Q"].width = 25
+    ws.column_dimensions["R"].width = 25
 
     # =========================================================
     # PIE DE REPORTE
@@ -113,6 +121,14 @@ def generar_reporte_programacion(programacion, detalles):
     ws[f"N{fila_footer + 1}"] = "Por:"
 
     ws[f"O{fila_footer + 1}"] = current_user.nombre
+    
+    ws[f"N{fila_footer + 2}"] = "Última modificación:"
+
+    ws[f"O{fila_footer + 2}"] = str(detalle["ultima_modificacion_programacion"])
+    
+    ws[f"N{fila_footer + 3}"] = "Por usuario:"
+
+    ws[f"O{fila_footer + 3}"] = detalle["nombreUsuarioModificacion_programacion"]
 
     # =========================================================
     # EXPORTAR EN MEMORIA
