@@ -63,9 +63,13 @@
   </body>
   <script>
     window.USER_CONTEXT = {
-        permisos: {{ current_user.permisos | tojson }},
-        departamentosUsuario: {{ current_user.departamentos | tojson }},
-        scopeGlobal: {{ current_user.scope_departamentos_global | tojson }}
+        permisos: JSON.parse('{{ current_user.permisos | tojson }}'),
+        roles: JSON.parse('{{ current_user.roles | tojson }}'),
+        departamentosUsuario: JSON.parse('{{ current_user.departamentos | tojson }}'),
+        scopeGlobal: JSON.parse('{{ current_user.scope_departamentos_global | tojson }}')
     }
+
+    console.log(window.USER_CONTEXT.roles);
+    console.log(window.USER_CONTEXT.permisos);
   </script>
 </html>
