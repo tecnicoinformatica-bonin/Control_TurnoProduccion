@@ -71,7 +71,8 @@ Bonin {% endblock %} {% block content %}
 
       const data = await response.json();
 
-      alert(data.message);
+      if (data.success === true) alert("Importación exitosa");
+      else alert(data.message);
     });
 </script>
 {% endblock %}
