@@ -493,8 +493,12 @@ message in messages %}
         usuariosResponse,
       ] = await Promise.all([
         fetch("/json/empleado/get_empleados"),
-        fetch("/json/linea/get_lineas"),
-        fetch("/json/proceso/get_procesos"),
+        fetch(
+          `/json/linea/get_lineas_by_department/${idDepartmentProgramacion}`,
+        ),
+        fetch(
+          `/json/proceso/get_procesos_by_department/${idDepartmentProgramacion}`,
+        ),
         fetch("/json/centro_de_costo/get_centros_de_costo"),
         fetch("/json/usuario/get_usuarios"),
       ]);
@@ -674,6 +678,20 @@ message in messages %}
                 return "✅ Confirmado";
             }
           },
+
+          headerFilter: "list",
+
+          headerFilterParams: {
+            values: {
+              "": "Todos",
+              draft: "Borrador",
+              editing: "Editando",
+              error: "Error",
+              unassigned: "Sin asignación",
+              saved: "Guardado",
+              saving: "Guardando",
+            },
+          },
         },
         {
           title: "Guardar",
@@ -797,6 +815,8 @@ message in messages %}
           editor: false,
           visible: true,
           frozen: true,
+
+          headerFilter: "input",
         },
         {
           title: "Badge",
@@ -804,11 +824,14 @@ message in messages %}
           editor: false,
           visible: true,
           frozen: true,
+
+          headerFilter: "input",
         },
         {
           title: "Empleado",
           field: "idEmpleado",
           frozen: true,
+          editor: false,
 
           formatter: function (cell) {
             return (
@@ -817,37 +840,46 @@ message in messages %}
             );
           },
 
-          // editor: canEdit && tienePermiso("registro.editar") ? "list" : false,
-          editor: false,
-
           editorParams: {
             values: empleados,
             autocomplete: true,
             // clearable: true,
           },
+
+          sorter: function (a, b) {
+            return (empleados[a] || "").localeCompare(empleados[b] || "");
+          },
+
+          headerFilter: "input",
+
+          headerFilterFunc: function (filterValue, cellValue) {
+            return (empleados[cellValue] || "")
+              .toLowerCase()
+              .includes(filterValue.toLowerCase());
+          },
         },
         {
           title: "Centro de costo",
           field: "idCentro",
+          editor: false,
+          headerFilter: "input",
+          editorParams: {
+            values: centrosDeCosto,
+          },
 
           formatter: function (cell) {
             return centrosDeCosto[cell.getValue()] || "—";
           },
 
-          editor: false,
-
-          editorParams: {
-            values: centrosDeCosto,
+          headerFilterFunc: function (filterValue, cellValue) {
+            return (centrosDeCosto[cellValue] || "")
+              .toLowerCase()
+              .includes(filterValue.toLowerCase());
           },
         },
         {
           title: "Línea",
           field: "idLinea",
-
-          formatter: function (cell) {
-            return lineas[cell.getValue()] || "—";
-          },
-
           editor:
             canEdit && tienePermiso("registro.asignarLineaOProceso")
               ? "list"
@@ -857,15 +889,22 @@ message in messages %}
             values: lineas,
             autocomplete: true,
           },
+
+          formatter: function (cell) {
+            return lineas[cell.getValue()] || "—";
+          },
+
+          headerFilter: "input",
+
+          headerFilterFunc: function (filterValue, cellValue) {
+            return (lineas[cellValue] || "")
+              .toLowerCase()
+              .includes(filterValue.toLowerCase());
+          },
         },
         {
           title: "Proceso",
           field: "idProceso",
-
-          formatter: function (cell) {
-            return procesos[cell.getValue()] || "—";
-          },
-
           editor:
             canEdit && tienePermiso("registro.asignarLineaOProceso")
               ? "list"
@@ -874,6 +913,18 @@ message in messages %}
           editorParams: {
             values: procesos,
             autocomplete: true,
+          },
+
+          formatter: function (cell) {
+            return procesos[cell.getValue()] || "—";
+          },
+
+          headerFilter: "input",
+
+          headerFilterFunc: function (filterValue, cellValue) {
+            return (procesos[cellValue] || "")
+              .toLowerCase()
+              .includes(filterValue.toLowerCase());
           },
         },
         {
@@ -890,6 +941,7 @@ message in messages %}
           editorParams: {
             format: "HH:mm:ss",
           },
+          headerFilter: "input",
         },
         {
           title: "Hora Fin",
@@ -905,6 +957,8 @@ message in messages %}
           editorParams: {
             format: "HH:mm:ss",
           },
+
+          headerFilter: "input",
         },
         {
           title: "Fecha",
@@ -930,6 +984,22 @@ message in messages %}
               tienePermiso("registro.editar") &&
               aplicaTransporteHorario(data)
             );
+          },
+
+          headerFilter: "list",
+
+          headerFilterParams: {
+            values: {
+              "": "Todos",
+              1: "Sí",
+              0: "No",
+            },
+          },
+
+          headerFilterFunc: function (value, rowValue) {
+            if (value === "") return true;
+
+            return Number(rowValue) === Number(value);
           },
         },
         {
@@ -966,10 +1036,26 @@ message in messages %}
           field: "aplica_cena",
           hozAlign: "center",
           editor: false,
+
           formatter: function (cell) {
             return cell.getValue()
               ? "<span style='color:lime;'>&check;</span>"
               : "<span style='color:red;'>&cross;</span>";
+          },
+          headerFilter: "list",
+
+          headerFilterParams: {
+            values: {
+              "": "Todos",
+              1: "Sí",
+              0: "No",
+            },
+          },
+
+          headerFilterFunc: function (value, rowValue) {
+            if (value === "") return true;
+
+            return Number(rowValue) === Number(value);
           },
         },
         {
@@ -977,10 +1063,27 @@ message in messages %}
           field: "cena_con_costo",
           hozAlign: "center",
           editor: false,
+
           formatter: function (cell) {
             return cell.getValue()
               ? "<span style='color:lime;'>&check;</span>"
               : "<span style='color:red;'>&cross;</span>";
+          },
+
+          headerFilter: "list",
+
+          headerFilterParams: {
+            values: {
+              "": "Todos",
+              1: "Sí",
+              0: "No",
+            },
+          },
+
+          headerFilterFunc: function (value, rowValue) {
+            if (value === "") return true;
+
+            return Number(rowValue) === Number(value);
           },
         },
         {
@@ -997,13 +1100,20 @@ message in messages %}
           title: "Usuario que modificó",
           field: "usuario_modificacion",
           editor: false,
+          editorParams: {
+            values: usuarios,
+          },
 
           formatter: function (cell) {
             return usuarios[cell.getValue()] || "—";
           },
 
-          editorParams: {
-            values: usuarios,
+          headerFilter: "input",
+
+          headerFilterFunc: function (filterValue, cellValue) {
+            return (usuarios[cellValue] || "")
+              .toLowerCase()
+              .includes(filterValue.toLowerCase());
           },
         },
       ],
