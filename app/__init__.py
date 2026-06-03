@@ -35,6 +35,7 @@ from app.routes.centro_de_costo.centro_de_costo_routes_templates import centro_d
 from app.routes.departamento.departamento_routes_templates import departamento_template_bp
 from app.routes.empleado.empleado_routes_templates import empleado_template_bp
 from app.routes.horario.horario_routes_templates import horario_template_bp
+from app.routes.importacion.importacion_routes_templates import importacion_template_bp
 from app.routes.linea.linea_routes_templates import linea_template_bp
 from app.routes.motivo_desasignacion.motivo_desasignacion_routes_templates import motivo_desasignacion_template_bp
 from app.routes.permiso.permiso_routes_templates import permiso_template_bp
@@ -77,6 +78,7 @@ from app.routes.usuario_rol.usuario_rol_routes_web import usuario_rol_web_bp
 from app.routes.centro_de_costo.centro_de_costo_routes_json import centro_de_costo_json_bp
 from app.routes.empleado.empleado_routes_json import empleado_json_bp
 from app.routes.horario.horario_routes_json import horario_json_bp
+from app.routes.importacion.importacion_routes_json import importacion_json_bp
 from app.routes.linea.linea_routes_json import linea_json_bp
 from app.routes.motivo_desasignacion.motivo_desasignacion_routes_json import motivo_desasignacion_json_bp
 from app.routes.permiso.permiso_routes_json import permiso_json_bp
@@ -178,6 +180,7 @@ def create_app():
     app.register_blueprint(departamento_template_bp, url_prefix="/template/departamento")
     app.register_blueprint(empleado_template_bp, url_prefix="/template/empleado")
     app.register_blueprint(horario_template_bp, url_prefix="/template/horario")
+    app.register_blueprint(importacion_template_bp, url_prefix="/template/importacion")
     app.register_blueprint(linea_template_bp, url_prefix="/template/linea")
     app.register_blueprint(motivo_desasignacion_template_bp, url_prefix="/template/motivo_desasignacion")
     app.register_blueprint(permiso_template_bp, url_prefix="/template/permiso")
@@ -220,6 +223,7 @@ def create_app():
     app.register_blueprint(centro_de_costo_json_bp, url_prefix="/json/centro_de_costo")
     app.register_blueprint(empleado_json_bp, url_prefix="/json/empleado")
     app.register_blueprint(horario_json_bp, url_prefix="/json/horario")
+    app.register_blueprint(importacion_json_bp, url_prefix="/json/importacion")
     app.register_blueprint(linea_json_bp, url_prefix="/json/linea")
     app.register_blueprint(motivo_desasignacion_json_bp, url_prefix="/json/motivo_desasignacion")
     app.register_blueprint(permiso_json_bp, url_prefix="/json/permiso")
