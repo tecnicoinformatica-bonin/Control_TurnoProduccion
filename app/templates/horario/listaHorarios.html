@@ -1,0 +1,264 @@
+{% extends "layout/base.html" %} {% block title %} Horarios - Turnos Bonin {%
+endblock %} {% block content %}
+
+<!-- form card cc payment -->
+<div class="card card-outline-secondary bg-dark text-light">
+  <div class="card-body">
+    <div class="d-flex justify-content-between">
+      <h3>Horarios</h3>
+      <form class="d-flex" role="search" onsubmit="return false;">
+        <input
+          class="form-control me-2"
+          type="search"
+          placeholder="Nombre del horario"
+          id="busqueda"
+        />
+        <button class="btn btn-outline-primary" type="submit">Buscar</button>
+      </form>
+    </div>
+    <hr />
+
+    {% with messages = get_flashed_messages(with_categories=true) %} {% for
+    category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+      <strong>{{ message }}</strong>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% endfor %} {% endwith %}
+
+    <table class="table table-dark table-striped">
+      <thead>
+        <tr>
+          <th scope="col">
+            <p class="title_column" onclick="ordenarTabla(0, 'numero')">
+              ID
+              <span class="arrow" data-type="darr" data-column="0"
+                ><strong>&darr;</strong></span
+              ><span class="arrow" data-type="uarr" data-column="0"
+                >&uarr;</span
+              >
+            </p>
+          </th>
+          <th scope="col">
+            <p class="title_column" onclick="ordenarTabla(1)">
+              Descripción
+              <span class="arrow" data-type="darr" data-column="1">&darr;</span
+              ><span class="arrow arrow-active" data-type="uarr" data-column="1"
+                >&uarr;</span
+              >
+            </p>
+          </th>
+          <th scope="col">
+            <p class="title_column" onclick="ordenarTabla(2)">
+              Hora de inicio
+              <span class="arrow" data-type="darr" data-column="2">&darr;</span
+              ><span class="arrow" data-type="uarr" data-column="2"
+                >&uarr;</span
+              >
+            </p>
+          </th>
+          <th scope="col">
+            <p class="title_column" onclick="ordenarTabla(3)">
+              Hora de final
+              <span class="arrow" data-type="darr" data-column="3">&darr;</span
+              ><span class="arrow" data-type="uarr" data-column="3"
+                >&uarr;</span
+              >
+            </p>
+          </th>
+          <th scope="col">
+            <p>Acciones</p>
+          </th>
+        </tr>
+      </thead>
+      <tbody class="tbody-list">
+        {% for h in horarios %}
+        <tr class="record tr-list">
+          <th scope="row">{{ h.idHorario }}</th>
+          <td class="record-name">{{ h.descripcionHorario }}</td>
+          <td>{{ h.hora_inicio }}</td>
+          <td>{{ h.hora_fin }}</td>
+          <td>
+            <div class="d-flex justify-content-between gap-2">
+              <button
+                type="button"
+                class="btn btn-warning"
+                data-bs-toggle="modal"
+                data-bs-target="#editModal{{ h.idHorario }}"
+              >
+                <img
+                  src="/static/img/edit-icon.png"
+                  height="15px"
+                  width="15px"
+                />
+                <strong>Editar</strong>
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-danger"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteModal{{ h.idHorario }}"
+              >
+                <img
+                  src="/static/img/delete-icon.png"
+                  height="15px"
+                  width="15px"
+                />
+                <strong>Eliminar</strong>
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% for h in horarios %}
+<!-- Edit Modal -->
+<div
+  class="modal fade"
+  id="editModal{{ h.idHorario }}"
+  tabindex="-1"
+  aria-labelledby="modalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalLabel">Editar horario</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form
+          id="formEdit"
+          class="form"
+          role="form"
+          action="/web/horario/editarHorario_web"
+          method="POST"
+        >
+          <div hidden class="form-group">
+            <label for="idHorario">ID del horario</label>
+            <input
+              type="number"
+              class="form-control"
+              id="idHorario"
+              name="idHorario"
+              title="ID del horario"
+              min="1"
+              required
+              value="{{ h.idHorario }}"
+              readonly
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="descripcionHorario">Descripción</label>
+            <input
+              type="text"
+              class="form-control"
+              id="descripcionHorario"
+              name="descripcionHorario"
+              title="Descripción"
+              required
+              value="{{ h.descripcionHorario }}"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="hora_inicio">Hora de inicio</label>
+            <input
+              type="time"
+              class="form-control"
+              id="hora_inicio"
+              name="hora_inicio"
+              title="Hora de inicio"
+              required
+              value="{{ h.hora_inicio }}"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="hora_fin">Hora de final</label>
+            <input
+              type="time"
+              class="form-control"
+              id="hora_fin"
+              name="hora_fin"
+              title="Hora de final"
+              required
+              value="{{ h.hora_fin }}"
+            />
+          </div>
+          <hr />
+          <div class="d-flex justify-content-end">
+            <button
+              type="button"
+              class="btn btn-secondary btn-lg m-1"
+              data-bs-dismiss="modal"
+            >
+              Cerrar
+            </button>
+            <button type="submit" class="btn btn-success btn-lg btn-block m-1">
+              Confirmar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete modal -->
+<div class="modal fade" id="deleteModal{{ h.idHorario }}" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">
+          Eliminar horario
+        </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p>¿Seguro que quiere eliminar el registro {{ h.idHorario }}?</p>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary btn-lg"
+          data-bs-dismiss="modal"
+        >
+          Cerrar
+        </button>
+        <form action="/web/horario/eliminarHorario_web" method="POST">
+          <input
+            type="number"
+            value="{{h.idHorario}}"
+            name="idHorario"
+            hidden
+          />
+          <button type="submit" class="btn btn-danger btn-lg">Eliminar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %} {% endblock %}
