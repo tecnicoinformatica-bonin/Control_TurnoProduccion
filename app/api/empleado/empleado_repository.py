@@ -73,6 +73,35 @@ class EmpleadoRepository:
         finally:
             if cursor:
                 cursor.close()
+    
+    @staticmethod
+    def get_full_name_empleados(db):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT CONCAT_WS(' ',
+                firstName,
+                secondName,
+                lastName,
+                lastName2
+            ) AS nombre_completo
+            FROM turnos_empleado;
+            """
+            cursor.execute(query)
+
+            empleados = cursor.fetchall()
+
+            return empleados
+        
+        except Exception as ex:
+            raise Exception ("No se pudo obtener nombres completos de empleados en el repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
 
     @staticmethod
     def getActiveEmpleadosByDepartment(db, idDepartment):

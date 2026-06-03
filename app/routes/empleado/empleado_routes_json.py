@@ -14,3 +14,12 @@ def get_empleados():
         return jsonify([]), 200
 
     return jsonify(data), 200
+
+@empleado_json_bp.route("/get_full_name_empleados", methods=["GET"])
+@login_required
+def get_full_name_empleados():
+    data = Empleado_Service.get_full_name_empleados_service(db)
+    if not data:
+        return jsonify([]), 200
+
+    return jsonify(data), 200
