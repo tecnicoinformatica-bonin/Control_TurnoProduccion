@@ -153,24 +153,106 @@ class Programacion_Service():
             return {"error": f"No se pudieron obtener las programaciones en el servicio: {str(ex)}"}
     
     @staticmethod
-    def getProgramacionesEnBorrador_service(db):
+    def getProgramacionesActivas_service(db):
         try:
-            data = ProgramacionRepository.getProgramacionesEnBorrador(db)
+            data = ProgramacionRepository.getProgramacionesActivas(db)
             programaciones = []
             for row in data:
+                fecha = row["fecha"].strftime("%Y-%m-%d")
                 programacion = {
-                    "idProgramacion": row[0], 
-                    "fecha": row[1], 
-                    "idDepartment": row[2],
-                    "elaborado_por": row[3], 
-                    "fecha_creacion": row[4], 
-                    "estado": row[5], 
-                    "fecha_cierre": row[6],
-                    "cerrado_por": row[7], 
-                    "fecha_reapertura": row[8],
-                    "reabierto_por": row[9],
-                    "motivo_reapertura": row[10],
-                    "verificado_por": row[11],
+                    "idProgramacion": row["idProgramacion"],
+                    "fecha": fecha,
+                    "idDepartment": row["idDepartment"],
+                    "elaborado_por": row["elaborado_por"],
+                    "fecha_creacion": row["fecha_creacion"],
+                    "estado": row["estado"],
+                    "fecha_cierre": row["fecha_cierre"],
+                    "cerrado_por": row["cerrado_por"],
+                    "fecha_reapertura": row["fecha_reapertura"],
+                    "reabierto_por": row["reabierto_por"],
+                    "motivo_reapertura": row["motivo_reapertura"],
+                    "verificado_por": row["verificado_por"],
+                }
+                programaciones.append(programacion)
+            return programaciones
+
+        except Exception as ex:
+            return {"error": f"No se pudieron obtener las programaciones en BORRADOR desde el servicio: {str(ex)}"}
+    
+    @staticmethod
+    def getProgramacionesActivasByIdDepartment_service(db, idDepartment):
+        try:
+            data = ProgramacionRepository.getProgramacionesActivasByIdDepartment(db, idDepartment)
+            programaciones = []
+            for row in data:
+                fecha = row["fecha"].strftime("%Y-%m-%d")
+                programacion = {
+                    "idProgramacion": row["idProgramacion"],
+                    "fecha": fecha,
+                    "idDepartment": row["idDepartment"],
+                    "elaborado_por": row["elaborado_por"],
+                    "fecha_creacion": row["fecha_creacion"],
+                    "estado": row["estado"],
+                    "fecha_cierre": row["fecha_cierre"],
+                    "cerrado_por": row["cerrado_por"],
+                    "fecha_reapertura": row["fecha_reapertura"],
+                    "reabierto_por": row["reabierto_por"],
+                    "motivo_reapertura": row["motivo_reapertura"],
+                    "verificado_por": row["verificado_por"],
+                }
+                programaciones.append(programacion)
+            return programaciones
+
+        except Exception as ex:
+            return {"error": f"No se pudieron obtener las programaciones en BORRADOR desde el servicio: {str(ex)}"}
+    
+    @staticmethod
+    def getProgramacionesCerradas_service(db):
+        try:
+            data = ProgramacionRepository.getProgramacionesCerradas(db)
+            programaciones = []
+            for row in data:
+                fecha = row["fecha"].strftime("%Y-%m-%d")
+                programacion = {
+                    "idProgramacion": row["idProgramacion"],
+                    "fecha": fecha,
+                    "idDepartment": row["idDepartment"],
+                    "elaborado_por": row["elaborado_por"],
+                    "fecha_creacion": row["fecha_creacion"],
+                    "estado": row["estado"],
+                    "fecha_cierre": row["fecha_cierre"],
+                    "cerrado_por": row["cerrado_por"],
+                    "fecha_reapertura": row["fecha_reapertura"],
+                    "reabierto_por": row["reabierto_por"],
+                    "motivo_reapertura": row["motivo_reapertura"],
+                    "verificado_por": row["verificado_por"],
+                }
+                programaciones.append(programacion)
+            return programaciones
+
+        except Exception as ex:
+            return {"error": f"No se pudieron obtener las programaciones en BORRADOR desde el servicio: {str(ex)}"}
+   
+    @staticmethod
+    def getProgramacionesCerradasByIdDepartment_service(db, idDepartment):
+        try:
+            data = ProgramacionRepository.getProgramacionesCerradasByIdDepartment(db, idDepartment)
+            programaciones = []
+            for row in data:
+                fecha = row["fecha"].strftime("%Y-%m-%d")
+                programacion = {
+                    "idProgramacion": row["idProgramacion"],
+                    "fecha": fecha,
+                    "idDepartment": row["idDepartment"],
+                    "elaborado_por": row["elaborado_por"],
+                    "fecha_creacion": row["fecha_creacion"],
+                    "estado": row["estado"],
+                    "fecha_cierre": row["fecha_cierre"],
+                    "cerrado_por": row["cerrado_por"],
+                    "fecha_reapertura": row["fecha_reapertura"],
+                    "reabierto_por": row["reabierto_por"],
+                    "motivo_reapertura": row["motivo_reapertura"],
+                    "verificado_por": row["verificado_por"],
                 }
                 programaciones.append(programacion)
             return programaciones

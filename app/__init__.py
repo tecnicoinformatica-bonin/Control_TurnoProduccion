@@ -76,6 +76,7 @@ from app.routes.usuario_rol.usuario_rol_routes_web import usuario_rol_web_bp
 
 # blueprints for JSON APIS
 from app.routes.centro_de_costo.centro_de_costo_routes_json import centro_de_costo_json_bp
+from app.routes.departamento.departamento_routes_json import departamento_json_bp
 from app.routes.empleado.empleado_routes_json import empleado_json_bp
 from app.routes.horario.horario_routes_json import horario_json_bp
 from app.routes.importacion.importacion_routes_json import importacion_json_bp
@@ -221,6 +222,7 @@ def create_app():
 
     # JSON APIs
     app.register_blueprint(centro_de_costo_json_bp, url_prefix="/json/centro_de_costo")
+    app.register_blueprint(departamento_json_bp, url_prefix="/json/departamento")
     app.register_blueprint(empleado_json_bp, url_prefix="/json/empleado")
     app.register_blueprint(horario_json_bp, url_prefix="/json/horario")
     app.register_blueprint(importacion_json_bp, url_prefix="/json/importacion")

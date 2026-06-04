@@ -140,18 +140,95 @@ class ProgramacionRepository:
                 cursor.close()
 
     @staticmethod
-    def getProgramacionesEnBorrador(db):
+    def getProgramacionesActivas(db):
         cursor = None
         
         try: 
-            cursor = db.connection.cursor()
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
 
             query = """
             SELECT * 
             FROM turnos_programacion
-            WHERE estado = 'BORRADOR'
+            WHERE estado = 'BORRADOR' OR estado = 'VERIFICADO'
             """
             cursor.execute(query)
+
+            programaciones = cursor.fetchall()
+
+            return programaciones
+        
+        except Exception as ex:
+            return {"error": f"No se pudo obtener las programaciones en borrador, en el repositorio: {str(ex)}"}
+
+        finally:
+            if cursor:
+                cursor.close()
+    
+    @staticmethod
+    def getProgramacionesCerradas(db):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT * 
+            FROM turnos_programacion
+            WHERE estado = 'CERRADO'
+            """
+            cursor.execute(query)
+
+            programaciones = cursor.fetchall()
+
+            return programaciones
+        
+        except Exception as ex:
+            return {"error": f"No se pudo obtener las programaciones en borrador, en el repositorio: {str(ex)}"}
+
+        finally:
+            if cursor:
+                cursor.close()
+    
+    @staticmethod
+    def getProgramacionesActivasByIdDepartment(db, idDepartment):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT * 
+            FROM turnos_programacion
+            WHERE estado = 'BORRADOR' OR estado = 'VERIFICADO'
+            AND idDepartment = %s
+            """
+            cursor.execute(query, (idDepartment,))
+
+            programaciones = cursor.fetchall()
+
+            return programaciones
+        
+        except Exception as ex:
+            return {"error": f"No se pudo obtener las programaciones en borrador, en el repositorio: {str(ex)}"}
+
+        finally:
+            if cursor:
+                cursor.close()
+    
+    @staticmethod
+    def getProgramacionesCerradasByIdDepartment(db, idDepartment):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT * 
+            FROM turnos_programacion
+            WHERE estado = 'CERRADO'
+            AND idDepartment = %s
+            """
+            cursor.execute(query, (idDepartment,))
 
             programaciones = cursor.fetchall()
 

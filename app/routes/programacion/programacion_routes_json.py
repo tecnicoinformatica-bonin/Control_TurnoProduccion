@@ -15,6 +15,42 @@ def get_programaciones():
 
     return jsonify(data), 200
 
+@programacion_json_bp.route("/get_programaciones_activas", methods=["GET"])
+@login_required
+def get_programaciones_activas():
+    data = Programacion_Service.getProgramacionesActivas_service(db)
+    if not data:
+        return jsonify([]), 200
+
+    return jsonify(data), 200
+
+@programacion_json_bp.route("/get_programaciones_activas_by_idDepartment/<int:idDepartment>", methods=["GET"])
+@login_required
+def get_programaciones_activas_by_idDepartment(idDepartment):
+    data = Programacion_Service.getProgramacionesActivasByIdDepartment_service(db, idDepartment)
+    if not data:
+        return jsonify([]), 200
+
+    return jsonify(data), 200
+
+@programacion_json_bp.route("/get_programaciones_cerradas", methods=["GET"])
+@login_required
+def get_programaciones_cerradas():
+    data = Programacion_Service.getProgramacionesCerradas_service(db)
+    if not data:
+        return jsonify([]), 200
+
+    return jsonify(data), 200
+
+@programacion_json_bp.route("/get_programaciones_cerradas_by_idDepartment/<int:idDepartment>", methods=["GET"])
+@login_required
+def get_programaciones_cerradas_by_idDepartment(idDepartment):
+    data = Programacion_Service.getProgramacionesCerradasByIdDepartment_service(db, idDepartment)
+    if not data:
+        return jsonify([]), 200
+
+    return jsonify(data), 200
+
 @programacion_json_bp.route("/get_counts_by_line/<int:idProgramacion>/<int:idDepartment>", methods=["GET"])
 @login_required
 @permiso_requerido("programacion.ver")
