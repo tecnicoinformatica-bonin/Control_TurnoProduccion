@@ -460,7 +460,6 @@ message in messages %}
   (function asignarFeriado() {
     const dataAsueto = document.querySelector(".asueto-data__programacion");
     const fechaMesDia = `${month}-${day}`;
-    console.log(fechaMesDia);
 
     if (feriadosGT.includes(fechaMesDia)) {
       dataAsueto.textContent = "SÍ";
