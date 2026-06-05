@@ -19,6 +19,7 @@ class Empleado_Service():
                 "idCentro": data[9],
                 "idLinea": data[10],
                 "idProceso": data[11],
+                "idHorario": data[12]
             }
             
             return empleado

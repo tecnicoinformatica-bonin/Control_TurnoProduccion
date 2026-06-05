@@ -2,6 +2,7 @@ from flask_login import current_user
 
 from app.api.centro_de_costo.centro_de_costo_service import Centro_de_costo_Service
 from app.api.empleado.empleado_service import Empleado_Service
+from app.api.horario.horario_service import Horario_Service
 from app.api.linea.linea_service import Linea_Service
 from app.api.proceso.proceso_service import Proceso_Service
 from app.api.programacion.programacion_service import Programacion_Service
@@ -11,6 +12,7 @@ import traceback
 from app.api.registro_log.registro_log_service import Registro_log_Service
 from app.api.usuario.usuario_service import Usuario_Service
 from app.extensions.beneficios import calcular_beneficios
+from app.extensions.calcular_diferencia_horas import calcular_diferencia_horas
 from app.extensions.logs import compare_values_in_logs
 
 class Registro_Service():
@@ -37,6 +39,7 @@ class Registro_Service():
                 "cena_con_costo": data[14],
                 "ultima_modificacion": data[15],
                 "usuario_modificacion": data[16],
+                "diferencia_horas": data[17],
             }
             
             return registro
@@ -68,6 +71,7 @@ class Registro_Service():
                     "cena_con_costo": row[14],
                     "ultima_modificacion": row[15],
                     "usuario_modificacion": row[16],
+                    "diferencia_horas": row[17],
                 }
                 registros.append(registro)
             return registros
@@ -99,6 +103,7 @@ class Registro_Service():
                     "cena_con_costo": row[14],
                     "ultima_modificacion": str(row[15]) if row[15] else "",
                     "usuario_modificacion": row[16],
+                    "diferencia_horas": row[17],
                 }
                 if(
                     registro["idLinea"] is None or
@@ -139,6 +144,7 @@ class Registro_Service():
                     "cena_con_costo": row[14],
                     "ultima_modificacion": row[15],
                     "usuario_modificacion": row[16],
+                    "diferencia_horas": row[17],
                 }
                 
                 if not registro["idLinea"] or not registro["idProceso"]:
@@ -387,6 +393,18 @@ class Registro_Service():
             aplica_almuerzo = beneficios["aplica_almuerzo"]
             aplica_cena = beneficios["aplica_cena"]
             cena_con_costo = beneficios["cena_con_costo"]
+
+            # Horas extra calculadas
+            empleado = Empleado_Service.getEmpleadoById_service(db, idEmpleado)
+            horarioEmpleado = Horario_Service.getHorarioById_service(db, empleado["idHorario"])
+
+            diferencia_horas = calcular_diferencia_horas(
+                fecha,
+                horarioEmpleado["hora_inicio"],
+                horarioEmpleado["hora_fin"],
+                hora_inicio, 
+                hora_fin
+            )
                                     
             datos_nuevos = {
                 "idEmpleado": idEmpleado, 
@@ -404,7 +422,23 @@ class Registro_Service():
             if programacion["estado"] == "CERRADO":
                 return { "error": "La programación ya se encuentra cerrada." }
             
-            dataUpdated = RegistroRepository.updateRegistro(db, idRegistro, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber, cena_con_costo)
+            dataUpdated = RegistroRepository.updateRegistro(
+                db, 
+                idRegistro, 
+                idEmpleado, 
+                hora_inicio, 
+                hora_fin, 
+                idLinea, 
+                idProceso, 
+                aplica_almuerzo, 
+                aplica_cena, 
+                aplica_transporte, 
+                observacion_transporte, 
+                fecha, 
+                idCentro, 
+                badgeNumber, 
+                cena_con_costo, 
+                diferencia_horas)
             
             for log in logs:
                 data = {
@@ -432,6 +466,7 @@ class Registro_Service():
                 "fecha": fecha,
                 "idCentro": idCentro,
                 "badgeNumber": badgeNumber,
+                "diferencia_horas": diferencia_horas,
                 "ultima_modificacion": dataUpdated["ultima_modificacion"],
                 "usuario_modificacion": dataUpdated["usuario_modificacion"],
             }

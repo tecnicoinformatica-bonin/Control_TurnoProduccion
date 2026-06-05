@@ -531,7 +531,22 @@ class RegistroRepository:
                 cursor.close()
     
     @staticmethod
-    def createRegistroAutomatico(db, idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, cena_con_costo, fecha, idCentro, badgeNumber):
+    def createRegistroAutomatico(
+        db, 
+        idProgramacion, 
+        idEmpleado, 
+        hora_inicio, 
+        hora_fin, 
+        idLinea, 
+        idProceso, 
+        aplica_almuerzo, 
+        aplica_cena, 
+        cena_con_costo, 
+        fecha, 
+        idCentro, 
+        badgeNumber, 
+        diferencia_horas
+    ):
         cursor = None
 
         try:
@@ -545,10 +560,24 @@ class RegistroRepository:
             cursor = db.connection.cursor()
             
             query = """
-                INSERT INTO turnos_registro(idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, cena_con_costo, fecha, idCentro, badgeNumber)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO turnos_registro(
+                    idProgramacion, 
+                    idEmpleado, 
+                    hora_inicio, 
+                    hora_fin, 
+                    idLinea, 
+                    idProceso, 
+                    aplica_almuerzo, 
+                    aplica_cena, 
+                    cena_con_costo, 
+                    fecha, 
+                    idCentro, 
+                    badgeNumber, 
+                    diferencia_horas
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """
-            cursor.execute(query, (idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, cena_con_costo, fecha, idCentro, badgeNumber,))
+            cursor.execute(query, (idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, cena_con_costo, fecha, idCentro, badgeNumber, diferencia_horas,))
             
             db.connection.commit()
 
@@ -566,6 +595,7 @@ class RegistroRepository:
                 "aplica_cena": aplica_cena,
                 "cena_con_costo": cena_con_costo,
                 "badgeNumber": badgeNumber,
+                "diferencia_horas": diferencia_horas,
             }
 
             return newRegistro
@@ -573,21 +603,54 @@ class RegistroRepository:
         except Exception as ex:
             db.connection.rollback()
             
-            return {"error": f"No se pudo crear registro en repositorio: {str(ex)}"}
+            raise Exception (f"No se pudo crear registro en repositorio: {str(ex)}")
 
         finally:
             if cursor:
                 cursor.close()
 
     @staticmethod
-    def updateRegistro(db, idRegistro, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber, cena_con_costo):
+    def updateRegistro(db, 
+        idRegistro, 
+        idEmpleado, 
+        hora_inicio, 
+        hora_fin, 
+        idLinea, 
+        idProceso, 
+        aplica_almuerzo, 
+        aplica_cena, 
+        aplica_transporte, 
+        observacion_transporte, 
+        fecha, 
+        idCentro, 
+        badgeNumber, 
+        cena_con_costo,
+        diferencia_horas
+    ):
         cursor = None
 
         try: 
             cursor = db.connection.cursor()
             
             query = """
-                UPDATE turnos_registro SET idEmpleado = %s, hora_inicio = %s, hora_fin = %s, idLinea = %s, idProceso = %s, aplica_almuerzo = %s, aplica_cena = %s, aplica_transporte = %s, observacion_transporte = %s, fecha = %s, idCentro = %s, badgeNumber = %s, cena_con_costo = %s, ultima_modificacion = %s, usuario_modificacion = %s
+                UPDATE turnos_registro 
+                SET 
+                    idEmpleado = %s, 
+                    hora_inicio = %s, 
+                    hora_fin = %s, 
+                    idLinea = %s, 
+                    idProceso = %s, 
+                    aplica_almuerzo = %s, 
+                    aplica_cena = %s, 
+                    aplica_transporte = %s, 
+                    observacion_transporte = %s, 
+                    fecha = %s, 
+                    idCentro = %s, 
+                    badgeNumber = %s, 
+                    cena_con_costo = %s, 
+                    ultima_modificacion = %s, 
+                    usuario_modificacion = %s,
+                    diferencia_horas = %s
                 WHERE idRegistro = %s
                 """
             
@@ -615,6 +678,7 @@ class RegistroRepository:
                 cena_con_costo, 
                 ultima_modificacion, 
                 usuario_modificacion,
+                diferencia_horas,
                 idRegistro,
             ))
             
@@ -636,6 +700,7 @@ class RegistroRepository:
                 "idCentro": idCentro,
                 "badgeNumber": badgeNumber,
                 "cena_con_costo": cena_con_costo,
+                "diferencia_horas": diferencia_horas,
                 "ultima_modificacion": ultima_modificacion.strftime("%Y-%m-%d %H:%M:%S"),
                 "usuario_modificacion": current_user.id
             }

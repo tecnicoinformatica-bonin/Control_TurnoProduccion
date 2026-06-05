@@ -8,6 +8,7 @@ from app.api.registro.registro_repository import RegistroRepository
 from app.api.usuario.usuario_service import Usuario_Service
 from app.api.usuario_departamento.usuario_departamento_service import Usuario_Departamento_Service
 
+from app.extensions.calcular_diferencia_horas import calcular_diferencia_horas
 from app.extensions.slugify import Slugify
 from app.extensions.beneficios import *
 
@@ -370,14 +371,17 @@ class Programacion_Service():
                         aplica_almuerzo = beneficios["aplica_almuerzo"] if beneficios else False
                         aplica_cena = beneficios["aplica_cena"] if beneficios else False
                         cena_con_costo = beneficios["cena_con_costo"] if beneficios else False
+
+                        diferencia_horas = calcular_diferencia_horas(fecha, e["hora_inicio"], e["hora_fin"], e["hora_inicio"], e["hora_fin"])
                     else:
                         aplica_almuerzo = False
                         aplica_cena = False
                         cena_con_costo = False
+                        diferencia_horas = 0
                         e["hora_inicio"] = None
                         e["hora_fin"] = None
 
-                    RegistroRepository.createRegistroAutomatico(db, idProgramacion, e["idEmpleado"], e["hora_inicio"], e["hora_fin"], e["idLinea"], e["idProceso"], aplica_almuerzo, aplica_cena, cena_con_costo, fecha, e["idCentro"], e["badgeNumber"])
+                    RegistroRepository.createRegistroAutomatico(db, idProgramacion, e["idEmpleado"], e["hora_inicio"], e["hora_fin"], e["idLinea"], e["idProceso"], aplica_almuerzo, aplica_cena, cena_con_costo, fecha, e["idCentro"], e["badgeNumber"], diferencia_horas)
 
                 creados += 1    
                 
