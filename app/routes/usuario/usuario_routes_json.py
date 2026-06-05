@@ -31,7 +31,6 @@ def reauth():
     print(dataUser)
 
     usuario = Usuario_Service.login_service(db, dataUser)
-    print(usuario)
     if "error" in usuario:
         return jsonify({
             "success": False,
@@ -39,7 +38,6 @@ def reauth():
         }), 401
     
     user = Usuario_Service.getUsuario_login_service(db, usuario["idUsuario"])
-    print(user)
 
     login_user(user)
 
