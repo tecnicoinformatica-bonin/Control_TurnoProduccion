@@ -199,7 +199,7 @@ class ProgramacionRepository:
             query = """
             SELECT * 
             FROM turnos_programacion
-            WHERE estado = 'BORRADOR' OR estado = 'VERIFICADO'
+            WHERE estado in ('BORRADOR', 'VERIFICADO')
             AND idDepartment = %s
             """
             cursor.execute(query, (idDepartment,))
