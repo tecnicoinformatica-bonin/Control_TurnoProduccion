@@ -31,6 +31,7 @@ from app.routes.usuario_permiso.usuario_permiso_routes_api import usuario_permis
 from app.routes.usuario_rol.usuario_rol_routes_api import usuario_rol_api_bp
 
 # WEB TEMPLATES
+from app.routes.autorizacion.autorizacion_routes_templates import autorizacion_template_bp
 from app.routes.centro_de_costo.centro_de_costo_routes_templates import centro_de_costo_template_bp
 from app.routes.departamento.departamento_routes_templates import departamento_template_bp
 from app.routes.empleado.empleado_routes_templates import empleado_template_bp
@@ -75,6 +76,7 @@ from app.routes.usuario_permiso.usuario_permiso_routes_web import usuario_permis
 from app.routes.usuario_rol.usuario_rol_routes_web import usuario_rol_web_bp
 
 # blueprints for JSON APIS
+from app.routes.autorizacion.autorizacion_routes_json import autorizacion_json_bp
 from app.routes.centro_de_costo.centro_de_costo_routes_json import centro_de_costo_json_bp
 from app.routes.departamento.departamento_routes_json import departamento_json_bp
 from app.routes.empleado.empleado_routes_json import empleado_json_bp
@@ -177,6 +179,7 @@ def create_app():
     app.register_blueprint(usuario_rol_api_bp, url_prefix="/api/usuario_rol")
 
     # WEB TEMPLATES
+    app.register_blueprint(autorizacion_template_bp, url_prefix="/template/autorizacion")
     app.register_blueprint(centro_de_costo_template_bp, url_prefix="/template/centro_de_costo")
     app.register_blueprint(departamento_template_bp, url_prefix="/template/departamento")
     app.register_blueprint(empleado_template_bp, url_prefix="/template/empleado")
@@ -221,6 +224,7 @@ def create_app():
     app.register_blueprint(usuario_rol_web_bp, url_prefix="/web/usuario_rol")
 
     # JSON APIs
+    app.register_blueprint(autorizacion_json_bp, url_prefix="/json/autorizacion")
     app.register_blueprint(centro_de_costo_json_bp, url_prefix="/json/centro_de_costo")
     app.register_blueprint(departamento_json_bp, url_prefix="/json/departamento")
     app.register_blueprint(empleado_json_bp, url_prefix="/json/empleado")

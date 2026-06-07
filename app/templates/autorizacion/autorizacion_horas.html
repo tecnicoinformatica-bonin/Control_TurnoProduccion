@@ -1,0 +1,614 @@
+{% extends "layout/base.html" %} {% block title %} Programación {% for d in
+departamentos %} {% if d.idDepartment == idDepartment %} {{ d.name }} {% endif
+%} {% endfor %} {{ fecha }} - Turnos Bonin {% endblock %} {% block content %} {%
+with messages = get_flashed_messages(with_categories=true) %} {% for category,
+message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible" role="alert">
+  <strong>{{ message }}</strong>
+  <button
+    type="button"
+    class="btn-close"
+    data-bs-dismiss="alert"
+    aria-label="Close"
+  ></button>
+</div>
+{% endfor %} {% endwith %}
+<div class="card card-outline-secondary bg-dark text-light mt-3">
+  <div class="card-body">
+    <div class="programacion-parent">
+      <div
+        class="encabezado__text encabezado__text-bold dia-fecha-text__programacion"
+      >
+        Día y Fecha
+      </div>
+      <div
+        class="encabezado__text encabezado__text-bold departamento-text__programacion"
+      >
+        Departamento
+      </div>
+      <div
+        class="encabezado__text encabezado__text-bold elaborado-por__programacion"
+      >
+        Elaborado por
+      </div>
+      <div
+        class="encabezado__text encabezado__text-bold cena-sin-costo-text__programacion"
+      >
+        Total cenas sin costo
+      </div>
+      <div
+        class="encabezado__text encabezado__text-bold cena-con-costo-text__programacion"
+      >
+        Total cenas con costo
+      </div>
+      <div
+        class="encabezado__text encabezado__text-bold almuerzos-sin-costo-text__programacion"
+      >
+        Total almuerzos
+      </div>
+      <div
+        class="encabezado__text encabezado__text-bold transporte-text__programacion"
+      >
+        Total transporte
+      </div>
+      <div class="encabezado__text transporte-data__programacion">0</div>
+      <div class="encabezado__text cena-sin-costo-data__programacion">0</div>
+      <div class="encabezado__text cena-con-costo-data__programacion">0</div>
+      <div class="encabezado__text almuerzos-sin-costo-data__programacion">
+        0
+      </div>
+      <div
+        class="encabezado__text encabezado__text-yellow dia-fecha-data__programacion"
+        data-fecha="{{ fecha }}"
+      ></div>
+      <div
+        class="encabezado__text encabezado__text-yellow departamento-data__programacion"
+        data-id-department="{{ idDepartment }}"
+      >
+        {% for d in departamentos %} {% if d.idDepartment == idDepartment %} {{
+        d.name }} {% endif %} {% endfor %}
+      </div>
+      <div
+        class="encabezado__text encabezado__text-yellow elaborado-por-data__programacion"
+      >
+        <label name="encabezado__text elaborado_por" id="elaborado_por">
+        </label>
+      </div>
+      <div
+        class="encabezado__text encabezado__text-horario encabezado__text-sin-costo encabezado__text-bold horario-diurno-text__programacion"
+      >
+        Aplica cena sin costo
+      </div>
+      <div
+        class="encabezado__text encabezado__text-horario encabezado__text-sin-costo horario-diurno-data__programacion"
+      >
+        Horario de 7:00 a 20:00 / 21:00 horas
+      </div>
+      <div
+        class="encabezado__text encabezado__text-horario encabezado__text-con-costo encabezado__text-bold horario-nocturno-text__programacion"
+      >
+        Aplica cena con costo
+      </div>
+      <div
+        class="encabezado__text encabezado__text-horario encabezado__text-con-costo horario-nocturno-data__programacion"
+      >
+        Horario de 18:00 a 06:00
+      </div>
+      <div
+        class="encabezado__text encabezado__text-horario encabezado__text-bus encabezado__text-bold horario-bus-text__programacion"
+      >
+        Aplica bus
+      </div>
+      <div
+        class="encabezado__text encabezado__text-horario encabezado__text-bus horario-bus-data__programacion"
+      >
+        21:00 (únicamente)
+      </div>
+      <div
+        class="encabezado__text encabezado__text-bold asueto-text__programacion"
+      >
+        Asueto
+      </div>
+      <div class="encabezado__text asueto-data__programacion"></div>
+      <div
+        class="encabezado__text encabezado__text-bold estado-text__programacion"
+      >
+        Estado
+      </div>
+      <div class="encabezado__text estado-data__programacion"></div>
+      <div class="encabezado__text encabezado__text-bold verificado_por-text">
+        Verificado por
+      </div>
+      <div class="encabezado__text verificado_por-data"></div>
+      <div class="card card-tabla-totales card-outline-white bg-dark">
+        <div class="card-body">
+          <h5 class="text-light">Resumen de empleados asignados por línea</h5>
+          <hr />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between gap-3 m-3">
+    <div class="d-flex justify-content-between gap-3">
+      <button
+        onclick="descargarExcel('')"
+        id="descargar-excel"
+        class="btn btn-success"
+      >
+        Descargar Excel
+      </button>
+      <button
+        onclick="descargarPDF('')"
+        id="descargar-pdf"
+        class="btn btn-danger"
+      >
+        Descargar PDF
+      </button>
+    </div>
+    <div>
+      <button
+        type="button"
+        data-bs-toggle="modal"
+        data-bs-target="#validarAsignacionesModal"
+        id="btn-validar"
+        class="btn btn-warning"
+      >
+        <strong>Validar empleados asignados</strong>
+      </button>
+    </div>
+  </div>
+
+  <div id="tabla-autorizaciones"></div>
+</div>
+
+<!-- validarAsignacionesModal -->
+<div
+  class="modal fade"
+  id="validarAsignacionesModal"
+  tabindex="-1"
+  aria-labelledby="validarAsignacionesModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="validarAsignacionesModalLabel">
+          Validación de empleados asignados a cada línea
+        </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div id="tabla-confirmacion"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Seguir asignando
+        </button>
+        <button
+          onclick="confirmarAsignacionesForm_submit()"
+          type="button"
+          class="btn btn-success"
+        >
+          Confirmar verificación
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form
+  hidden
+  id="confirmarAsignacionesForm"
+  action="/web/programacion/confirmar_verificacion_programacion_web"
+  method="POST"
+>
+  <input
+    type="number"
+    name="idProgramacion"
+    id="idProgramacion_asignacion"
+    value=""
+  />
+  <input
+    type="number"
+    name="verificado_por"
+    id="verificado_por_asignacion"
+    value="{{ current_user.id }}"
+  />
+  <input
+    type="number"
+    name="idDepartment"
+    id="idDepartment_asignacion"
+    value="{{ idDepartment }}"
+  />
+  <input type="text" name="fecha" id="fecha_asignacion" value="{{ fecha }}" />
+</form>
+
+<!-- Session expired Modal -->
+<div
+  class="modal fade"
+  id="sessionExpiredModal"
+  tabindex="-1"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-light">
+      <div class="modal-header">
+        <h5 class="modal-title">Sesión expirada</h5>
+      </div>
+
+      <div class="modal-body">Tu sesión expiró por inactividad.</div>
+      <hr />
+      <form id="reauthForm" class="p-4">
+        <div class="mb-3">
+          <label class="form-label">Usuario</label>
+
+          <input type="text" class="form-control" id="reauthUser" required />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Contraseña</label>
+
+          <input
+            type="password"
+            class="form-control"
+            id="reauthPassword"
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Renovar sesión</button>
+      </form>
+
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const fechaActual = new Date();
+  const fecha = `${fechaActual.getFullYear()}-${String(fechaActual.getMonth() + 1).padStart(2, "0")}-${String(fechaActual.getDay()).padStart(2, "0")}`;
+  const idDepartmentUser = "{{idDepartment}}";
+
+  console.log(fecha);
+  console.log(idDepartmentUser);
+
+  async function apiFetch(url, options = {}) {
+    try {
+      const response = await fetch(url, options);
+
+      if (response.status === 401) {
+        mostrarSesionExpiradaModal();
+        return null;
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const contentType = response.headers.get("content-type");
+
+      if (!contentType?.includes("application/json")) {
+        throw new Error("Respuesta no válida");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error(error);
+
+      alert("Ocurrió un error de comunicación con el servidor.");
+
+      return null;
+    }
+  }
+
+  let sessionModalVisible = false;
+
+  function mostrarSesionExpiradaModal() {
+    if (sessionModalVisible) return;
+
+    sessionModalVisible = true;
+
+    const modal = new bootstrap.Modal(
+      document.getElementById("sessionExpiredModal"),
+      {
+        backdrop: "static",
+        keyboard: false,
+      },
+    );
+
+    modal.show();
+    usernameInput.focus();
+  }
+
+  const reauthForm = document.getElementById("reauthForm");
+
+  reauthForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const usernameInput = document.getElementById("reauthUser");
+    const passwordInput = document.getElementById("reauthPassword");
+
+    const username = usernameInput.value;
+    const password = passwordInput.value;
+
+    try {
+      const response = await fetch("/json/usuario/reauth", {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          username,
+          password,
+        }),
+      });
+
+      const resp = await response.json();
+
+      if (!resp.success) {
+        alert("Credenciales inválidas");
+        return;
+      }
+
+      sessionModalVisible = false;
+
+      bootstrap.Modal.getInstance(
+        document.getElementById("sessionExpiredModal"),
+      ).hide();
+
+      usernameInput.value = passwordInput.value = "";
+
+      alert("Sesión renovada");
+    } catch (error) {
+      console.error(error);
+    }
+  });
+
+  const tableAutorizaciones = new Tabulator("#tabla-autorizaciones", {
+    theme: "site-dark",
+    maxHeight: "500px",
+    layout: "fitData",
+    resizableColumnGuide: true,
+    initialFilter: [{ field: "diferencia", type: ">", value: 0 }],
+
+    ajaxURL: `/json/autorizacion/get_detalles_autorizaciones/2026-06-01/2026-06-01/${idDepartmentUser}`,
+    // ajaxURL: `/json/autorizacion/get_detalles_autorizaciones/${fecha}/${fecha}/${idDepartmentUser}`,
+    ajaxConfig: "GET",
+    ajaxResponse: function (url, params, response) {
+      if (response.session_expired) {
+        mostrarSesionExpiradaModal();
+        return [];
+      }
+
+      return response;
+    },
+
+    columns: [
+      {
+        title: "No.",
+        formatter: "rownum",
+        frozen: true,
+      },
+      {
+        title: "Estado",
+        field: "_saveStatus",
+        hozAlign: "center",
+        frozen: true,
+
+        formatter: function (cell) {
+          const value = cell.getValue();
+          const row = cell.getRow();
+          const data = row.getData();
+
+          switch (value) {
+            case "pending":
+              return "⬜ Pendicente";
+
+            case "saving":
+              return "💾 Guardando";
+
+            case "authorized":
+              return "🟢 Autorizado";
+
+            case "unauthorized":
+              return "⛔ No autorizado";
+
+            case "editing":
+              return "📝 Editando";
+
+            case "error":
+              return "🔴 Error";
+
+            default:
+              return "✅ Confirmado";
+          }
+        },
+      },
+      {
+        title: "ID Registro",
+        field: "idRegistro",
+        headerHozAlign: "center",
+        hozAlign: "center",
+        editor: false,
+        frozen: true,
+        visible: false,
+      },
+      {
+        title: "ID Empleado",
+        field: "idEmpleado",
+        headerHozAlign: "center",
+        hozAlign: "center",
+        editor: false,
+        frozen: true,
+      },
+      {
+        title: "Nombre empleado",
+        field: "nombre_completo",
+        headerHozAlign: "center",
+        hozAlign: "left",
+        editor: false,
+        frozen: true,
+      },
+      {
+        title: "Fecha",
+        field: "fecha",
+        headerHozAlign: "center",
+        hozAlign: "center",
+        editor: false,
+        frozen: true,
+
+        formatter: function (cell) {
+          const [anio, mes, dia] = cell.getValue().split("-");
+
+          return `${dia}/${mes}/${anio}`;
+        },
+      },
+      {
+        title: "Horario normal",
+        hozAlign: "center",
+        editor: false,
+
+        formatter: function (cell) {
+          const data = cell.getRow().getData();
+
+          return `
+            ${data.hora_entrada !== null ? data.hora_entrada.padStart(8, "0") : "Sin datos"} - 
+            ${data.hora_salida !== null ? data.hora_salida.padStart(8, "0") : "Sin datos"}
+          `;
+        },
+      },
+      {
+        title: "Horario digitado",
+        hozAlign: "center",
+        editor: false,
+
+        formatter: function (cell) {
+          const data = cell.getRow().getData();
+
+          return `
+            ${data.hora_entrada_digitada !== null ? data.hora_entrada_digitada.padStart(8, "0") : "Sin datos"} - 
+            ${data.hora_salida_digitada !== null ? data.hora_salida_digitada.padStart(8, "0") : "Sin datos"}
+          `;
+        },
+      },
+      {
+        title: "Horario marcado",
+        hozAlign: "center",
+        editor: false,
+
+        formatter: function (cell) {
+          const data = cell.getRow().getData();
+
+          return `
+            ${data.hora_entrada_marcaje !== null ? data.hora_entrada_marcaje.padStart(8, "0") : "Sin datos"} - 
+            ${data.hora_salida_marcaje !== null ? data.hora_salida_marcaje.padStart(8, "0") : "Sin datos"}
+          `;
+        },
+      },
+      {
+        title: "Total horas según digitación",
+        field: "total_digitado",
+        hozAlign: "center",
+        editor: false,
+
+        formatter: function (cell) {
+          return cell.getValue() ? cell.getValue() : "0.00";
+        },
+      },
+      {
+        title: "Total horas según reloj",
+        field: "total_horas",
+        hozAlign: "center",
+        editor: false,
+      },
+      {
+        title: "Diferencia",
+        field: "diferencia",
+        hozAlign: "center",
+        editor: false,
+      },
+      {
+        title: "Total autorizable",
+        field: "total_horas_autorizables",
+        hozAlign: "center",
+        editor: false,
+      },
+      {
+        title: "Horas autorizadas",
+        field: "horas_autorizadas",
+        hozAlign: "center",
+        editor: false,
+      },
+      {
+        title: "Pendiente de autorizar",
+        field: "pendiente_de_autorizar",
+        hozAlign: "center",
+        editor: false,
+      },
+      {
+        title: "Autorizar",
+        hozAlign: "center",
+
+        formatter: function () {
+          return `
+            <button 
+              class="btn btn-success btn-sm" 
+              style="width:100%; height: 100%"
+            >
+              ✔️
+            </button>
+          `;
+        },
+      },
+      {
+        title: "No autorizar",
+        hozAlign: "center",
+
+        formatter: function () {
+          return `
+            <button 
+              class="btn btn-danger btn-sm" 
+              style="width:100%; height: 100%"
+            >
+              ✖️
+            </button>
+          `;
+        },
+      },
+      {
+        title: "Autorizado",
+        field: "autorizado",
+        hozAlign: "center",
+        editor: true,
+        formatter: "tickCross",
+      },
+      {
+        title: "Motivo de autorización",
+        field: "observacion",
+        hozAlign: "center",
+        editor: "input",
+      },
+      {
+        title: "Usuario que autoriza",
+        field: "usuario_autorizacion",
+        hozAlign: "center",
+        editor: false,
+      },
+      {
+        title: "Fecha de autorizado",
+        field: "fecha_autorizacion",
+        hozAlign: "center",
+        editor: false,
+      },
+    ],
+  });
+</script>
+
+{% endblock %}
