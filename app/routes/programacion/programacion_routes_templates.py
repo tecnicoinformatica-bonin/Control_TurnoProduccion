@@ -35,7 +35,7 @@ def listaProgramaciones_template():
     programaciones = Programacion_Service.getProgramaciones_service(db)
     departamentos = Departamento_Service.getDepartamentos_service(db)
     usuarios = Usuario_Service.getUsuarios_service(db)
-    programaciones_borrador = Programacion_Service.getProgramacionesEnBorrador_service(db)
+    programaciones_borrador = Programacion_Service.getProgramacionesActivas_service(db)
             
     return render_template(
         f"programacion/listaProgramaciones.html", 
