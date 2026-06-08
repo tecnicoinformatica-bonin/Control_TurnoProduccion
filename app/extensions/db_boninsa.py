@@ -1,8 +1,8 @@
-import pyodbc
 from flask import current_app
 
 
 def get_boninsa_connection():
+    import pyodbc
     return pyodbc.connect(
         (
             "DRIVER={SQL Server Native Client 11.0};"
