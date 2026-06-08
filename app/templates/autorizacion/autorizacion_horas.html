@@ -270,6 +270,39 @@ message in messages %}
   </div>
 </div>
 
+<!-- Modal Observacion autorizacion -->
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="staticBackdropObservacion"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="staticBackdropLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">...</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button type="button" class="btn btn-primary">Understood</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   const fechaActual = new Date();
   const fecha = `${fechaActual.getFullYear()}-${String(fechaActual.getMonth() + 1).padStart(2, "0")}-${String(fechaActual.getDay()).padStart(2, "0")}`;
@@ -306,6 +339,22 @@ message in messages %}
       return null;
     }
   }
+
+  let usuarios = {};
+
+  (async function () {
+    async function cargarCatalogos() {
+      const [usuariosResponse] = await Promise.all([
+        fetch`/json/usuario/get_usuarios`,
+      ]);
+
+      const usuariosData = await usuariosResponse.json();
+
+      usuariosData.forEach((u) => (usuarios[u.idUsuario] = u.nombre));
+    }
+
+    await cargarCatalogos();
+  })();
 
   let sessionModalVisible = false;
 
@@ -376,9 +425,9 @@ message in messages %}
     maxHeight: "500px",
     layout: "fitData",
     resizableColumnGuide: true,
-    initialFilter: [{ field: "diferencia", type: ">", value: 0 }],
+    // initialFilter: [{ field: "diferencia", type: ">", value: 0 }],
 
-    ajaxURL: `/json/autorizacion/get_detalles_autorizaciones/2026-06-01/2026-06-01/${idDepartmentUser}`,
+    ajaxURL: `/json/autorizacion/get_detalles_autorizaciones/2026-06-05/2026-06-05/${idDepartmentUser}`,
     // ajaxURL: `/json/autorizacion/get_detalles_autorizaciones/${fecha}/${fecha}/${idDepartmentUser}`,
     ajaxConfig: "GET",
     ajaxResponse: function (url, params, response) {
@@ -409,7 +458,7 @@ message in messages %}
 
           switch (value) {
             case "pending":
-              return "⬜ Pendicente";
+              return "⬜ Pendiente";
 
             case "saving":
               return "💾 Guardando";
@@ -551,6 +600,13 @@ message in messages %}
         field: "pendiente_de_autorizar",
         hozAlign: "center",
         editor: false,
+        visible: false,
+      },
+      {
+        title: "Motivo de autorización",
+        field: "observacion",
+        hozAlign: "center",
+        editor: "input",
       },
       {
         title: "Autorizar",
@@ -565,6 +621,18 @@ message in messages %}
               ✔️
             </button>
           `;
+        },
+
+        cellClick: async function (e, cell) {
+          let row = cell.getRow();
+          let data = row.getData();
+
+          autorizacion = createAutorizacionData(data, 1);
+
+          console.log(autorizacion);
+          console.log(JSON.stringify(autorizacion));
+
+          guardarAutorizacionData(row, autorizacion);
         },
       },
       {
@@ -581,25 +649,39 @@ message in messages %}
             </button>
           `;
         },
+
+        cellClick: async function (e, cell) {
+          let row = cell.getRow();
+          let data = row.getData();
+
+          autorizacion = createAutorizacionData(data, 0);
+
+          console.log(autorizacion);
+          console.log(JSON.stringify(autorizacion));
+
+          guardarAutorizacionData(row, autorizacion);
+        },
       },
       {
         title: "Autorizado",
         field: "autorizado",
         hozAlign: "center",
-        editor: true,
-        formatter: "tickCross",
-      },
-      {
-        title: "Motivo de autorización",
-        field: "observacion",
-        hozAlign: "center",
-        editor: "input",
+        editor: false,
+        formatter: function (cell) {
+          return cell.getValue()
+            ? "<span style='color:lime;'>&check;</span>"
+            : "<span style='color:red;'>&cross;</span>";
+        },
       },
       {
         title: "Usuario que autoriza",
         field: "usuario_autorizacion",
         hozAlign: "center",
         editor: false,
+
+        formatter: function (cell) {
+          return usuarios[cell.getValue()] ? usuarios[cell.getValue()] : "";
+        },
       },
       {
         title: "Fecha de autorizado",
@@ -608,7 +690,97 @@ message in messages %}
         editor: false,
       },
     ],
+
+    rowFormatter: function (row) {
+      const el = row.getElement();
+      el.classList.remove("red-row");
+      el.classList.remove("green-row");
+      el.classList.remove("yellow-row");
+
+      const { _saveStatus, autorizado } = row.getData();
+
+      if (row.getData()._saveStatus === "error") {
+        el.classList.add("red-row");
+      } else if (row.getData()._saveStatus === "editing") {
+        el.classList.add("yellow-row");
+      } else if (_saveStatus === "authorized" && autorizado === 1) {
+        el.classList.add("green-row");
+      } else if (_saveStatus === "unauthorized" && autorizado === 0) {
+        el.classList.add("orange-row");
+      }
+    },
   });
+
+  function createAutorizacionData(data, isAuthorized) {
+    const fromWhichTotalComment = isAuthorized
+      ? "Según marcaje del reloj"
+      : "Según lo digitado";
+
+    return {
+      idEmpleado: data.idEmpleado,
+      fecha: data.fecha,
+      horas_autorizadas: isAuthorized ? data.total_horas : data.total_digitado,
+      autorizado: isAuthorized ? 1 : 0,
+      observacion: data.observacion
+        ? `${data.observacion}: ${fromWhichTotalComment}`
+        : `Autorizado: ${fromWhichTotalComment}`,
+      fecha_autorizacion: new Date()
+        .toISOString()
+        .slice(0, 19)
+        .replace("T", " "),
+      usuario_autorizacion: "{{ current_user.id }}",
+      idRegistro: data.idRegistro,
+    };
+  }
+
+  async function guardarAutorizacionData(row, autorizacion) {
+    try {
+      const resp = await apiFetch(
+        `/json/autorizacion/guardar_autorizacion_service`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(autorizacion),
+        },
+      );
+
+      if (!resp) {
+        row.update({
+          _saveStatus: "error",
+        });
+
+        alert(`Error al guardar: ${resp}`);
+
+        return;
+      }
+
+      if (resp.error) {
+        row.update({
+          _saveStatus: "error",
+        });
+        throw new Error(resp.error);
+      } else {
+        console.log(resp);
+
+        row.update({
+          ...resp,
+
+          pendiente_de_autorizar:
+            autorizacion.autorizado === 1 ? 0 : resp.pendiente_de_autorizar,
+          _saveStatus:
+            autorizacion.autorizado === 1 ? "authorized" : "unauthorized",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+
+      row.update({
+        _saveStatus: "error",
+      });
+    }
+  }
 </script>
 
 {% endblock %}

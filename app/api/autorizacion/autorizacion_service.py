@@ -134,16 +134,18 @@ class Autorizacion_Service():
             observacion = data.get("observacion")
             fecha_autorizacion = data.get("fecha_autorizacion")
             usuario_autorizacion = data.get("usuario_autorizacion")
+            idRegistro = data.get("idRegistro")
             
             required_fields = {
-                    "idEmpleado": idEmpleado, 
-                    "fecha": fecha, 
-                    "horas_autorizadas": horas_autorizadas, 
-                    "autorizado": autorizado, 
-                    "observacion": observacion, 
-                    "fecha_autorizacion": fecha_autorizacion, 
-                    "usuario_autorizacion": usuario_autorizacion, 
-                }
+                "idEmpleado": idEmpleado, 
+                "fecha": fecha, 
+                "horas_autorizadas": horas_autorizadas, 
+                "autorizado": autorizado, 
+                "observacion": observacion, 
+                "fecha_autorizacion": fecha_autorizacion, 
+                "usuario_autorizacion": usuario_autorizacion, 
+                "idRegistro": idRegistro, 
+            }
             
             missing_fields = [key for key, value in required_fields.items() if value is None or value == ""]
 
@@ -159,6 +161,7 @@ class Autorizacion_Service():
                 observacion,
                 fecha_autorizacion,
                 usuario_autorizacion,
+                idRegistro
             )
         
         except Exception as ex:
@@ -172,7 +175,7 @@ class Autorizacion_Service():
             for row in data:
                 if(
                     row["total_horas"] > 0
-                    and row["diferencia"] == 0
+                    and row["diferencia"] <= 0
                 ):
                     registro = {
                         "idEmpleado": row["idEmpleado"],
@@ -225,6 +228,7 @@ class Autorizacion_Service():
                     "observacion": "Autorizado automáticamente por el sistema", 
                     "fecha_autorizacion": fecha_actual, 
                     "usuario_autorizacion": 0, 
+                    "idRegistro": row["idRegistro"]
                 }
                 Autorizacion_Service.guardar_autorizacion_service(db, dataRegistro)
                 autorizaciones_realizadas += 1

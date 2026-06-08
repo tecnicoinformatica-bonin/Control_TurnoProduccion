@@ -168,7 +168,8 @@ class AutorizacionRepository:
             autorizado,
             observacion,
             fecha_autorizacion,
-            usuario_autorizacion
+            usuario_autorizacion,
+            idRegistro
         ):
         cursor = None
 
@@ -183,9 +184,11 @@ class AutorizacionRepository:
                     autorizado,
                     observacion,
                     fecha_autorizacion,
-                    usuario_autorizacion
+                    usuario_autorizacion,
+                    idRegistro
                 )
                 VALUES (
+                    %s,
                     %s,
                     %s,
                     %s,
@@ -199,7 +202,7 @@ class AutorizacionRepository:
                     autorizado = VALUES(autorizado),
                     observacion = VALUES(observacion),
                     usuario_autorizacion = VALUES(usuario_autorizacion),
-                    fecha_autorizacion = NOW();
+                    fecha_autorizacion = %s;
                 """
             cursor.execute(query, (
                 idEmpleado,
@@ -208,7 +211,9 @@ class AutorizacionRepository:
                 autorizado,
                 observacion,
                 fecha_autorizacion,
-                usuario_autorizacion
+                usuario_autorizacion,
+                idRegistro,
+                fecha_autorizacion
             ))
             
             db.connection.commit()
@@ -222,6 +227,7 @@ class AutorizacionRepository:
                 "observacion": observacion,
                 "fecha_autorizacion": fecha_autorizacion,
                 "usuario_autorizacion": usuario_autorizacion,
+                "idRegistro": idRegistro,
             }
 
             return newAutorizacion

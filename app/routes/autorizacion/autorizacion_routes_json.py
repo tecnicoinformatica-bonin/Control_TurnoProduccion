@@ -23,3 +23,13 @@ def get_detalles_autorizaciones(from_date, to_date, idDepartment):
         return jsonify([]), 200
 
     return jsonify(data), 200
+
+@autorizacion_json_bp.route("/guardar_autorizacion_service", methods=["POST", "PUT"])
+@login_required
+def guardar_autorizacion_service():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No se enviaron datos"}), 400
+
+    result = Autorizacion_Service.guardar_autorizacion_service(db, data)
+    return jsonify(result), 200

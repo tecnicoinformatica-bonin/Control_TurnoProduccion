@@ -341,6 +341,16 @@
   background-color: rgb(214, 24, 24) !important;
 }
 
+.orange-row {
+  color: black !important;
+  background-color: rgba(138, 90, 0, 0.87) !important;
+}
+
+.orange-row:hover {
+  color: black !important;
+  background-color: rgb(192, 109, 0) !important;
+}
+
 .green-row {
   color: black !important;
   background-color: rgba(22, 131, 0, 0.87) !important;
