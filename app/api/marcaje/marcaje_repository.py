@@ -1,6 +1,76 @@
+import MySQLdb
+
 from app.extensions.slugify import Slugify
+from app.extensions.db_boninsa import get_boninsa_connection
 
 class MarcajeRepository:
+    @staticmethod
+    def get_marcajes_by_fecha(db, fecha):
+        cursor: None
+
+        try:
+            cursor = db.connection.cursor(MySQLdb.cursors)
+
+            query = """
+            SELECT * 
+            FROM turnos_marcaje_importado
+            WHERE fecha = %s
+            """
+
+            cursor.execute(query, (fecha,))
+
+            result = cursor.fetchall()
+
+            return result
+        
+        except Exception as ex:
+            return Exception(f"No se pudo obtener marcajes de la fecha {fecha}. {str(ex)}")
+
+    @staticmethod
+    def get_summary_of_clocks(fecha):
+        cursor = None
+
+        try:
+            db_boninsa = get_boninsa_connection()
+            cursor = db_boninsa.cursor()
+
+            query = """
+             SELECT
+                Dia as dia,
+                Hora_Inicial as entrada_garita,
+                Hora_Fin as salida_garita,
+                Hora_IGSSini as entrada_area,
+                Hora_IGSSfin as salida_area,
+                Nombre as nombre_empleado,
+                Codigo as idEmpleado, 
+                horario as horario_inicio,
+                Fecha as fecha,
+                Horario_Fin as horario_fin,
+                Area as area,
+                Departamento as departamento
+            FROM dbo.Horas_extraDep
+            WHERE Fecha = ?
+            ORDER BY Nombre
+            """
+
+            cursor.execute(query, (fecha,))
+
+            columnas = [col[0] for col in cursor.description]
+
+            resultado = [
+                dict(zip(columnas, row))
+                for row in cursor.fetchall()
+            ]
+
+            return resultado
+        
+        except Exception as ex:
+            raise Exception(f"No se pudo obtener datos de boninsa. {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
+
     @staticmethod
     def createMarcaje(
         db, 

@@ -83,6 +83,7 @@ from app.routes.empleado.empleado_routes_json import empleado_json_bp
 from app.routes.horario.horario_routes_json import horario_json_bp
 from app.routes.importacion.importacion_routes_json import importacion_json_bp
 from app.routes.linea.linea_routes_json import linea_json_bp
+from app.routes.marcaje.marcaje_routes_json import marcaje_json_bp
 from app.routes.motivo_desasignacion.motivo_desasignacion_routes_json import motivo_desasignacion_json_bp
 from app.routes.permiso.permiso_routes_json import permiso_json_bp
 from app.routes.proceso.proceso_routes_json import proceso_json_bp
@@ -231,6 +232,7 @@ def create_app():
     app.register_blueprint(horario_json_bp, url_prefix="/json/horario")
     app.register_blueprint(importacion_json_bp, url_prefix="/json/importacion")
     app.register_blueprint(linea_json_bp, url_prefix="/json/linea")
+    app.register_blueprint(marcaje_json_bp, url_prefix="/json/marcaje")
     app.register_blueprint(motivo_desasignacion_json_bp, url_prefix="/json/motivo_desasignacion")
     app.register_blueprint(permiso_json_bp, url_prefix="/json/permiso")
     app.register_blueprint(programacion_json_bp, url_prefix="/json/programacion")

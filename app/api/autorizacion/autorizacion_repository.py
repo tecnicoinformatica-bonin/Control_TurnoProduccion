@@ -28,6 +28,7 @@ class AutorizacionRepository:
             if cursor:
                 cursor.close()
 
+    @staticmethod
     def getAutorizacionByEmpleado(db, idEmpleado):
         cursor = None
 
@@ -233,5 +234,3 @@ class AutorizacionRepository:
         finally:
             if cursor:
                 cursor.close()
-
-    

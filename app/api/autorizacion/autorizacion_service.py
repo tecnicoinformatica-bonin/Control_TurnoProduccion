@@ -1,3 +1,7 @@
+from datetime import datetime
+
+import pytz
+
 from app.api.autorizacion.autorizacion_repository import AutorizacionRepository
 
 class Autorizacion_Service():
@@ -113,8 +117,6 @@ class Autorizacion_Service():
                 if (autorizacion["autorizado"] == 0 or autorizacion["autorizado"] == False) and autorizacion["usuario_autorizacion"] is not None: 
                     autorizacion["_saveStatus"] = "unauthorized"
                 
-                autorizacion["_saveStatus"] 
-
                 autorizaciones.append(autorizacion)
 
             return autorizaciones
@@ -162,4 +164,73 @@ class Autorizacion_Service():
         except Exception as ex:
             return {"error": f"No se pudo crear el autorizacion. {ex}"}
         
-    
+
+    def get_registros_con_horas_extra(db, fecha, idDeparment):
+        try:
+            data = Autorizacion_Service.get_detalles_autorizaciones_service(db, fecha, fecha, idDeparment)
+            registros_autorizados = []
+            for row in data:
+                if(
+                    row["total_horas"] > 0
+                    and row["diferencia"] == 0
+                ):
+                    registro = {
+                        "idEmpleado": row["idEmpleado"],
+                        "idRegistro": row["idRegistro"],
+                        "nombre_completo": row["nombre_completo"],
+                        "fecha": row["fecha"],
+                        "hora_entrada": row["hora_entrada"],
+                        "hora_entrada_digitada": row["hora_entrada_digitada"],
+                        "hora_entrada_marcaje": row["hora_entrada_marcaje"],
+                        "hora_salida": row["hora_salida"],
+                        "hora_salida_digitada": row["hora_salida_digitada"],
+                        "hora_salida_marcaje": row["hora_salida_marcaje"],
+                        "horas_temprano": row["horas_temprano"],
+                        "horas_tarde": row["horas_tarde"],
+                        "total_horas": row["total_horas"],
+                        "total_digitado": row["total_digitado"],
+                        "diferencia": row["diferencia"],
+                        "total_horas_autorizables": row["total_horas_autorizables"],
+                        "horas_autorizadas": row["horas_autorizadas"],
+                        "autorizado": row["autorizado"],
+                        "observacion": row["observacion"],
+                        "usuario_autorizacion": row["usuario_autorizacion"],
+                        "fecha_autorizacion": row["fecha_autorizacion"],
+                    }
+                    
+                    registros_autorizados.append(registro)
+
+            return registros_autorizados
+
+        except Exception as ex:
+            return {"error": f"No se pudo obtener registros con horas extra y sin diferencia en el servicio: {str(ex)}"}
+
+    @staticmethod
+    def create_autorizacion_automatica(db, fecha, idDeparment):
+        try:
+            data = Autorizacion_Service.get_registros_con_horas_extra(db, fecha, idDeparment)
+            tz = pytz.timezone("America/Guatemala")
+            fecha_actual = datetime.now(tz)
+            autorizaciones_realizadas = 0
+
+            if data is None or data == []:
+                return autorizaciones_realizadas            
+
+            for row in data:
+                dataRegistro = {
+                    "idEmpleado": row["idEmpleado"], 
+                    "fecha": fecha, 
+                    "horas_autorizadas": row["total_horas"], 
+                    "autorizado": 1, 
+                    "observacion": "Autorizado automáticamente por el sistema", 
+                    "fecha_autorizacion": fecha_actual, 
+                    "usuario_autorizacion": 0, 
+                }
+                Autorizacion_Service.guardar_autorizacion_service(db, dataRegistro)
+                autorizaciones_realizadas += 1
+            
+            return autorizaciones_realizadas
+
+        except Exception as ex:
+            return {"error": f"No se pudo autorización automática en el servicio: {str(ex)}"}
+

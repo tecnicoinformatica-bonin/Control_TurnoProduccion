@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pandas as pd
 import pytz
@@ -7,6 +7,37 @@ from app.api.marcaje.marcaje_repository import MarcajeRepository
 from app.extensions.slugify import Slugify
 
 class Marcaje_Service():
+    @staticmethod
+    def get_marcajes_by_fecha_service(db, fecha):
+        try: 
+            data = MarcajeRepository.get_marcajes_by_fecha(db, fecha)
+            marcajes = []
+
+            for row in data:
+                marcaje = {
+                    "idEmpleado": row["idEmpleado"],
+                    "nombre_empleado": row["nombre_empleado"],
+                    "departamento": row["departamento"],
+                    "area": row["area"],
+                    "dia": row["dia"],
+                    "fecha": row["fecha"],
+                    "entrada_garita": row["entrada_garita"],
+                    "entrada_area": row["entrada_area"],
+                    "salida_area": row["salida_area"],
+                    "salida_garita": row["salida_garita"],
+                    "hora_simple": row["hora_simple"],
+                    "hora_doble": row["hora_doble"],
+                    "total_horas": row["total_horas"],
+                    "horario_inicio": row["horario_inicio"],
+                    "horario_fin": row["horario_fin"],
+                }
+
+                marcajes.append(marcaje)
+
+            return marcajes
+        except Exception as ex:
+            return
+
     @staticmethod
     def createMarcaje_service(db, data):
         try:
@@ -131,3 +162,30 @@ class Marcaje_Service():
             "success": True,
             "registros": registros
         }
+
+    @staticmethod
+    def get_summary_of_clocks_service(fecha):
+        try:
+            data = MarcajeRepository.get_summary_of_clocks(fecha)
+            marcajes = []
+            for row in data:
+                marcaje = {
+                    "dia": row["dia"],
+                    "entrada_garita": row["entrada_garita"],
+                    "salida_garita": row["salida_garita"],
+                    "entrada_area": row["entrada_area"],
+                    "salida_area": row["salida_area"],
+                    "nombre_empleado": row["nombre_empleado"],
+                    "idEmpleado": row["idEmpleado"],
+                    "horario_inicio": row["horario_inicio"],
+                    "fecha": row["fecha"],
+                    "horario_fin": row["horario_fin"],
+                    "area": row["area"],
+                    "departamento": row["departamento"],
+                }
+                
+                marcajes.append(marcaje)
+            return marcajes
+
+        except Exception as ex:
+            return {"error": f"No se pudo obtener autorizacion en el servicio: {str(ex)}"}
