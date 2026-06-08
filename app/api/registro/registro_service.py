@@ -509,6 +509,7 @@ class Registro_Service():
             fecha = data.get("fecha")
             idCentro = data.get("idCentro")
             badgeNumber = data.get("badgeNumber")
+            diferencia_horas = None
             
             aplica_almuerzo = 0
             aplica_cena = 0
@@ -535,7 +536,7 @@ class Registro_Service():
             if programacion["estado"] == "CERRADO":
                 return { "error": "La programación ya se encuentra cerrada." }
             
-            dataUpdated = RegistroRepository.updateRegistro(db, idRegistro, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber, cena_con_costo)
+            dataUpdated = RegistroRepository.updateRegistro(db, idRegistro, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber, cena_con_costo, diferencia_horas)
             
             for log in logs:
                 data = {
