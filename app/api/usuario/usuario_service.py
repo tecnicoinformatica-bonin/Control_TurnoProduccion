@@ -43,7 +43,7 @@ class Usuario_Service():
 
          return usuario
       except Exception as ex:
-         return {"error": f"No se puede listar los usuarios. {ex}"}
+         raise Exception(f"No se puede listar los usuarios. {str(ex)}")
       
    @staticmethod
    def createUsuario_service(db, data):
