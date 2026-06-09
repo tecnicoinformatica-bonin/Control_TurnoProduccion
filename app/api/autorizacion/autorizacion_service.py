@@ -3,6 +3,8 @@ from datetime import datetime
 import pytz
 
 from app.api.autorizacion.autorizacion_repository import AutorizacionRepository
+from app.api.departamento.departamento_service import Departamento_Service
+from app.api.usuario.usuario_service import Usuario_Service
 
 class Autorizacion_Service():
     @staticmethod
@@ -89,9 +91,11 @@ class Autorizacion_Service():
                     "hora_entrada": str(row["hora_entrada"]) if row["hora_entrada"] is not None else None, 
                     "hora_entrada_digitada": str(row["hora_entrada_digitada"]) if row["hora_entrada_digitada"] is not None else None, 
                     "hora_entrada_marcaje": str(row["hora_entrada_marcaje"]) if row["hora_entrada_marcaje"] is not None else None, 
+                    "hora_entrada_garita": str(row["hora_entrada_garita"]) if row["hora_entrada_garita"] is not None else None, 
                     "hora_salida": str(row["hora_salida"]) if row["hora_salida"] is not None else None, 
                     "hora_salida_digitada": str(row["hora_salida_digitada"]) if row["hora_salida_digitada"] is not None else None, 
                     "hora_salida_marcaje": str(row["hora_salida_marcaje"]) if row["hora_salida_marcaje"] is not None else None, 
+                    "hora_salida_garita": str(row["hora_salida_garita"]) if row["hora_salida_garita"] is not None else None, 
                     "horas_temprano": row["horas_temprano"], 
                     "horas_tarde": row["horas_tarde"], 
                     "total_horas": row["total_horas"], 
@@ -116,6 +120,9 @@ class Autorizacion_Service():
                     autorizacion["_saveStatus"] = "authorized"
                 if (autorizacion["autorizado"] == 0 or autorizacion["autorizado"] == False) and autorizacion["usuario_autorizacion"] is not None: 
                     autorizacion["_saveStatus"] = "unauthorized"
+
+                autorizacion["hora_entrada_reloj"] = autorizacion["hora_entrada_marcaje"] if autorizacion["hora_entrada_marcaje"] is not None else autorizacion["hora_entrada_garita"]
+                autorizacion["hora_salida_reloj"] = autorizacion["hora_salida_marcaje"] if autorizacion["hora_salida_marcaje"] is not None else autorizacion["hora_salida_garita"]
                 
                 autorizaciones.append(autorizacion)
 
@@ -238,3 +245,63 @@ class Autorizacion_Service():
         except Exception as ex:
             return {"error": f"No se pudo autorización automática en el servicio: {str(ex)}"}
 
+
+    @staticmethod
+    def get_detalles_autorizaciones_reporte_service(db, from_date, to_date, idDepartment):
+        try:
+            data = AutorizacionRepository.get_detalles_autorizaciones_reporte(db, from_date, to_date, idDepartment)
+            autorizaciones = []
+            
+            for row in data:   
+                fecha = row["fecha"].strftime("%Y-%m-%d")
+                autorizacion = {
+                    "badgeNumber": row["badgeNumber"], 
+                    "idEmpleado": row["idEmpleado"], 
+                    "idRegistro": row["idRegistro"], 
+                    "nombre_completo": row["nombre_completo"], 
+                    "fecha": fecha, 
+                    "hora_entrada": str(row["hora_entrada"]) if row["hora_entrada"] is not None else None, 
+                    "hora_entrada_digitada": str(row["hora_entrada_digitada"]) if row["hora_entrada_digitada"] is not None else None, 
+                    "hora_entrada_marcaje": str(row["hora_entrada_marcaje"]) if row["hora_entrada_marcaje"] is not None else None, 
+                    "hora_entrada_garita": str(row["hora_entrada_garita"]) if row["hora_entrada_garita"] is not None else None, 
+                    "hora_salida": str(row["hora_salida"]) if row["hora_salida"] is not None else None, 
+                    "hora_salida_digitada": str(row["hora_salida_digitada"]) if row["hora_salida_digitada"] is not None else None, 
+                    "hora_salida_marcaje": str(row["hora_salida_marcaje"]) if row["hora_salida_marcaje"] is not None else None, 
+                    "hora_salida_garita": str(row["hora_salida_garita"]) if row["hora_salida_garita"] is not None else None, 
+                    "horas_temprano": row["horas_temprano"], 
+                    "horas_tarde": row["horas_tarde"], 
+                    "total_horas": row["total_horas"], 
+                    "total_digitado": row["total_digitado"], 
+                    "diferencia": row["diferencia"], 
+                    "total_horas_autorizables": row["total_horas_autorizables"], 
+                    "horas_autorizadas": row["horas_autorizadas"], 
+                    "autorizado": row["autorizado"], 
+                    "observacion": row["observacion"], 
+                    "usuario_autorizacion": row["usuario_autorizacion"], 
+                    "fecha_autorizacion": row["fecha_autorizacion"], 
+                }
+
+                if autorizacion["usuario_autorizacion"] is not None:
+                    usuario = Usuario_Service.getUsuarioById_service(db, autorizacion["usuario_autorizacion"])
+                else:
+                    usuario = None
+
+                autorizacion["nombreUsuario"] = usuario["nombre"] if usuario is not None else ""
+
+                autorizacion["hora_entrada_reloj"] = autorizacion["hora_entrada_marcaje"] if autorizacion["hora_entrada_marcaje"] is not None else autorizacion["hora_entrada_garita"]
+                autorizacion["hora_salida_reloj"] = autorizacion["hora_salida_marcaje"] if autorizacion["hora_salida_marcaje"] is not None else autorizacion["hora_salida_garita"]
+                
+                autorizaciones.append(autorizacion)
+
+            
+            departamento = Departamento_Service.getDepartamentoById_service(db, idDepartment)
+            encabezado = {
+                "nombreDepartamento": departamento["name"],
+                "from_date": from_date,
+                "to_date": to_date,
+            }
+
+            return (encabezado, autorizaciones)
+
+        except Exception as ex:
+            raise Exception (f"No se pudo obtener autorizacion en el servicio: {str(ex)}")

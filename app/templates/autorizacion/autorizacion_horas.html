@@ -33,36 +33,125 @@ message in messages %}
         {% for d in departamentos %} {% if d.idDepartment == idDepartment_value
         %} {{ d.name }} {% endif %} {% endfor %}
       </div>
-    </div>
-  </div>
-
-  <div class="d-flex justify-content-between gap-3 m-3">
-    <div class="d-flex justify-content-between gap-3">
-      <button
-        onclick="descargarExcel('')"
-        id="descargar-excel"
-        class="btn btn-success"
-      >
-        Descargar Excel
-      </button>
-      <button
-        onclick="descargarPDF('')"
-        id="descargar-pdf"
-        class="btn btn-danger"
-      >
-        Descargar PDF
-      </button>
-    </div>
-    <div>
-      <button
-        type="button"
-        data-bs-toggle="modal"
-        data-bs-target="#validarAsignacionesModal"
-        id="btn-validar"
-        class="btn btn-warning"
-      >
-        <strong>Validar empleados asignados</strong>
-      </button>
+      <div class="reportes">
+        <div class="accordion" id="accordionPanelsStayOpenExample">
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#panelsStayOpen-collapseOne"
+                aria-expanded="true"
+                aria-controls="panelsStayOpen-collapseOne"
+              >
+                Reportes
+              </button>
+            </h2>
+            <div
+              id="panelsStayOpen-collapseOne"
+              class="accordion-collapse collapse"
+            >
+              <div class="accordion-body">
+                <div class="card card-outline-secondary bg-light text-dark">
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table table-light table-striped">
+                        <thead class="text-center">
+                          <tr>
+                            <th scope="col">Descripción</th>
+                            <th scope="col">Opciones</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td scope="row">
+                              Reporte de autorización de horas extra
+                            </td>
+                            <td>
+                              <div class="text-center">
+                                <button
+                                  onclick="descargarExcel(1, '{{from_date_value}}', '{{to_date_value}}', '{{idDepartment_value}}')"
+                                  class="btn btn-success"
+                                >
+                                  Excel
+                                </button>
+                                <button
+                                  onclick="descargarPDF(1, '{{from_date_value}}', '{{to_date_value}}', '{{idDepartment_value}}')"
+                                  class="btn btn-danger"
+                                >
+                                  PDF
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td scope="row">
+                              Reporte de diferencias pendientes de autorizar
+                            </td>
+                            <td>
+                              <div class="text-center">
+                                <button class="btn btn-success">Excel</button>
+                                <button class="btn btn-danger">PDF</button>
+                              </div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td scope="row">
+                              Reporte de horas autorizadas por empleado, línea
+                              asignada y fecha
+                            </td>
+                            <td>
+                              <div class="text-center">
+                                <button class="btn btn-success">Excel</button>
+                                <button class="btn btn-danger">PDF</button>
+                              </div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td scope="row">
+                              Reporte de horas autorizadas por empleado
+                            </td>
+                            <td>
+                              <div class="text-center">
+                                <button class="btn btn-success">Excel</button>
+                                <button class="btn btn-danger">PDF</button>
+                              </div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td scope="row">
+                              Reporte de horas autorizadas por empleado y línea
+                              asignada
+                            </td>
+                            <td>
+                              <div class="text-center">
+                                <button class="btn btn-success">Excel</button>
+                                <button class="btn btn-danger">PDF</button>
+                              </div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td scope="row">
+                              Reporte de resumen de horas extra autorizadas
+                            </td>
+                            <td>
+                              <div class="text-center">
+                                <button class="btn btn-success">Excel</button>
+                                <button class="btn btn-danger">PDF</button>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -334,7 +423,7 @@ message in messages %}
 
   const tableAutorizaciones = new Tabulator("#tabla-autorizaciones", {
     theme: "site-dark",
-    maxHeight: "500px",
+    maxHeight: "640px",
     layout: "fitData",
     resizableColumnGuide: true,
     // initialFilter: [{ field: "diferencia", type: ">", value: 0 }],
@@ -468,8 +557,8 @@ message in messages %}
           const data = cell.getRow().getData();
 
           return `
-            ${data.hora_entrada_marcaje !== null ? data.hora_entrada_marcaje.padStart(8, "0") : "Sin datos"} - 
-            ${data.hora_salida_marcaje !== null ? data.hora_salida_marcaje.padStart(8, "0") : "Sin datos"}
+            ${data.hora_entrada_reloj !== null ? data.hora_entrada_reloj.padStart(8, "0") : "Sin datos"} - 
+            ${data.hora_salida_reloj !== null ? data.hora_salida_reloj.padStart(8, "0") : "Sin datos"}
           `;
         },
       },
@@ -691,6 +780,36 @@ message in messages %}
       row.update({
         _saveStatus: "error",
       });
+    }
+  }
+
+  /* DESCARGAR REPORTES */
+  async function descargarExcel(
+    numeroReporte,
+    from_date,
+    to_date,
+    idDepartment,
+  ) {
+    switch (numeroReporte) {
+      case 1:
+        window.open(
+          `/json/reports/autorizacion/descargar_autorizacion_horas_extra/${from_date}/${to_date}/${idDepartment}/isPDF=${0}`,
+        );
+
+      default:
+        return;
+    }
+  }
+
+  async function descargarPDF(numeroReporte, from_date, to_date, idDepartment) {
+    switch (numeroReporte) {
+      case 1:
+        window.open(
+          `/json/reports/autorizacion/descargar_autorizacion_horas_extra/${from_date}/${to_date}/${idDepartment}/isPDF=${1}`,
+        );
+
+      default:
+        return;
     }
   }
 </script>
