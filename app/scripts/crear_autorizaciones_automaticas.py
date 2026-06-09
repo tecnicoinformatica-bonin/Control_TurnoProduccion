@@ -19,12 +19,18 @@ with app.app_context():
         ayer_str = ayer.strftime("%Y-%m-%d")
 
         autorizaciones = 0
+        daysCount = 1
 
         departamentos = Departamento_Service.getDepartamentos_aplica_horas_extra_service(db)
 
-        for d in departamentos:
-            autorizaciones += Autorizacion_Service.create_autorizacion_automatica(db, ayer_str, d["idDepartment"])
+        while daysCount < 7: # 7 es para una semana antes
+            day = fecha_actual - timedelta(days=daysCount)
+            day_str = day.strftime("%Y-%m-%d")
 
+            for d in departamentos:
+                autorizaciones += Autorizacion_Service.create_autorizacion_automatica(db, day_str, d["idDepartment"])
+            
+            daysCount += 1
 
         print("=====================================")
         print("CREACIÓN AUTOMÁTICA DE AUTORIZACIONES")
