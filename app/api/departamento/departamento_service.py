@@ -3,6 +3,21 @@ from app.extensions.slugify import Slugify
 
 class Departamento_Service():
     @staticmethod
+    def getDepartamentoById_service(db, idDepartment):
+        try:
+            data = DepartamentoRepository.getDepartamentoById(db, idDepartment)
+            department = {
+                "idDepartment": data[0],
+                "name": data[1],
+                "aplica_horas_extra" : data[2],
+                "nameSlug": Slugify.slugify(data[1])
+            }
+            return department
+
+        except Exception as ex:
+            return {"error": f"No se pudo obtener el departamento en el servicio: {str(ex)}"}
+    
+    @staticmethod
     def getDepartamentos_service(db):
         try:
             data = DepartamentoRepository.getDepartamentos(db)
