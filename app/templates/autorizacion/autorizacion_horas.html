@@ -15,116 +15,23 @@ message in messages %}
 {% endfor %} {% endwith %}
 <div class="card card-outline-secondary bg-dark text-light mt-3">
   <div class="card-body">
-    <div class="programacion-parent">
+    <div class="grid-autorizacion-parent">
       <div
-        class="encabezado__text encabezado__text-bold dia-fecha-text__programacion"
+        class="encabezado__text encabezado__text-bold grid-autorizacion__encabezado"
       >
-        Día y Fecha
+        <h1>Autorización de horas extra</h1>
       </div>
       <div
-        class="encabezado__text encabezado__text-bold departamento-text__programacion"
+        class="encabezado__text encabezado__text-bold grid-autorizacion__departamento-title"
       >
         Departamento
       </div>
       <div
-        class="encabezado__text encabezado__text-bold elaborado-por__programacion"
-      >
-        Elaborado por
-      </div>
-      <div
-        class="encabezado__text encabezado__text-bold cena-sin-costo-text__programacion"
-      >
-        Total cenas sin costo
-      </div>
-      <div
-        class="encabezado__text encabezado__text-bold cena-con-costo-text__programacion"
-      >
-        Total cenas con costo
-      </div>
-      <div
-        class="encabezado__text encabezado__text-bold almuerzos-sin-costo-text__programacion"
-      >
-        Total almuerzos
-      </div>
-      <div
-        class="encabezado__text encabezado__text-bold transporte-text__programacion"
-      >
-        Total transporte
-      </div>
-      <div class="encabezado__text transporte-data__programacion">0</div>
-      <div class="encabezado__text cena-sin-costo-data__programacion">0</div>
-      <div class="encabezado__text cena-con-costo-data__programacion">0</div>
-      <div class="encabezado__text almuerzos-sin-costo-data__programacion">
-        0
-      </div>
-      <div
-        class="encabezado__text encabezado__text-yellow dia-fecha-data__programacion"
+        class="encabezado__text grid-autorizacion__departamento-name"
         data-fecha="{{ fecha }}"
-      ></div>
-      <div
-        class="encabezado__text encabezado__text-yellow departamento-data__programacion"
-        data-id-department="{{ idDepartment }}"
       >
-        {% for d in departamentos %} {% if d.idDepartment == idDepartment %} {{
-        d.name }} {% endif %} {% endfor %}
-      </div>
-      <div
-        class="encabezado__text encabezado__text-yellow elaborado-por-data__programacion"
-      >
-        <label name="encabezado__text elaborado_por" id="elaborado_por">
-        </label>
-      </div>
-      <div
-        class="encabezado__text encabezado__text-horario encabezado__text-sin-costo encabezado__text-bold horario-diurno-text__programacion"
-      >
-        Aplica cena sin costo
-      </div>
-      <div
-        class="encabezado__text encabezado__text-horario encabezado__text-sin-costo horario-diurno-data__programacion"
-      >
-        Horario de 7:00 a 20:00 / 21:00 horas
-      </div>
-      <div
-        class="encabezado__text encabezado__text-horario encabezado__text-con-costo encabezado__text-bold horario-nocturno-text__programacion"
-      >
-        Aplica cena con costo
-      </div>
-      <div
-        class="encabezado__text encabezado__text-horario encabezado__text-con-costo horario-nocturno-data__programacion"
-      >
-        Horario de 18:00 a 06:00
-      </div>
-      <div
-        class="encabezado__text encabezado__text-horario encabezado__text-bus encabezado__text-bold horario-bus-text__programacion"
-      >
-        Aplica bus
-      </div>
-      <div
-        class="encabezado__text encabezado__text-horario encabezado__text-bus horario-bus-data__programacion"
-      >
-        21:00 (únicamente)
-      </div>
-      <div
-        class="encabezado__text encabezado__text-bold asueto-text__programacion"
-      >
-        Asueto
-      </div>
-      <div class="encabezado__text asueto-data__programacion"></div>
-      <div
-        class="encabezado__text encabezado__text-bold estado-text__programacion"
-      >
-        Estado
-      </div>
-      <div class="encabezado__text estado-data__programacion"></div>
-      <div class="encabezado__text encabezado__text-bold verificado_por-text">
-        Verificado por
-      </div>
-      <div class="encabezado__text verificado_por-data"></div>
-      <div class="card card-tabla-totales card-outline-white bg-dark">
-        <div class="card-body">
-          <h5 class="text-light">Resumen de empleados asignados por línea</h5>
-          <hr />
-        </div>
+        {% for d in departamentos %} {% if d.idDepartment == idDepartment_value
+        %} {{ d.name }} {% endif %} {% endfor %}
       </div>
     </div>
   </div>
@@ -306,10 +213,15 @@ message in messages %}
 <script>
   const fechaActual = new Date();
   const fecha = `${fechaActual.getFullYear()}-${String(fechaActual.getMonth() + 1).padStart(2, "0")}-${String(fechaActual.getDay()).padStart(2, "0")}`;
-  const idDepartmentUser = "{{idDepartment}}";
+  const idDepartmentValue = "{{ idDepartment_value }}";
+  const fromDateValue = "{{ from_date_value }}";
+  const toDateValue = "{{ to_date_value }}";
 
-  console.log(fecha);
-  console.log(idDepartmentUser);
+  console.log({
+    idDepartmentValue,
+    fromDateValue,
+    toDateValue,
+  });
 
   async function apiFetch(url, options = {}) {
     try {
@@ -427,7 +339,7 @@ message in messages %}
     resizableColumnGuide: true,
     // initialFilter: [{ field: "diferencia", type: ">", value: 0 }],
 
-    ajaxURL: `/json/autorizacion/get_detalles_autorizaciones/2026-06-05/2026-06-05/${idDepartmentUser}`,
+    ajaxURL: `/json/autorizacion/get_detalles_autorizaciones/${fromDateValue}/${toDateValue}/${idDepartmentValue}`,
     // ajaxURL: `/json/autorizacion/get_detalles_autorizaciones/${fecha}/${fecha}/${idDepartmentUser}`,
     ajaxConfig: "GET",
     ajaxResponse: function (url, params, response) {

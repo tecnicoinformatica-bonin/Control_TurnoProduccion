@@ -423,3 +423,30 @@ a {
 .accordion-button::after {
   filter: invert(1);
 }
+
+/* GRID autorizacion_horas.html */
+.grid-autorizacion-parent {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 0px;
+
+  /* border: 4px inset; */
+  /* padding: 1.5rem; */
+}
+
+.grid-autorizacion__encabezado {
+  grid-column: span 2 / span 2;
+  grid-row-start: 1;
+  grid-column-start: 1;
+}
+
+.grid-autorizacion__departamento-title {
+  grid-row-start: 2;
+  grid-column-start: 1;
+}
+
+.grid-autorizacion__departamento-name {
+  grid-row-start: 2;
+  grid-column-start: 2;
+}

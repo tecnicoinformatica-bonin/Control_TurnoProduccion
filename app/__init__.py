@@ -55,6 +55,7 @@ from app.routes.usuario_rol.usuario_rol_routes_templates import usuario_rol_temp
 from app.routes.home.home_routes_templates import home_template_bp
 
 # WEB LOGIC
+from app.routes.autorizacion.autorizacion_routes_web import autorizacion_web_bp
 from app.routes.centro_de_costo.centro_de_costo_routes_web import centro_de_costo_web_bp
 from app.routes.departamento.departamento_routes_web import departamento_web_bp
 from app.routes.empleado.empleado_routes_web import empleado_web_bp
@@ -204,6 +205,7 @@ def create_app():
     app.register_blueprint(home_template_bp, url_prefix="/template/home")
 
     # WEB LOGIC
+    app.register_blueprint(autorizacion_web_bp, url_prefix="/web/autorizacion")
     app.register_blueprint(centro_de_costo_web_bp, url_prefix="/web/centro_de_costo")
     app.register_blueprint(departamento_web_bp, url_prefix="/web/departamento")
     app.register_blueprint(empleado_web_bp, url_prefix="/web/empleado")
