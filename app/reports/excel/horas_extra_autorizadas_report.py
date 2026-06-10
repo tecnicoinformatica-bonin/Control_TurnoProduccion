@@ -10,6 +10,24 @@ from copy import copy
 
 import pytz
 
+def copiar_estilo_fila(ws, fila_origen, fila_destino):
+
+    for col in range(1, ws.max_column + 1):
+
+        celda_origen = ws.cell(row=fila_origen, column=col)
+        celda_destino = ws.cell(row=fila_destino, column=col)
+
+        # Copiar estilo
+        celda_destino.font = copy(celda_origen.font)
+        celda_destino.fill = copy(celda_origen.fill)
+        celda_destino.border = copy(celda_origen.border)
+        celda_destino.alignment = copy(celda_origen.alignment)
+        celda_destino.number_format = copy(celda_origen.number_format)
+        celda_destino.protection = copy(celda_origen.protection)
+
+        # Copiar altura fila
+        ws.row_dimensions[fila_destino].height = ws.row_dimensions[fila_origen].height
+
 @login_required
 def generar_reporte_horas_extra_autorizadas(encabezado_detalles, detalles):
     ruta_plantilla = "app/templates/excel/horas_extra_autorizadas.xlsm"
@@ -18,9 +36,9 @@ def generar_reporte_horas_extra_autorizadas(encabezado_detalles, detalles):
 
     ws = wb["Resumen"]
 
-    ws["C2"] = encabezado_detalles["nombreDepartamento"]
-    ws["C3"] = encabezado_detalles["from_date"]
-    ws["C4"] = encabezado_detalles["to_date"]
+    ws["D2"] = encabezado_detalles["nombreDepartamento"]
+    ws["D3"] = encabezado_detalles["from_date"]
+    ws["D4"] = encabezado_detalles["to_date"]
     
     
     # =========================================================
@@ -90,16 +108,16 @@ def generar_reporte_horas_extra_autorizadas(encabezado_detalles, detalles):
 
     ws[f"P{fila_contador}"] = f'=COUNT(P{fila_inicio}:P{fila_contador - 1})'
 
-    ws["C5"] = f"=P{fila_contador}"
-    ws["C6"] = f'=SUMIFS(N{fila_inicio}:N{fila_contador - 1}, O{fila_inicio}:O{fila_contador - 1}, "PENDIENTE")'
+    ws["D5"] = f"=P{fila_contador}"
+    ws["D6"] = f'=SUMIFS(N{fila_inicio}:N{fila_contador - 1}, O{fila_inicio}:O{fila_contador - 1}, "PENDIENTE")'
 
     # =========================================================
     # ANCHO COLUMNAS
     # =========================================================
 
     ws.column_dimensions["A"].width = 5
-    ws.column_dimensions["B"].width = 10
-    ws.column_dimensions["C"].width = 10
+    ws.column_dimensions["B"].width = 14
+    ws.column_dimensions["C"].width = 14
     ws.column_dimensions["D"].width = 35
     ws.column_dimensions["E"].width = 12
     ws.column_dimensions["F"].width = 12
@@ -132,6 +150,8 @@ def generar_reporte_horas_extra_autorizadas(encabezado_detalles, detalles):
     ws[f"N{fila_footer + 1}"] = "Por:"
 
     ws[f"O{fila_footer + 1}"] = current_user.nombre
+
+    
     
     # =========================================================
     # EXPORTAR EN MEMORIA
@@ -145,20 +165,96 @@ def generar_reporte_horas_extra_autorizadas(encabezado_detalles, detalles):
 
     return archivo
 
-def copiar_estilo_fila(ws, fila_origen, fila_destino):
+@login_required
+def generar_reporte_horas_extra_pendientes(encabezado_detalles, detalles):
+    ruta_plantilla = "app/templates/excel/horas_pendientes.xlsm"
 
-    for col in range(1, ws.max_column + 1):
+    wb = load_workbook(ruta_plantilla, keep_vba=True)
 
-        celda_origen = ws.cell(row=fila_origen, column=col)
-        celda_destino = ws.cell(row=fila_destino, column=col)
+    ws = wb["Pendientes"]
 
-        # Copiar estilo
-        celda_destino.font = copy(celda_origen.font)
-        celda_destino.fill = copy(celda_origen.fill)
-        celda_destino.border = copy(celda_origen.border)
-        celda_destino.alignment = copy(celda_origen.alignment)
-        celda_destino.number_format = copy(celda_origen.number_format)
-        celda_destino.protection = copy(celda_origen.protection)
+    ws["D2"] = encabezado_detalles["nombreDepartamento"]
+    ws["D3"] = encabezado_detalles["from_date"]
+    ws["D4"] = encabezado_detalles["to_date"]    
+    
+    # =========================================================
+    # DETALLE EMPLEADOS
+    # =========================================================
 
-        # Copiar altura fila
-        ws.row_dimensions[fila_destino].height = ws.row_dimensions[fila_origen].height
+    fila_inicio = 8
+    fila_contador = fila_inicio
+    fila_plantilla = 8
+
+    contador = 1
+
+    if len(detalles) > 1:
+        ws.insert_rows(fila_inicio + 1, len(detalles) - 1)
+
+    for fila in range(fila_inicio + 1, fila_inicio + len(detalles)):
+        copiar_estilo_fila(ws, fila_plantilla, fila)
+
+    for detalle in detalles:
+
+        ws[f"A{fila_contador}"] = contador
+
+        ws[f"B{fila_contador}"] = detalle["idEmpleado"]
+        
+        ws[f"C{fila_contador}"] = detalle["badgeNumber"]
+
+        ws[f"D{fila_contador}"] =  detalle["nombre_completo"] 
+
+        ws[f"I{fila_contador}"] = detalle["fecha"]
+
+        ws[f"J{fila_contador}"] = detalle["diferencia"]
+
+        fila_contador += 1
+        contador += 1
+
+    ws[f"J{fila_contador}"] = f'=COUNT(J{fila_inicio}:J{fila_contador - 1})'
+
+    ws["D5"] = f"=J{fila_contador}"
+
+    # =========================================================
+    # ANCHO COLUMNAS
+    # =========================================================
+
+    ws.column_dimensions["A"].width = 5
+    ws.column_dimensions["B"].width = 18
+    ws.column_dimensions["C"].width = 18
+    ws.column_dimensions["D"].width = 15
+    ws.column_dimensions["E"].width = 15
+    ws.column_dimensions["F"].width = 15
+    ws.column_dimensions["G"].width = 15
+    ws.column_dimensions["H"].width = 15
+    ws.column_dimensions["I"].width = 21
+    ws.column_dimensions["J"].width = 21
+    
+    # =========================================================
+    # PIE DE REPORTE
+    # =========================================================
+
+    fila_footer = fila_contador + 2
+
+    ws[f"I{fila_footer}"] = "Generado el:"
+
+    ahora = datetime.now(pytz.timezone("America/Guatemala"))
+
+    ws[f"J{fila_footer}"] = ahora.strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
+    ws[f"I{fila_footer + 1}"] = "Por:"
+
+    ws[f"J{fila_footer + 1}"] = current_user.nombre
+    
+    # =========================================================
+    # EXPORTAR EN MEMORIA
+    # =========================================================
+    
+    archivo = BytesIO()
+
+    wb.save(archivo)
+
+    archivo.seek(0)
+
+    return archivo
+

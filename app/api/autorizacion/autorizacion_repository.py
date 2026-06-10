@@ -144,7 +144,7 @@ class AutorizacionRepository:
             LEFT JOIN turnos_autorizacion_horas tah
                 ON tah.idEmpleado = x.idEmpleado
                 AND tah.fecha = x.fecha
-            WHERE x.total_horas  > 0
+            WHERE x.total_horas  > 0 
             ORDER BY x.idEmpleado 
             """
             cursor.execute(query, (from_date, to_date, idDepartment,))
@@ -265,6 +265,7 @@ class AutorizacionRepository:
                 tr.badgeNumber,
                 tr.idEmpleado,
                 tr.idRegistro,
+                tr.idCentro,
                 CONCAT_WS(' ',
                     te.firstName,
                     te.secondName,
@@ -312,7 +313,69 @@ class AutorizacionRepository:
             LEFT JOIN turnos_autorizacion_horas tah
                 ON tah.idEmpleado = x.idEmpleado
                 AND tah.fecha = x.fecha
-            WHERE x.total_horas  > 0
+            WHERE x.total_horas  > 0 AND NOT x.idCentro IN (1)
+            ORDER BY x.idEmpleado 
+            """
+            cursor.execute(query, (from_date, to_date, idDepartment,))
+
+            autorizaciones = cursor.fetchall()
+
+            return autorizaciones
+        
+        except Exception as ex:
+            raise Exception (f"No se pueden listar los autorizaciones en repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
+    
+    @staticmethod
+    def get_detalles_pendientes_reporte(db, from_date, to_date, idDepartment):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT 
+                x.*,
+                x.total_horas - x.total_digitado AS diferencia,
+                x.total_horas AS total_horas_autorizables,
+                COALESCE(tah.autorizado, 0) AS autorizado
+            FROM (SELECT
+                tr.badgeNumber,
+                tr.idRegistro,
+                tr.idEmpleado,
+                CONCAT_WS(' ',
+                    te.firstName,
+                    te.secondName,
+                    te.lastName,
+                    te.lastName2
+                ) AS nombre_completo,
+                tr.idCentro,
+                tr.fecha,
+                tr.diferencia_horas AS total_digitado,
+                tmi.total_horas AS total_horas
+            FROM turnos_registro tr
+            INNER JOIN 
+                turnos_empleado te
+                ON te.idEmpleado = tr.idEmpleado
+            INNER JOIN 
+                turnos_marcaje_importado tmi
+                ON tmi.idEmpleado = tr.idEmpleado AND tmi.fecha = tr.fecha
+            WHERE 
+                tr.fecha >= %s
+                AND tr.fecha <= %s
+                AND te.idDepartment = %s
+            ) x
+            LEFT JOIN turnos_autorizacion_horas tah
+                ON tah.idEmpleado = x.idEmpleado
+                AND tah.fecha = x.fecha
+            WHERE 
+                x.total_horas > 0 
+                AND ISNULL(tah.usuario_autorizacion) 
+                AND (x.total_horas - x.total_digitado) > 0
+                AND NOT x.idCentro IN (1)
             ORDER BY x.idEmpleado 
             """
             cursor.execute(query, (from_date, to_date, idDepartment,))

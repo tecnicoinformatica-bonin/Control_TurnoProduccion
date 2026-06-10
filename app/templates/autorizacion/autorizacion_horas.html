@@ -91,8 +91,18 @@ message in messages %}
                             </td>
                             <td>
                               <div class="text-center">
-                                <button class="btn btn-success">Excel</button>
-                                <button class="btn btn-danger">PDF</button>
+                                <button
+                                  onclick="descargarExcel(2, '{{from_date_value}}', '{{to_date_value}}', '{{idDepartment_value}}')"
+                                  class="btn btn-success"
+                                >
+                                  Excel
+                                </button>
+                                <button
+                                  onclick="descargarPDF(2, '{{from_date_value}}', '{{to_date_value}}', '{{idDepartment_value}}')"
+                                  class="btn btn-danger"
+                                >
+                                  PDF
+                                </button>
                               </div>
                             </td>
                           </tr>
@@ -796,6 +806,11 @@ message in messages %}
           `/json/reports/autorizacion/descargar_autorizacion_horas_extra/${from_date}/${to_date}/${idDepartment}/isPDF=${0}`,
         );
 
+      case 2:
+        window.open(
+          `/json/reports/autorizacion/descargar_horas_extra_pendientes/${from_date}/${to_date}/${idDepartment}/isPDF=${0}`,
+        );
+
       default:
         return;
     }
@@ -808,6 +823,10 @@ message in messages %}
           `/json/reports/autorizacion/descargar_autorizacion_horas_extra/${from_date}/${to_date}/${idDepartment}/isPDF=${1}`,
         );
 
+      case 2:
+        window.open(
+          `/json/reports/autorizacion/descargar_horas_extra_pendientes/${from_date}/${to_date}/${idDepartment}/isPDF=${1}`,
+        );
       default:
         return;
     }

@@ -305,3 +305,35 @@ class Autorizacion_Service():
 
         except Exception as ex:
             raise Exception (f"No se pudo obtener autorizacion en el servicio: {str(ex)}")
+    
+    @staticmethod
+    def get_detalles_pendientes_reporte_service(db, from_date, to_date, idDepartment):
+        try:
+            data = AutorizacionRepository.get_detalles_pendientes_reporte(db, from_date, to_date, idDepartment)
+            autorizaciones = []
+            
+            for row in data:   
+                fecha = row["fecha"].strftime("%Y-%m-%d")
+                autorizacion = {
+                    "badgeNumber": row["badgeNumber"], 
+                    "idEmpleado": row["idEmpleado"], 
+                    "idRegistro": row["idRegistro"], 
+                    "nombre_completo": row["nombre_completo"], 
+                    "fecha": fecha, 
+                    "diferencia": row["diferencia"], 
+                }
+
+                autorizaciones.append(autorizacion)
+
+            
+            departamento = Departamento_Service.getDepartamentoById_service(db, idDepartment)
+            encabezado = {
+                "nombreDepartamento": departamento["name"],
+                "from_date": from_date,
+                "to_date": to_date,
+            }
+
+            return (encabezado, autorizaciones)
+
+        except Exception as ex:
+            raise Exception (f"No se pudo obtener autorizacion en el servicio: {str(ex)}")
