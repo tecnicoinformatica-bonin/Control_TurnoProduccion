@@ -108,24 +108,22 @@ message in messages %}
                           </tr>
                           <tr>
                             <td scope="row">
-                              Reporte de horas autorizadas por empleado, línea
-                              asignada y fecha
-                            </td>
-                            <td>
-                              <div class="text-center">
-                                <button class="btn btn-success">Excel</button>
-                                <button class="btn btn-danger">PDF</button>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td scope="row">
                               Reporte de horas autorizadas por empleado
                             </td>
                             <td>
                               <div class="text-center">
-                                <button class="btn btn-success">Excel</button>
-                                <button class="btn btn-danger">PDF</button>
+                                <button
+                                  onclick="descargarExcel(3, '{{from_date_value}}', '{{to_date_value}}', '{{idDepartment_value}}')"
+                                  class="btn btn-success"
+                                >
+                                  Excel
+                                </button>
+                                <button
+                                  onclick="descargarPDF(3, '{{from_date_value}}', '{{to_date_value}}', '{{idDepartment_value}}')"
+                                  class="btn btn-danger"
+                                >
+                                  PDF
+                                </button>
                               </div>
                             </td>
                           </tr>
@@ -133,6 +131,18 @@ message in messages %}
                             <td scope="row">
                               Reporte de horas autorizadas por empleado y línea
                               asignada
+                            </td>
+                            <td>
+                              <div class="text-center">
+                                <button class="btn btn-success">Excel</button>
+                                <button class="btn btn-danger">PDF</button>
+                              </div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td scope="row">
+                              Reporte de horas autorizadas por empleado, línea
+                              asignada y fecha
                             </td>
                             <td>
                               <div class="text-center">
@@ -811,6 +821,11 @@ message in messages %}
           `/json/reports/autorizacion/descargar_horas_extra_pendientes/${from_date}/${to_date}/${idDepartment}/isPDF=${0}`,
         );
 
+      case 3:
+        window.open(
+          `/json/reports/autorizacion/descargar_resumen_horas_autorizadas/${from_date}/${to_date}/${idDepartment}/isPDF=${0}`,
+        );
+
       default:
         return;
     }
@@ -827,6 +842,12 @@ message in messages %}
         window.open(
           `/json/reports/autorizacion/descargar_horas_extra_pendientes/${from_date}/${to_date}/${idDepartment}/isPDF=${1}`,
         );
+
+      case 3:
+        window.open(
+          `/json/reports/autorizacion/descargar_resumen_horas_autorizadas/${from_date}/${to_date}/${idDepartment}/isPDF=${1}`,
+        );
+
       default:
         return;
     }

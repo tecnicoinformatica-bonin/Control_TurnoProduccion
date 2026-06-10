@@ -391,3 +391,49 @@ class AutorizacionRepository:
             if cursor:
                 cursor.close()
     
+    @staticmethod
+    def get_resumen_horas_autorizadas_reporte(db, from_date, to_date, idDepartment):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT 
+                x.*
+            FROM(
+                SELECT 
+                tah.idEmpleado, 
+                CONCAT_WS(' ',
+                    te.firstName,
+                    te.secondName,
+                    te.lastName,
+                    te.lastName2
+                ) AS nombre_completo,
+                SUM(tah.horas_autorizadas) AS suma_horas_autorizadas
+            FROM turnos_autorizacion_horas tah 
+            INNER JOIN 
+                turnos_empleado te
+                ON te.idEmpleado = tah.idEmpleado 
+            WHERE 
+                tah.fecha >= %s
+                AND tah.fecha <= %s
+                AND te.idDepartment = %s
+            GROUP BY tah.idEmpleado 
+            ORDER BY tah.idEmpleado
+            ) x
+            WHERE x.suma_horas_autorizadas > 0
+            """
+            cursor.execute(query, (from_date, to_date, idDepartment,))
+
+            autorizaciones = cursor.fetchall()
+
+            return autorizaciones
+        
+        except Exception as ex:
+            raise Exception (f"No se pueden listar las horas autorizadas por empleado en repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
+    

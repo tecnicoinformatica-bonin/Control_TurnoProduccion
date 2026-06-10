@@ -324,7 +324,33 @@ class Autorizacion_Service():
                 }
 
                 autorizaciones.append(autorizacion)
+            
+            departamento = Departamento_Service.getDepartamentoById_service(db, idDepartment)
+            encabezado = {
+                "nombreDepartamento": departamento["name"],
+                "from_date": from_date,
+                "to_date": to_date,
+            }
 
+            return (encabezado, autorizaciones)
+
+        except Exception as ex:
+            raise Exception (f"No se pudo obtener autorizacion en el servicio: {str(ex)}")
+    
+    @staticmethod
+    def get_resumen_horas_autorizadas_reporte_service(db, from_date, to_date, idDepartment):
+        try:
+            data = AutorizacionRepository.get_resumen_horas_autorizadas_reporte(db, from_date, to_date, idDepartment)
+            autorizaciones = []
+            
+            for row in data:   
+                autorizacion = {
+                    "idEmpleado": row["idEmpleado"], 
+                    "nombre_completo": row["nombre_completo"], 
+                    "suma_horas_autorizadas": row["suma_horas_autorizadas"], 
+                }
+
+                autorizaciones.append(autorizacion)
             
             departamento = Departamento_Service.getDepartamentoById_service(db, idDepartment)
             encabezado = {

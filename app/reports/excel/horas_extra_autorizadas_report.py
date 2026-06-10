@@ -210,7 +210,7 @@ def generar_reporte_horas_extra_pendientes(encabezado_detalles, detalles):
         fila_contador += 1
         contador += 1
 
-    ws[f"J{fila_contador}"] = f'=COUNT(J{fila_inicio}:J{fila_contador - 1})'
+    ws[f"J{fila_contador}"] = f'=SUM(J{fila_inicio}:J{fila_contador - 1})'
 
     ws["D5"] = f"=J{fila_contador}"
 
@@ -245,6 +245,89 @@ def generar_reporte_horas_extra_pendientes(encabezado_detalles, detalles):
     ws[f"I{fila_footer + 1}"] = "Por:"
 
     ws[f"J{fila_footer + 1}"] = current_user.nombre
+    
+    # =========================================================
+    # EXPORTAR EN MEMORIA
+    # =========================================================
+    
+    archivo = BytesIO()
+
+    wb.save(archivo)
+
+    archivo.seek(0)
+
+    return archivo
+
+@login_required
+def generar_reporte_resumen_horas_autorizadas(encabezado_detalles, detalles):
+    ruta_plantilla = "app/templates/excel/resumen_horas_autorizadas.xlsm"
+
+    wb = load_workbook(ruta_plantilla, keep_vba=True)
+
+    ws = wb["Resumen"]
+
+    ws["C2"] = encabezado_detalles["nombreDepartamento"]
+    ws["C3"] = encabezado_detalles["from_date"]
+    ws["C4"] = encabezado_detalles["to_date"]    
+    
+    # =========================================================
+    # DETALLE EMPLEADOS
+    # =========================================================
+
+    fila_inicio = 8
+    fila_contador = fila_inicio
+    fila_plantilla = 8
+
+    contador = 1
+
+    if len(detalles) > 1:
+        ws.insert_rows(fila_inicio + 1, len(detalles) - 1)
+
+    for fila in range(fila_inicio + 1, fila_inicio + len(detalles)):
+        copiar_estilo_fila(ws, fila_plantilla, fila)
+
+    for detalle in detalles:
+
+        ws[f"A{fila_contador}"] = contador
+
+        ws[f"B{fila_contador}"] = detalle["idEmpleado"]
+        
+        ws[f"C{fila_contador}"] = detalle["nombre_completo"]
+
+        ws[f"D{fila_contador}"] =  detalle["suma_horas_autorizadas"] 
+
+        fila_contador += 1
+        contador += 1
+
+    ws[f"D{fila_contador}"] = f'=SUM(D{fila_inicio}:D{fila_contador - 1})'
+
+    ws["C5"] = f"=D{fila_contador}"
+
+    # =========================================================
+    # ANCHO COLUMNAS
+    # =========================================================
+
+    ws.column_dimensions["A"].width = 10
+    ws.column_dimensions["B"].width = 25
+    ws.column_dimensions["C"].width = 80
+    ws.column_dimensions["D"].width = 27
+
+    # =========================================================
+    # PIE DE REPORTE
+    # =========================================================
+
+    fila_footer = fila_contador + 2
+
+    ws[f"C{fila_footer}"] = "Generado el:"
+
+    ahora = datetime.now(pytz.timezone("America/Guatemala"))
+
+    ws[f"D{fila_footer}"] = ahora.strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
+    ws[f"C{fila_footer + 1}"] = "Por:"
+
+    ws[f"D{fila_footer + 1}"] = current_user.nombre
     
     # =========================================================
     # EXPORTAR EN MEMORIA
