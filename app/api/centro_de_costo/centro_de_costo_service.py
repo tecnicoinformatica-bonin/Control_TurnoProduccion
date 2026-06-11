@@ -35,9 +35,9 @@ class Centro_de_costo_Service():
             return {"mensaje": f"No se pudo obtener centros de costo en el servicio: {str(ex)}"}
             
     @staticmethod
-    def getCentros_de_costoByDepartment_service(db, data):
+    def getCentros_de_costoByDepartment_service(db, idDepartment):
         try:
-            data = Centro_de_costoRepository.getCentro_de_costoByDepartment(db, data)
+            data = Centro_de_costoRepository.getCentro_de_costoByDepartment(db, idDepartment)
             centros_de_costo = []
             for row in data:
                 centro_de_costo = {
