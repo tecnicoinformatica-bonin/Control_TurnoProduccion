@@ -7,6 +7,7 @@ from openpyxl.styles import Font, Alignment, Border, Side
 from openpyxl.drawing.image import Image
 from openpyxl.utils import get_column_letter
 
+from app.api.centro_de_costo.centro_de_costo_service import Centro_de_costo_Service
 from app.extensions.db import db
 
 from copy import copy
@@ -665,6 +666,306 @@ def generar_reporte_horas_autorizadas_por_empleado_linea(encabezado_detalles, de
     ws[f"C{fila_footer + 1}"] = "Por:"
 
     ws[f"C{fila_footer + 1}"] = current_user.nombre
+    
+    # =========================================================
+    # EXPORTAR EN MEMORIA
+    # =========================================================
+    
+    archivo = BytesIO()
+
+    wb.save(archivo)
+
+    archivo.seek(0)
+
+    return archivo
+
+@login_required
+def generar_reporte_resumen_general(encabezado_detalles_parte1, detalles_parte1, detalles_parte2, detalles_parte3, detalles_parte4):
+    ruta_plantilla = "app/templates/excel/resumen_horas_autorizadas_lineas_general.xlsm"
+    
+    lineas_por_departamento = Linea_Service.getLineasByDepartment_service(db, encabezado_detalles_parte1["idDepartment"])
+    centros_por_departamento = Centro_de_costo_Service.getCentros_de_costoByDepartment_service(db, encabezado_detalles_parte1["idDepartment"])
+
+    wb = load_workbook(ruta_plantilla, keep_vba=True)
+
+    ws = wb["Resumen_general"]    
+    
+    ws["C2"] = encabezado_detalles_parte1["nombreDepartamento"]
+    ws["C3"] = encabezado_detalles_parte1["from_date"]
+    ws["C4"] = encabezado_detalles_parte1["to_date"]    
+    
+    # =========================================================
+    # DETALLE EMPLEADOS
+    # =========================================================
+
+    # =========================================================
+    # PARTE 1
+    # =========================================================
+
+    fila_inicio = 11
+    fila_contador = fila_plantilla = fila_inicio
+    
+    contador = 1
+
+    if len(detalles_parte1) > 1:
+        ws.insert_rows(fila_inicio + 1, len(detalles_parte1) - 1)
+
+    for fila in range(fila_inicio + 1, fila_inicio + len(detalles_parte1)):
+        copiar_estilo_fila(ws, fila_plantilla, fila)
+
+    for detalle in detalles_parte1:
+        ws[f"A{fila_contador}"] = contador
+
+        ws[f"B{fila_contador}"] = detalle["nombreCentro"]
+        
+        ws[f"C{fila_contador}"] = detalle["horas_centro_costo"]
+
+        ws[f"D{fila_contador}"] =  detalle["horas_linea"]
+        
+        ws[f"E{fila_contador}"] =  detalle["diferencia"]
+        
+        fila_contador += 1
+        contador += 1
+
+    ws[f"C{fila_contador}"] = f"=SUM(C{fila_inicio}:C{fila_contador - 1})"
+    ws[f"D{fila_contador}"] = f"=SUM(D{fila_inicio}:D{fila_contador - 1})"
+    ws[f"E{fila_contador}"] = f"=SUM(E{fila_inicio}:E{fila_contador - 1})"
+
+    # =========================================================
+    # PARTE 2
+    # =========================================================
+
+    fila_inicio = fila_contador + 7
+    fila_contador = fila_plantilla = fila_inicio
+    
+    columna_inicio = 3
+    columna_contador = columna_plantilla = columna_inicio
+    
+    contador = 1
+
+    if len(detalles_parte2) > 1:
+        ws.insert_rows(fila_inicio + 1, len(detalles_parte2) - 1)
+
+    for fila in range(fila_inicio + 1, fila_inicio + len(detalles_parte2)):
+        copiar_estilo_fila(ws, fila_plantilla, fila)
+    
+    for l in lineas_por_departamento:
+        ws.cell(row=fila_inicio - 1, column=columna_contador).value = l["nameLinea"]
+
+        columna_contador += 1
+
+    columna_final = columna_contador
+    columna_contador = columna_inicio
+
+    ws.cell(row=fila_inicio - 1, column=columna_final).value = "Total horas"
+
+    for detalle in detalles_parte2:
+        ws[f"A{fila_contador}"] = contador
+
+        ws[f"B{fila_contador}"] = detalle["nombreCentro"]
+        
+        horas_total = 0
+        for l in lineas_por_departamento:
+            linea_key = l["nameLinea"]
+
+            info = detalle["lineas"].get(linea_key)
+
+            if info:
+                ws.cell(row=fila_contador, column=columna_contador).value = info["horas"] if info["horas"] else "----"
+                horas_total += float(info["horas"])
+            else:
+                ws.cell(row=fila_contador, column=columna_contador).value = "----"
+
+            columna_contador += 1
+
+        ws.cell(row=fila_contador, column=columna_final).value = horas_total
+        
+        columna_contador = columna_inicio
+                
+        fila_contador += 1
+        contador += 1
+
+    for l in lineas_por_departamento:
+        column_letter = get_column_letter(columna_contador)
+        ws.cell(row=fila_contador, column=columna_contador).value = f"=SUM({column_letter}{fila_inicio}:{column_letter}{fila_contador - 1})"
+
+        columna_contador +=1
+
+    columna_contador = columna_inicio
+
+    final_column_letter = get_column_letter(columna_final)
+
+    ws[f"{final_column_letter}{fila_contador}"] = f"=SUM({final_column_letter}{fila_inicio}:{final_column_letter}{fila_contador - 1})"
+    ws["C5"] = f"={final_column_letter}{fila_contador}"
+
+
+    for i, l in enumerate(lineas_por_departamento):
+        if i < (len(lineas_por_departamento) - 1):
+            copiar_estilo_columna(
+                ws, 
+                columna_plantilla, 
+                columna_contador + 1, 
+                fila_inicio - 2, 
+                fila_contador
+            )
+
+        columna_contador += 1
+    
+    copiar_estilo_columna(
+        ws, 
+        columna_plantilla, 
+        columna_final, 
+        fila_inicio - 1, 
+        fila_contador
+    )
+    
+    # =========================================================
+    # PARTE 3
+    # =========================================================
+
+    fila_inicio = fila_contador + 7
+    fila_contador = fila_plantilla = fila_inicio
+    
+    columna_inicio = 3
+    columna_contador = columna_plantilla = columna_inicio
+    
+    contador = 1
+
+    if len(detalles_parte3) > 1:
+        ws.insert_rows(fila_inicio + 1, len(detalles_parte3) - 1)
+
+    for fila in range(fila_inicio + 1, fila_inicio + len(detalles_parte3)):
+        copiar_estilo_fila(ws, fila_plantilla, fila)
+    
+    for c in centros_por_departamento:
+        ws.cell(row=fila_inicio - 1, column=columna_contador).value = c["nombreCentro"]
+
+        columna_contador += 1
+
+    columna_final = columna_contador
+    columna_contador = columna_inicio
+
+    ws.cell(row=fila_inicio - 1, column=columna_final).value = "Total horas"
+
+    for detalle in detalles_parte3:
+        ws[f"A{fila_contador}"] = contador
+
+        ws[f"B{fila_contador}"] = detalle["nameLinea"]
+        
+        horas_total = 0
+        for c in centros_por_departamento:
+            centro_key = c["nombreCentro"]
+
+            info = detalle["centros"].get(centro_key)
+
+            if info:
+                ws.cell(row=fila_contador, column=columna_contador).value = info["horas"] if info["horas"] else "----"
+                horas_total += float(info["horas"])
+            else:
+                ws.cell(row=fila_contador, column=columna_contador).value = "----"
+
+            columna_contador += 1
+
+        ws.cell(row=fila_contador, column=columna_final).value = horas_total
+        
+        columna_contador = columna_inicio
+                
+        fila_contador += 1
+        contador += 1
+
+    for c in centros_por_departamento:
+        column_letter = get_column_letter(columna_contador)
+        ws.cell(row=fila_contador, column=columna_contador).value = f"=SUM({column_letter}{fila_inicio}:{column_letter}{fila_contador - 1})"
+
+        columna_contador +=1
+
+    columna_contador = columna_inicio
+
+    final_column_letter = get_column_letter(columna_final)
+
+    ws[f"{final_column_letter}{fila_contador}"] = f"=SUM({final_column_letter}{fila_inicio}:{final_column_letter}{fila_contador - 1})"
+    ws["C5"] = f"={final_column_letter}{fila_contador}"
+
+
+    for i, l in enumerate(lineas_por_departamento):
+        if i < (len(lineas_por_departamento) - 1):
+            copiar_estilo_columna(
+                ws, 
+                columna_plantilla, 
+                columna_contador + 1, 
+                fila_inicio - 2, 
+                fila_contador
+            )
+
+        columna_contador += 1
+    
+    copiar_estilo_columna(
+        ws, 
+        columna_plantilla, 
+        columna_final, 
+        fila_inicio - 1, 
+        fila_contador
+    )
+
+    # =========================================================
+    # PARTE 4
+    # =========================================================
+
+    fila_inicio = fila_contador + 6
+    fila_contador = fila_plantilla = fila_inicio
+    
+    columna_inicio = 3
+    columna_contador = columna_plantilla = columna_inicio
+    
+    contador = 1
+
+    if len(detalles_parte4) > 1:
+        ws.insert_rows(fila_inicio + 1, len(detalles_parte4) - 1)
+
+    for fila in range(fila_inicio + 1, fila_inicio + len(detalles_parte4)):
+        copiar_estilo_fila(ws, fila_plantilla, fila)
+
+    for detalle in detalles_parte4:
+        ws[f"A{fila_contador}"] = contador
+
+        ws[f"B{fila_contador}"] = detalle["nameLinea"]
+        
+        ws[f"C{fila_contador}"] = detalle["horas_autorizadas"]
+        
+        fila_contador += 1
+        contador += 1
+
+    ws[f"C{fila_contador}"] = f"=SUM(C{fila_inicio}:C{fila_contador - 1})"
+
+    # =========================================================
+    # ANCHO COLUMNAS
+    # =========================================================
+
+    # ws.column_dimensions["A"].width = 12
+    # ws.column_dimensions["B"].width = 30
+    # ws.column_dimensions["C"].width = 50
+    # ws.column_dimensions["D"].width = 50
+
+    # =========================================================
+    # PIE DE REPORTE
+    # =========================================================
+
+    fila_footer = fila_contador + 2
+
+    ws[f"A{fila_footer}"] = "Generado el:"
+    # ws[f"B{fila_footer}"] = "Generado el:"
+
+    ahora = datetime.now(pytz.timezone("America/Guatemala"))
+
+    ws[f"B{fila_footer}"] = ahora.strftime(
+    # ws[f"B{fila_footer}"] = ahora.strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
+    ws[f"A{fila_footer + 1}"] = "Por:"
+    # ws[f"C{fila_footer + 1}"] = "Por:"
+
+    ws[f"B{fila_footer + 1}"] = current_user.nombre
+    # ws[f"C{fila_footer + 1}"] = current_user.nombre
     
     # =========================================================
     # EXPORTAR EN MEMORIA

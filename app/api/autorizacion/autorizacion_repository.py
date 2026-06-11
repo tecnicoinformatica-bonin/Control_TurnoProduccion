@@ -540,3 +540,205 @@ class AutorizacionRepository:
         finally:
             if cursor:
                 cursor.close()
+    
+    # Primera parte del reporte resumen_horas_autorizadas_lineas_general.xlsm 
+    @staticmethod
+    def get_resumen_horas_autorizadas_centros_de_costo(db, from_date, to_date, idDepartment):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT
+                c.nombreCentro,
+                COALESCE(cc.horas_autorizadas, 0) AS horas_centro_costo,
+                COALESCE(li.horas_autorizadas, 0) AS horas_linea,
+                COALESCE(cc.horas_autorizadas, 0) -
+                COALESCE(li.horas_autorizadas, 0) AS diferencia
+            FROM turnos_centro_de_costo c
+            LEFT JOIN (
+                SELECT
+                    tcdc.nombreCentro,
+                    SUM(tah.horas_autorizadas) AS horas_autorizadas
+                FROM turnos_centro_de_costo tcdc
+                LEFT JOIN turnos_registro tr
+                    ON tr.idCentro = tcdc.idCentro
+                    AND tr.fecha >= %s AND tr.fecha <= %s
+                LEFT JOIN turnos_autorizacion_horas tah
+                    ON tah.idRegistro = tr.idRegistro
+                WHERE
+                    tcdc.idDepartment = %s
+                    AND (
+                        tr.idEmpleado IS NULL
+                        OR tcdc.idCentro  NOT IN (1)
+                    )
+                GROUP BY tcdc.nombreCentro
+            ) cc
+                ON cc.nombreCentro = c.nombreCentro
+            LEFT JOIN (
+                SELECT
+                    tl.nameLinea,
+                    SUM(tah.horas_autorizadas) AS horas_autorizadas
+                FROM turnos_linea tl
+                LEFT JOIN turnos_registro tr
+                    ON tr.idLinea = tl.idLinea
+                    AND tr.fecha >= %s AND tr.fecha <= %s
+                LEFT JOIN turnos_autorizacion_horas tah
+                    ON tah.idRegistro = tr.idRegistro
+                WHERE
+                    tl.idDepartment = %s
+                    AND (
+                        tr.idEmpleado IS NULL
+                        OR tl.idLinea NOT IN (9)
+                    )
+                GROUP BY tl.nameLinea
+            ) li
+                ON li.nameLinea = c.nombreCentro
+            WHERE
+                c.idDepartment = %s
+                AND c.idCentro NOT IN (1)
+            ORDER BY
+                c.nombreCentro;
+            """
+            cursor.execute(query, (from_date, to_date, idDepartment, from_date, to_date, idDepartment, idDepartment,))
+
+            autorizaciones = cursor.fetchall()
+
+            return autorizaciones
+        
+        except Exception as ex:
+            raise Exception (f"No se pueden listar las horas autorizadas por centro de costo y línea en repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
+    
+    # Segunda parte parte del reporte resumen_horas_autorizadas_lineas_general.xlsm 
+    @staticmethod
+    def get_resumen_horas_autorizadas_centros_asignados(db, from_date, to_date, idDepartment):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT
+                tah.idRegistro,
+                tcdc.nombreCentro,
+                tl.nameLinea,
+                SUM(tah.horas_autorizadas) as horas_autorizadas_linea
+            FROM turnos_centro_de_costo tcdc 
+            INNER JOIN 	
+                turnos_registro tr
+                ON tr.idCentro = tcdc.idCentro 
+                AND tr.fecha >= %s AND tr.fecha <= %s
+            INNER JOIN 
+                turnos_linea tl 
+                ON tl.idLinea = tr.idLinea 
+            INNER JOIN
+                turnos_autorizacion_horas tah 
+                ON tah.idRegistro = tr.idRegistro 
+            WHERE 
+                tcdc.idDepartment = %s
+                AND tcdc.idCentro NOT IN (1)
+            GROUP BY tah.idRegistro, tcdc.nombreCentro, tl.nameLinea
+            ORDER BY tcdc.nombreCentro 
+            """
+            cursor.execute(query, (from_date, to_date, idDepartment,))
+
+            autorizaciones = cursor.fetchall()
+
+            return autorizaciones
+        
+        except Exception as ex:
+            raise Exception (f"No se pueden listar las horas autorizadas por centro de costo en repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
+    
+    # Tercera parte parte del reporte resumen_horas_autorizadas_lineas_general.xlsm 
+    @staticmethod
+    def get_resumen_horas_autorizadas_lineas_asignados(db, from_date, to_date, idDepartment):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT
+                tah.idRegistro,
+                tl.nameLinea,
+                tcdc.nombreCentro ,
+                SUM(tah.horas_autorizadas) as horas_autorizadas_centro
+            FROM turnos_linea tl 
+            INNER JOIN 	
+                turnos_registro tr
+                ON tr.idLinea= tl.idLinea
+                AND tr.fecha >= %s AND tr.fecha <= %s
+            INNER JOIN 
+                turnos_centro_de_costo tcdc  
+                ON tcdc.idCentro = tr.idCentro
+            INNER JOIN
+                turnos_autorizacion_horas tah 
+                ON tah.idRegistro = tr.idRegistro 
+            WHERE 
+                tcdc.idDepartment = %s
+                AND tl.idLinea NOT IN (9)
+            GROUP BY tah.idRegistro, tcdc.nombreCentro, tl.nameLinea
+            ORDER BY tcdc.nombreCentro 
+            """
+            cursor.execute(query, (from_date, to_date, idDepartment,))
+
+            autorizaciones = cursor.fetchall()
+
+            return autorizaciones
+        
+        except Exception as ex:
+            raise Exception (f"No se pueden listar las horas autorizadas por línea en repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
+    
+    # Cuarta parte parte del reporte resumen_horas_autorizadas_lineas_general.xlsm 
+    @staticmethod
+    def get_resumen_horas_autorizadas_lineas(db, from_date, to_date, idDepartment):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT
+                tl.nameLinea,
+                COALESCE(SUM(tah.horas_autorizadas), 0) AS horas_autorizadas
+            FROM turnos_linea tl
+            LEFT JOIN 
+                turnos_registro tr
+                ON tr.idLinea = tl.idLinea
+                AND tr.fecha >= %s AND tr.fecha <= %s
+            LEFT JOIN 
+                turnos_autorizacion_horas tah
+                ON tah.idRegistro = tr.idRegistro
+            WHERE
+                tl.idDepartment = %s
+                AND NOT tr.idEmpleado IN (120,662,921,1315,1429,1466,1477,2007)
+            GROUP BY
+                tl.nameLinea
+            ORDER BY
+                tl.nameLinea;
+            """
+            cursor.execute(query, (from_date, to_date, idDepartment,))
+
+            autorizaciones = cursor.fetchall()
+
+            return autorizaciones
+        
+        except Exception as ex:
+            raise Exception (f"No se pueden listar las horas autorizadas por centro de costo en repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()

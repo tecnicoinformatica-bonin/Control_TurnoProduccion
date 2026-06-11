@@ -440,3 +440,141 @@ class Autorizacion_Service():
 
         except Exception as ex:
             raise Exception (f"No se pudo obtener autorizacion en el servicio: {str(ex)}")
+    
+    # Primera parte del reporte resumen_horas_autorizadas_lineas_general.xlsm 
+    @staticmethod
+    def get_resumen_horas_autorizadas_centros_de_costo_service(db, from_date, to_date, idDepartment):
+        try:
+            data = AutorizacionRepository.get_resumen_horas_autorizadas_centros_de_costo(db, from_date, to_date, idDepartment)
+            autorizaciones = []
+            
+            for row in data:   
+                autorizacion = {
+                    "nombreCentro": row["nombreCentro"],
+                    "horas_centro_costo": row["horas_centro_costo"],
+                    "horas_linea": row["horas_linea"],
+                    "diferencia": row["diferencia"],
+                }
+
+                autorizaciones.append(autorizacion)
+            
+            departamento = Departamento_Service.getDepartamentoById_service(db, idDepartment)
+            encabezado = {
+                "idDepartment": idDepartment,
+                "nombreDepartamento": departamento["name"],
+                "from_date": from_date,
+                "to_date": to_date,
+            }
+
+            return (encabezado, autorizaciones)
+
+        except Exception as ex:
+            raise Exception (f"No se pudo obtener autorizacion en el servicio: {str(ex)}")
+
+    # Segunda parte del reporte resumen_horas_autorizadas_lineas_general.xlsm 
+    @staticmethod        
+    def get_resumen_horas_autorizadas_centros_asignados_service(db, from_date, to_date, idDepartment):
+        try:
+            data = AutorizacionRepository.get_resumen_horas_autorizadas_centros_asignados(db, from_date, to_date, idDepartment)
+            autorizaciones = {}
+            
+            for row in data:   
+
+                nombreCentro = row["nombreCentro"]
+
+                if nombreCentro not in autorizaciones:
+                    autorizaciones[nombreCentro] = {
+                        "nombreCentro": row["nombreCentro"],
+                        "lineas": {}
+                    } 
+
+                if row["nameLinea"] not in autorizaciones[nombreCentro]["lineas"]:
+                    autorizaciones[nombreCentro]["lineas"][row["nameLinea"]] = {
+                        "linea": row["nameLinea"],
+                        "horas": float(row["horas_autorizadas_linea"])
+                    }
+                else:
+                    autorizaciones[nombreCentro]["lineas"][row["nameLinea"]]["horas"] += float(row["horas_autorizadas_linea"])
+            
+            autorizacionesList = list(autorizaciones.values())
+            
+            departamento = Departamento_Service.getDepartamentoById_service(db, idDepartment)
+            encabezado = {
+                "idDepartment": idDepartment,
+                "nombreDepartamento": departamento["name"],
+                "from_date": from_date,
+                "to_date": to_date,
+            }
+
+            return (encabezado, autorizacionesList)
+
+        except Exception as ex:
+            raise Exception (f"No se pudo obtener autorizacion en el servicio: {str(ex)}")
+    
+    # Segunda parte del reporte resumen_horas_autorizadas_lineas_general.xlsm 
+    @staticmethod        
+    def get_resumen_horas_autorizadas_lineas_asignados_service(db, from_date, to_date, idDepartment):
+        try:
+            data = AutorizacionRepository.get_resumen_horas_autorizadas_lineas_asignados(db, from_date, to_date, idDepartment)
+            autorizaciones = {}
+            
+            for row in data:   
+
+                nameLinea = row["nameLinea"]
+
+                if nameLinea not in autorizaciones:
+                    autorizaciones[nameLinea] = {
+                        "nameLinea": row["nameLinea"],
+                        "centros": {}
+                    } 
+
+                if row["nombreCentro"] not in autorizaciones[nameLinea]["centros"]:
+                    autorizaciones[nameLinea]["centros"][row["nombreCentro"]] = {
+                        "centro": row["nombreCentro"],
+                        "horas": float(row["horas_autorizadas_centro"])
+                    }
+                else:
+                    autorizaciones[nameLinea]["centros"][row["nombreCentro"]]["horas"] += float(row["horas_autorizadas_centro"])
+            
+            autorizacionesList = list(autorizaciones.values())
+            
+            departamento = Departamento_Service.getDepartamentoById_service(db, idDepartment)
+            encabezado = {
+                "idDepartment": idDepartment,
+                "nombreDepartamento": departamento["name"],
+                "from_date": from_date,
+                "to_date": to_date,
+            }
+
+            return (encabezado, autorizacionesList)
+
+        except Exception as ex:
+            raise Exception (f"No se pudo obtener autorizacion en el servicio: {str(ex)}")
+        
+     # Cuarta parte del reporte resumen_horas_autorizadas_lineas_general.xlsm 
+    @staticmethod
+    def get_resumen_horas_autorizadas_lineas_service(db, from_date, to_date, idDepartment):
+        try:
+            data = AutorizacionRepository.get_resumen_horas_autorizadas_lineas(db, from_date, to_date, idDepartment)
+            autorizaciones = []
+            
+            for row in data:   
+                autorizacion = {
+                    "nameLinea": row["nameLinea"],
+                    "horas_autorizadas": row["horas_autorizadas"],
+                }
+
+                autorizaciones.append(autorizacion)
+            
+            departamento = Departamento_Service.getDepartamentoById_service(db, idDepartment)
+            encabezado = {
+                "idDepartment": idDepartment,
+                "nombreDepartamento": departamento["name"],
+                "from_date": from_date,
+                "to_date": to_date,
+            }
+
+            return (encabezado, autorizaciones)
+
+        except Exception as ex:
+            raise Exception (f"No se pudo obtener autorizacion en el servicio: {str(ex)}")

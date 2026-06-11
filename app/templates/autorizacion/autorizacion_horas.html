@@ -173,12 +173,23 @@ message in messages %}
                           </tr>
                           <tr>
                             <td scope="row">
-                              Reporte de resumen de horas extra autorizadas
+                              Reporte de resumen general de horas extra
+                              autorizadas
                             </td>
                             <td>
                               <div class="text-center">
-                                <button class="btn btn-success">Excel</button>
-                                <button class="btn btn-danger">PDF</button>
+                                <button
+                                  onclick="descargarExcel(6, '{{from_date_value}}', '{{to_date_value}}', '{{idDepartment_value}}')"
+                                  class="btn btn-success"
+                                >
+                                  Excel
+                                </button>
+                                <button
+                                  onclick="descargarPDF(6, '{{from_date_value}}', '{{to_date_value}}', '{{idDepartment_value}}')"
+                                  class="btn btn-danger"
+                                >
+                                  PDF
+                                </button>
                               </div>
                             </td>
                           </tr>
@@ -856,6 +867,11 @@ message in messages %}
           `/json/reports/autorizacion/descargar_horas_autorizadas_por_empleado_linea_fecha/${from_date}/${to_date}/${idDepartment}/isPDF=${0}`,
         );
 
+      case 6:
+        window.open(
+          `/json/reports/autorizacion/descargar_reporte_resumen_general/${from_date}/${to_date}/${idDepartment}/isPDF=${0}`,
+        );
+
       default:
         return;
     }
@@ -886,6 +902,11 @@ message in messages %}
       case 5:
         window.open(
           `/json/reports/autorizacion/descargar_horas_autorizadas_por_empleado_linea_fecha/${from_date}/${to_date}/${idDepartment}/isPDF=${1}`,
+        );
+
+      case 6:
+        window.open(
+          `/json/reports/autorizacion/descargar_reporte_resumen_general/${from_date}/${to_date}/${idDepartment}/isPDF=${1}`,
         );
 
       default:
