@@ -372,8 +372,8 @@ def generar_reporte_resumen_horas_autorizadas(encabezado_detalles, detalles):
     return archivo
 
 @login_required
-def generar_reporte_horas_autorizadas_por_empleado_linea(encabezado_detalles, detalles):
-    ruta_plantilla = "app/templates/excel/horas_autorizadas_empleado_linea.xlsm"
+def generar_reporte_horas_autorizadas_por_empleado_linea_fecha(encabezado_detalles, detalles):
+    ruta_plantilla = "app/templates/excel/horas_autorizadas_empleado_linea_fecha.xlsm"
     fechas = obtener_diferencia_fechas(encabezado_detalles["from_date"], encabezado_detalles["to_date"])
 
     wb = load_workbook(ruta_plantilla, keep_vba=True)

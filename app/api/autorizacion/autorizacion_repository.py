@@ -438,7 +438,7 @@ class AutorizacionRepository:
                 cursor.close()
     
     @staticmethod
-    def get_horas_autorizadas_por_empleado_linea(db, from_date, to_date, idDepartment):
+    def get_horas_autorizadas_por_empleado_linea_fecha(db, from_date, to_date, idDepartment):
         cursor = None
         
         try: 
@@ -488,4 +488,3 @@ class AutorizacionRepository:
         finally:
             if cursor:
                 cursor.close()
-    

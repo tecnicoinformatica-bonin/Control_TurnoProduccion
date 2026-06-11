@@ -14,7 +14,7 @@ from app.api.registro.registro_service import Registro_Service
 from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 from app.reports.excel.programacion_report import (generar_reporte_programacion)
-from app.reports.excel.horas_extra_autorizadas_report import (generar_reporte_horas_extra_autorizadas, generar_reporte_horas_extra_pendientes, generar_reporte_resumen_horas_autorizadas, generar_reporte_horas_autorizadas_por_empleado_linea)
+from app.reports.excel.horas_extra_autorizadas_report import (generar_reporte_horas_extra_autorizadas, generar_reporte_horas_extra_pendientes, generar_reporte_resumen_horas_autorizadas, generar_reporte_horas_autorizadas_por_empleado_linea_fecha)
 
 reports_json_bp = Blueprint("reports_json_pb", __name__)
 
@@ -249,13 +249,13 @@ def descargar_resumen_horas_autorizadas(from_date, to_date, idDepartment, isPDF)
         )
     )
 
-@reports_json_bp.route("/autorizacion/descargar_horas_autorizadas_por_empleado_linea/<string:from_date>/<string:to_date>/<int:idDepartment>/isPDF=<int:isPDF>")
+@reports_json_bp.route("/autorizacion/descargar_horas_autorizadas_por_empleado_linea_fecha/<string:from_date>/<string:to_date>/<int:idDepartment>/isPDF=<int:isPDF>")
 @login_required
 # @permiso_requerido("programacion.ver")
-def horas_autorizadas_por_empleado_linea(from_date, to_date, idDepartment, isPDF):
-    encabezado_detalles, detalles = Autorizacion_Service.get_horas_autorizadas_por_empleado_linea_service(db, from_date, to_date, idDepartment)
+def horas_autorizadas_por_empleado_linea_fecha(from_date, to_date, idDepartment, isPDF):
+    encabezado_detalles, detalles = Autorizacion_Service.get_horas_autorizadas_por_empleado_linea_fecha_service(db, from_date, to_date, idDepartment)
 
-    archivo = generar_reporte_horas_autorizadas_por_empleado_linea(encabezado_detalles, detalles)
+    archivo = generar_reporte_horas_autorizadas_por_empleado_linea_fecha(encabezado_detalles, detalles)
 
     isPDF = bool(isPDF)
 

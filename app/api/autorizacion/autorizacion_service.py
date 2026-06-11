@@ -365,9 +365,9 @@ class Autorizacion_Service():
             raise Exception (f"No se pudo obtener autorizacion en el servicio: {str(ex)}")
     
     @staticmethod
-    def get_horas_autorizadas_por_empleado_linea_service(db, from_date, to_date, idDepartment):
+    def get_horas_autorizadas_por_empleado_linea_fecha_service(db, from_date, to_date, idDepartment):
         try:
-            data = AutorizacionRepository.get_horas_autorizadas_por_empleado_linea(db, from_date, to_date, idDepartment)
+            data = AutorizacionRepository.get_horas_autorizadas_por_empleado_linea_fecha(db, from_date, to_date, idDepartment)
             autorizaciones = {}
             
             for row in data:   
