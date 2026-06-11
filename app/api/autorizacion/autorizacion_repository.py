@@ -437,3 +437,55 @@ class AutorizacionRepository:
             if cursor:
                 cursor.close()
     
+    @staticmethod
+    def get_horas_autorizadas_por_empleado_linea(db, from_date, to_date, idDepartment):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT 
+                tah.idEmpleado, 
+                CONCAT_WS(' ',
+                    te.firstName,
+                    te.secondName,
+                    te.lastName,
+                    te.lastName2
+                ) AS nombre_completo,
+                tah.fecha,
+                tcdc.nombreCentro,
+                tl.nameLinea,
+                tah.horas_autorizadas
+            FROM turnos_autorizacion_horas tah 
+            INNER JOIN 
+                turnos_empleado te
+                ON te.idEmpleado = tah.idEmpleado 
+            INNER JOIN 
+                turnos_registro tr
+                ON tr.idRegistro = tah.idRegistro 
+            INNER JOIN 
+                turnos_centro_de_costo tcdc 
+                ON tcdc.idCentro  = tr.idCentro
+            INNER JOIN 
+                turnos_linea tl
+                ON tl.idLinea = tr.idLinea 
+            WHERE 
+                tah.fecha >= %s
+                AND tah.fecha <= %s
+                AND te.idDepartment = %s
+            ORDER BY tah.idEmpleado
+            """
+            cursor.execute(query, (from_date, to_date, idDepartment,))
+
+            autorizaciones = cursor.fetchall()
+
+            return autorizaciones
+        
+        except Exception as ex:
+            raise Exception (f"No se pueden listar las horas autorizadas por empleado en repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
+    

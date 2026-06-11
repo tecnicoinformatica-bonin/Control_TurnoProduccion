@@ -134,8 +134,18 @@ message in messages %}
                             </td>
                             <td>
                               <div class="text-center">
-                                <button class="btn btn-success">Excel</button>
-                                <button class="btn btn-danger">PDF</button>
+                                <button
+                                  onclick="descargarExcel(4, '{{from_date_value}}', '{{to_date_value}}', '{{idDepartment_value}}')"
+                                  class="btn btn-success"
+                                >
+                                  Excel
+                                </button>
+                                <button
+                                  onclick="descargarPDF(4, '{{from_date_value}}', '{{to_date_value}}', '{{idDepartment_value}}')"
+                                  class="btn btn-danger"
+                                >
+                                  PDF
+                                </button>
                               </div>
                             </td>
                           </tr>
@@ -826,6 +836,11 @@ message in messages %}
           `/json/reports/autorizacion/descargar_resumen_horas_autorizadas/${from_date}/${to_date}/${idDepartment}/isPDF=${0}`,
         );
 
+      case 4:
+        window.open(
+          `/json/reports/autorizacion/descargar_horas_autorizadas_por_empleado_linea/${from_date}/${to_date}/${idDepartment}/isPDF=${0}`,
+        );
+
       default:
         return;
     }
@@ -846,6 +861,11 @@ message in messages %}
       case 3:
         window.open(
           `/json/reports/autorizacion/descargar_resumen_horas_autorizadas/${from_date}/${to_date}/${idDepartment}/isPDF=${1}`,
+        );
+
+      case 4:
+        window.open(
+          `/json/reports/autorizacion/descargar_horas_autorizadas_por_empleado_linea/${from_date}/${to_date}/${idDepartment}/isPDF=${1}`,
         );
 
       default:
