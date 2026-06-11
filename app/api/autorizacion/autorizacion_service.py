@@ -401,3 +401,42 @@ class Autorizacion_Service():
 
         except Exception as ex:
             raise Exception (f"No se pudo obtener autorizacion en el servicio: {str(ex)}")
+    
+    @staticmethod
+    def get_horas_autorizadas_por_empleado_linea_service(db, from_date, to_date, idDepartment):
+        try:
+            data = AutorizacionRepository.get_horas_autorizadas_por_empleado_linea(db, from_date, to_date, idDepartment)
+            autorizaciones = {}
+            
+            for row in data:   
+
+                idEmpleado = row["idEmpleado"]
+
+                if idEmpleado not in autorizaciones:
+                    autorizaciones[idEmpleado] = {
+                        "idEmpleado": idEmpleado,
+                        "nombre_completo": row["nombre_completo"],
+                        "centro_de_costo": row["nombreCentro"],
+                        "lineas": {}
+                    } 
+
+                autorizaciones[idEmpleado]["lineas"][row["nameLinea"]] = {
+                    "linea": row["nameLinea"],
+                    "horas": float(row["horas_autorizadas_linea"])
+                }
+
+            
+            autorizacionesList = list(autorizaciones.values())
+            
+            departamento = Departamento_Service.getDepartamentoById_service(db, idDepartment)
+            encabezado = {
+                "idDepartment": idDepartment,
+                "nombreDepartamento": departamento["name"],
+                "from_date": from_date,
+                "to_date": to_date,
+            }
+
+            return (encabezado, autorizacionesList)
+
+        except Exception as ex:
+            raise Exception (f"No se pudo obtener autorizacion en el servicio: {str(ex)}")

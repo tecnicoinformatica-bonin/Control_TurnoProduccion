@@ -7,9 +7,13 @@ from openpyxl.styles import Font, Alignment, Border, Side
 from openpyxl.drawing.image import Image
 from openpyxl.utils import get_column_letter
 
+from app.extensions.db import db
+
 from copy import copy
 
 import pytz
+
+from app.api.linea.linea_service import Linea_Service
 
 def copiar_estilo_fila(ws, fila_origen, fila_destino):
 
@@ -432,7 +436,6 @@ def generar_reporte_horas_autorizadas_por_empleado_linea_fecha(encabezado_detall
 
             info = detalle["fechas"].get(fecha_key)
 
-
             if info:
                 ws.cell(row=fila_contador, column=columna_contador).value = info["horas"] if info["horas"] else "----"
                 ws.cell(row=fila_contador, column=columna_contador + 1).value = info["linea"] if info["linea"] else "----"
@@ -481,6 +484,153 @@ def generar_reporte_horas_autorizadas_por_empleado_linea_fecha(encabezado_detall
             )
 
         columna_contador += 2
+    
+    copiar_estilo_columna(
+        ws, 
+        columna_plantilla, 
+        columna_final, 
+        fila_inicio - 1, 
+        fila_contador
+    )
+
+    # =========================================================
+    # ANCHO COLUMNAS
+    # =========================================================
+
+    ws.column_dimensions["A"].width = 12
+    ws.column_dimensions["B"].width = 26
+    ws.column_dimensions["C"].width = 80
+    ws.column_dimensions["D"].width = 30
+
+    # =========================================================
+    # PIE DE REPORTE
+    # =========================================================
+
+    fila_footer = fila_contador + 2
+
+    ws[f"B{fila_footer}"] = "Generado el:"
+
+    ahora = datetime.now(pytz.timezone("America/Guatemala"))
+
+    ws[f"B{fila_footer}"] = ahora.strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
+    ws[f"C{fila_footer + 1}"] = "Por:"
+
+    ws[f"C{fila_footer + 1}"] = current_user.nombre
+    
+    # =========================================================
+    # EXPORTAR EN MEMORIA
+    # =========================================================
+    
+    archivo = BytesIO()
+
+    wb.save(archivo)
+
+    archivo.seek(0)
+
+    return archivo
+
+@login_required
+def generar_reporte_horas_autorizadas_por_empleado_linea(encabezado_detalles, detalles):
+    ruta_plantilla = "app/templates/excel/horas_autorizadas_empleado_linea.xlsm"
+    
+    lineas_por_departamento = Linea_Service.getLineasByDepartment_service(db, encabezado_detalles["idDepartment"])
+
+    wb = load_workbook(ruta_plantilla, keep_vba=True)
+
+    ws = wb["Resumen_EmpleadoXlineaYDept"]
+
+    ws["C2"] = encabezado_detalles["nombreDepartamento"]
+    ws["C3"] = encabezado_detalles["from_date"]
+    ws["C4"] = encabezado_detalles["to_date"]    
+    
+    # =========================================================
+    # DETALLE EMPLEADOS
+    # =========================================================
+
+    fila_inicio = 8
+    fila_contador = fila_inicio
+    fila_plantilla = 8
+
+    columna_inicio = 5
+    columna_contador = columna_inicio
+    columna_plantilla = 5
+
+    contador = 1
+
+    if len(detalles) > 1:
+        ws.insert_rows(fila_inicio + 1, len(detalles) - 1)
+
+    for fila in range(fila_inicio + 1, fila_inicio + len(detalles)):
+        copiar_estilo_fila(ws, fila_plantilla, fila)
+
+
+    for l in lineas_por_departamento:
+        ws.cell(row=fila_inicio - 1, column=columna_contador).value = l["nameLinea"]
+
+        columna_contador += 1
+
+    columna_final = columna_contador
+    columna_contador = columna_inicio
+
+    ws.cell(row=fila_inicio - 1, column=columna_final).value = "Total horas"
+
+    for detalle in detalles:
+        ws[f"A{fila_contador}"] = contador
+
+        ws[f"B{fila_contador}"] = detalle["idEmpleado"]
+        
+        ws[f"C{fila_contador}"] = detalle["nombre_completo"]
+
+        ws[f"D{fila_contador}"] =  detalle["centro_de_costo"]
+        
+        horas_total = 0
+        for l in lineas_por_departamento:
+            linea_key = l["nameLinea"]
+
+            info = detalle["lineas"].get(linea_key)
+
+            if info:
+                ws.cell(row=fila_contador, column=columna_contador).value = info["horas"] if info["horas"] else "----"
+                horas_total += float(info["horas"])
+            else:
+                ws.cell(row=fila_contador, column=columna_contador).value = "----"
+
+            columna_contador += 1
+
+        ws.cell(row=fila_contador, column=columna_final).value = horas_total
+        
+        columna_contador = columna_inicio
+
+        fila_contador += 1
+        contador += 1
+
+    for l in lineas_por_departamento:
+        column_letter = get_column_letter(columna_contador)
+        ws.cell(row=fila_contador, column=columna_contador).value = f"=SUM({column_letter}{fila_inicio}:{column_letter}{fila_contador - 1})"
+
+        columna_contador +=1
+
+    columna_contador = columna_inicio
+
+    final_column_letter = get_column_letter(columna_final)
+
+    ws[f"{final_column_letter}{fila_contador}"] = f"=SUM({final_column_letter}{fila_inicio}:{final_column_letter}{fila_contador - 1})"
+    ws["C5"] = f"={final_column_letter}{fila_contador}"
+
+
+    for i, l in enumerate(lineas_por_departamento):
+        if i < (len(lineas_por_departamento) - 1):
+            copiar_estilo_columna(
+                ws, 
+                columna_plantilla, 
+                columna_contador + 1, 
+                fila_inicio - 2, 
+                fila_contador
+            )
+
+        columna_contador += 1
     
     copiar_estilo_columna(
         ws, 

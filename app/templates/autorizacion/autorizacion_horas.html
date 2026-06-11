@@ -846,6 +846,11 @@ message in messages %}
           `/json/reports/autorizacion/descargar_resumen_horas_autorizadas/${from_date}/${to_date}/${idDepartment}/isPDF=${0}`,
         );
 
+      case 4:
+        window.open(
+          `/json/reports/autorizacion/descargar_horas_autorizadas_por_empleado_linea/${from_date}/${to_date}/${idDepartment}/isPDF=${0}`,
+        );
+
       case 5:
         window.open(
           `/json/reports/autorizacion/descargar_horas_autorizadas_por_empleado_linea_fecha/${from_date}/${to_date}/${idDepartment}/isPDF=${0}`,
@@ -871,6 +876,11 @@ message in messages %}
       case 3:
         window.open(
           `/json/reports/autorizacion/descargar_resumen_horas_autorizadas/${from_date}/${to_date}/${idDepartment}/isPDF=${1}`,
+        );
+
+      case 4:
+        window.open(
+          `/json/reports/autorizacion/descargar_horas_autorizadas_por_empleado_linea/${from_date}/${to_date}/${idDepartment}/isPDF=${1}`,
         );
 
       case 5:
