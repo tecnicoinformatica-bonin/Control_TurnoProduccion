@@ -450,3 +450,60 @@ a {
   grid-row-start: 2;
   grid-column-start: 2;
 }
+
+.container__home {
+  display: flex;
+  justify-content: center;
+
+  max-width: 1200px;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.parent-module {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  justify-items: center;
+  gap: 2rem;
+}
+
+.module {
+  width: 20rem;
+  max-height: 600px;
+  padding: 1rem;
+}
+
+.module__icon {
+  display: flex;
+  justify-content: center;
+
+  font-size: 6rem;
+}
+
+.modul__icon-red {
+  color: red;
+}
+
+.modul__icon-green {
+  color: green;
+}
+
+.module__text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  justify-content: space-between;
+}
+
+.module__text > h5 {
+  text-align: center;
+}
+
+.module__text > p {
+  text-align: center;
+}
+
+.module__text > a {
+  text-align: center;
+}
