@@ -53,10 +53,15 @@
             <option disabled selected value="">
               -- Seleccione una opción --
             </option>
+            <option value="autorizacion">autorizacion</option>
             <option value="centro_de_costo">centro_de_costo</option>
             <option value="departamento">departamento</option>
             <option value="empleado">empleado</option>
+            <option value="horario">horario</option>
+            <option value="importacion_marcaje">importacion_marcaje</option>
             <option value="linea">linea</option>
+            <option value="marcaje">marcaje</option>
+            <option value="motivo_desasignacion">motivo_desasignacion</option>
             <option value="permiso">permiso</option>
             <option value="proceso">proceso</option>
             <option value="programacion">programacion</option>
@@ -70,7 +75,7 @@
           </select>
         </div>
 
-        <div class="form-group">
+        <!-- <div class="form-group">
           <label for="nombreClave">Nombre clave del permiso</label>
           <select class="form-control" name="nombreClave" id="nombreClave">
             <option disabled selected value="">
@@ -81,6 +86,18 @@
             <option value="editar">Editar</option>
             <option value="eliminar">Eliminar</option>
           </select>
+        </div> -->
+
+        <div class="form-group">
+          <label for="nombreClave">Nombre clave del permiso</label>
+          <input
+            type="text"
+            class="form-control"
+            id="nombreClave"
+            name="nombreClave"
+            title="Nombre clave del permiso"
+            required
+          />
         </div>
 
         <div class="form-group">
