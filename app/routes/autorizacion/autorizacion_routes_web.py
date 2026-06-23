@@ -15,7 +15,7 @@ autorizacion_web_bp = Blueprint(
 
 @autorizacion_web_bp.route("/parametros_autorizacion_horas_web", methods=["GET", "POST"])
 @login_required
-# @permiso_requerido("autorizacion.crear")
+@permiso_requerido("autorizacion.ver")
 def parametros_autorizacion_horas_web():
     if request.method == "POST":
         data = {

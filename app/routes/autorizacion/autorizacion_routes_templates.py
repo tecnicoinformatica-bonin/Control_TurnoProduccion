@@ -15,7 +15,7 @@ autorizacion_template_bp = Blueprint(
 
 @autorizacion_template_bp.route("/autorizacion_horas/<string:from_date>/<string:to_date>/<int:idDepartment>")
 @login_required
-# @permiso_requerido("autorizacion.ver")
+@permiso_requerido("autorizacion.ver")
 def autorizacion_horas_template(from_date, to_date, idDepartment):
     autorizaciones = Autorizacion_Service.getAutorizaciones_service(db)
     departamentos = Departamento_Service.getDepartamentos_service(db)
@@ -37,7 +37,7 @@ def autorizacion_horas_template(from_date, to_date, idDepartment):
 
 @autorizacion_template_bp.route("/parametros_autorizacion_horas")
 @login_required
-# @permiso_requerido("autorizacion.ver")
+@permiso_requerido("autorizacion.ver")
 def parametros_autorizacion_horas_template():
     departamentos = Departamento_Service.getDepartamentos_aplica_horas_extra_service(db)
     departamentos_usuario = UsuarioRepository.getUserDepartmentsById(db, current_user.id)

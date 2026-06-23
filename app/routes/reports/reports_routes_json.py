@@ -80,7 +80,7 @@ def descargar_programacion(idProgramacion, isPDF):
 
 @reports_json_bp.route("/autorizacion/descargar_autorizacion_horas_extra/<string:from_date>/<string:to_date>/<int:idDepartment>/isPDF=<int:isPDF>")
 @login_required
-# @permiso_requerido("programacion.ver")
+@permiso_requerido("autorizacion.ver")
 def descargar_autorizacion_horas_extra(from_date, to_date, idDepartment, isPDF):
     encabezado_detalles, detalles = Autorizacion_Service.get_detalles_autorizaciones_reporte_service(db, from_date, to_date, idDepartment)
 
@@ -137,7 +137,7 @@ def descargar_autorizacion_horas_extra(from_date, to_date, idDepartment, isPDF):
 
 @reports_json_bp.route("/autorizacion/descargar_horas_extra_pendientes/<string:from_date>/<string:to_date>/<int:idDepartment>/isPDF=<int:isPDF>")
 @login_required
-# @permiso_requerido("programacion.ver")
+@permiso_requerido("autorizacion.ver")
 def descargar_horas_extra_pendientes(from_date, to_date, idDepartment, isPDF):
     encabezado_detalles, detalles = Autorizacion_Service.get_detalles_pendientes_reporte_service(db, from_date, to_date, idDepartment)
 
@@ -194,7 +194,7 @@ def descargar_horas_extra_pendientes(from_date, to_date, idDepartment, isPDF):
 
 @reports_json_bp.route("/autorizacion/descargar_resumen_horas_autorizadas/<string:from_date>/<string:to_date>/<int:idDepartment>/isPDF=<int:isPDF>")
 @login_required
-# @permiso_requerido("programacion.ver")
+@permiso_requerido("autorizacion.ver")
 def descargar_resumen_horas_autorizadas(from_date, to_date, idDepartment, isPDF):
     encabezado_detalles, detalles = Autorizacion_Service.get_resumen_horas_autorizadas_reporte_service(db, from_date, to_date, idDepartment)
 
@@ -251,7 +251,7 @@ def descargar_resumen_horas_autorizadas(from_date, to_date, idDepartment, isPDF)
 
 @reports_json_bp.route("/autorizacion/descargar_horas_autorizadas_por_empleado_linea_fecha/<string:from_date>/<string:to_date>/<int:idDepartment>/isPDF=<int:isPDF>")
 @login_required
-# @permiso_requerido("programacion.ver")
+@permiso_requerido("autorizacion.ver")
 def descargar_horas_autorizadas_por_empleado_linea_fecha(from_date, to_date, idDepartment, isPDF):
     encabezado_detalles, detalles = Autorizacion_Service.get_horas_autorizadas_por_empleado_linea_fecha_service(db, from_date, to_date, idDepartment)
 
@@ -308,7 +308,7 @@ def descargar_horas_autorizadas_por_empleado_linea_fecha(from_date, to_date, idD
 
 @reports_json_bp.route("/autorizacion/descargar_horas_autorizadas_por_empleado_linea/<string:from_date>/<string:to_date>/<int:idDepartment>/isPDF=<int:isPDF>")
 @login_required
-# @permiso_requerido("programacion.ver")
+@permiso_requerido("autorizacion.ver")
 def descargar_horas_autorizadas_por_empleado_linea(from_date, to_date, idDepartment, isPDF):
     encabezado_detalles, detalles = Autorizacion_Service.get_horas_autorizadas_por_empleado_linea_service(db, from_date, to_date, idDepartment)
 
@@ -365,7 +365,7 @@ def descargar_horas_autorizadas_por_empleado_linea(from_date, to_date, idDepartm
 
 @reports_json_bp.route("/autorizacion/descargar_reporte_resumen_general/<string:from_date>/<string:to_date>/<int:idDepartment>/isPDF=<int:isPDF>")
 @login_required
-# @permiso_requerido("programacion.ver")
+@permiso_requerido("autorizacion.ver")
 def descargar_reporte_resumen_general(from_date, to_date, idDepartment, isPDF):
     encabezado_detalles_parte1, detalles_parte1 = Autorizacion_Service.get_resumen_horas_autorizadas_centros_de_costo_service(db, from_date, to_date, idDepartment)
     _, detalles_parte2 = Autorizacion_Service.get_resumen_horas_autorizadas_centros_asignados_service(db, from_date, to_date, idDepartment)

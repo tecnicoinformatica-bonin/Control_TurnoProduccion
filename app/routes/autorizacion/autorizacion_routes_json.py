@@ -8,6 +8,7 @@ autorizacion_json_bp = Blueprint("autorizacion_json_bp", __name__)
 
 @autorizacion_json_bp.route("/get_autorizaciones", methods=["GET"])
 @login_required
+@permiso_requerido('autorizacion.ver')
 def get_autorizaciones():
     data = Autorizacion_Service.getAutorizaciones_service(db)
     if not data:
@@ -17,6 +18,7 @@ def get_autorizaciones():
 
 @autorizacion_json_bp.route("/get_detalles_autorizaciones/<string:from_date>/<string:to_date>/<int:idDepartment>", methods=["GET"])
 @login_required
+@permiso_requerido('autorizacion.ver')
 def get_detalles_autorizaciones(from_date, to_date, idDepartment):
     data = Autorizacion_Service.get_detalles_autorizaciones_service(db, from_date, to_date, idDepartment)
     if not data:
@@ -26,6 +28,7 @@ def get_detalles_autorizaciones(from_date, to_date, idDepartment):
 
 @autorizacion_json_bp.route("/guardar_autorizacion_service", methods=["POST", "PUT"])
 @login_required
+@permiso_requerido('autorizacion.crear')
 def guardar_autorizacion_service():
     data = request.get_json()
     if not data:
