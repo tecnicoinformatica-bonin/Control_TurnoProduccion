@@ -37,6 +37,15 @@ def calcular_diferencia_horas(
 
     if None in (inicio_emp, fin_emp, inicio_sup, fin_sup):
         return 0
+    
+     # Sábado o domingo
+    if fecha.weekday() in (5, 6):
+        if fin_sup < inicio_sup:
+            fin_sup += timedelta(days=1)
+
+        total_horas = (fin_sup - inicio_sup).total_seconds() / 3600
+
+        return floor_half(total_horas)
 
     if fecha.weekday() == 4:
         fin_emp = to_timedelta("15:00:00")
