@@ -634,6 +634,12 @@ message in messages %}
         field: "diferencia",
         hozAlign: "center",
         editor: false,
+
+        formatter: function (cell) {
+          const data = cell.getRow().getData();
+
+          return cell.getValue() ? cell.getValue() : data.total_horas;
+        },
       },
       {
         title: "Total autorizable",
