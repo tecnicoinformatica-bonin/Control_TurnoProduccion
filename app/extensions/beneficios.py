@@ -54,7 +54,7 @@ def calcular_beneficios(fecha, hora_inicio, hora_fin):
     # CENA CON COSTO
     # =====================================================
 
-    if 17 <= hora_entrada <= 19:
+    if 15 <= hora_entrada <= 23:
         cena_con_costo = True
 
     # =====================================================
