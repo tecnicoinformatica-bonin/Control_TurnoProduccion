@@ -108,19 +108,19 @@ def generar_reporte_horas_extra_autorizadas(encabezado_detalles, detalles):
 
         ws[f"G{fila_contador}"] = detalle["hora_salida"]
 
-        ws[f"H{fila_contador}"] = detalle["hora_entrada_digitada"]
+        ws[f"H{fila_contador}"] = detalle["hora_entrada_digitada"] if detalle["hora_entrada_digitada"] is not None else "----"
 
-        ws[f"I{fila_contador}"] = detalle["hora_salida_digitada"]
+        ws[f"I{fila_contador}"] = detalle["hora_salida_digitada"] if detalle["hora_salida_digitada"] is not None else "----"
         
-        ws[f"J{fila_contador}"] = detalle["hora_entrada_reloj"]
+        ws[f"J{fila_contador}"] = detalle["hora_entrada_reloj"] if detalle["hora_entrada_reloj"] is not None else "----"
         
-        ws[f"K{fila_contador}"] = detalle["hora_entrada_reloj"]
+        ws[f"K{fila_contador}"] = detalle["hora_salida_reloj"] if detalle["hora_salida_reloj"] is not None else "----"
         
-        ws[f"L{fila_contador}"] = detalle["total_digitado"]
+        ws[f"L{fila_contador}"] = detalle["total_digitado"] if detalle["total_digitado"] is not None else "----"
         
         ws[f"M{fila_contador}"] = detalle["total_horas"]
         
-        ws[f"N{fila_contador}"] = detalle["diferencia"]
+        ws[f"N{fila_contador}"] = detalle["diferencia"] if detalle["diferencia"] is not None else detalle["total_horas"]
 
         autorizado = ""
         if int(detalle["autorizado"]) == 1 and detalle["usuario_autorizacion"] is not None:
@@ -141,7 +141,7 @@ def generar_reporte_horas_extra_autorizadas(encabezado_detalles, detalles):
         fila_contador += 1
         contador += 1
 
-    ws[f"P{fila_contador}"] = f'=COUNT(P{fila_inicio}:P{fila_contador - 1})'
+    ws[f"P{fila_contador}"] = f'=SUM(P{fila_inicio}:P{fila_contador - 1})'
 
     ws["D5"] = f"=P{fila_contador}"
     ws["D6"] = f'=SUMIFS(N{fila_inicio}:N{fila_contador - 1}, O{fila_inicio}:O{fila_contador - 1}, "PENDIENTE")'
