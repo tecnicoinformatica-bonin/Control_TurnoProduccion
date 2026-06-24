@@ -140,6 +140,7 @@ class AutorizacionRepository:
             WHERE tr.fecha >= %s
             AND tr.fecha <= %s
             AND te.idDepartment = %s
+            AND te.idCentro NOT IN (1)
             ) x
             LEFT JOIN turnos_autorizacion_horas tah
                 ON tah.idEmpleado = x.idEmpleado
