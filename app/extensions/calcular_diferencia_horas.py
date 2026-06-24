@@ -38,6 +38,23 @@ def calcular_diferencia_horas(
     if None in (inicio_emp, fin_emp, inicio_sup, fin_sup):
         return 0
     
+    if fecha.weekday() == 4 and inicio_emp < to_timedelta("12:00:00"):
+        fin_emp = to_timedelta("15:00:00")
+    
+    # Horario empleado cruza medianoche
+    if fin_emp < inicio_emp:
+        fin_emp += timedelta(days=1)
+
+        if inicio_sup < inicio_emp:
+            inicio_sup += timedelta(days=1)
+
+        if fin_sup < inicio_emp:
+            fin_sup += timedelta(days=1)
+
+    # Horario digitado cruza medianoche
+    elif fin_sup < inicio_sup:
+        fin_sup += timedelta(days=1)
+    
      # Sábado o domingo
     if fecha.weekday() in (5, 6):
         if fin_sup < inicio_sup:
@@ -46,9 +63,6 @@ def calcular_diferencia_horas(
         total_horas = (fin_sup - inicio_sup).total_seconds() / 3600
 
         return floor_half(total_horas)
-
-    if fecha.weekday() == 4:
-        fin_emp = to_timedelta("15:00:00")
 
     entrada_extra = 0
     salida_extra = 0
