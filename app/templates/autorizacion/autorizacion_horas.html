@@ -640,6 +640,13 @@ message in messages %}
 
           return cell.getValue() ? cell.getValue() : data.total_horas;
         },
+
+        sorter: function (a, b, aRow, bRow) {
+          const valorA = a ?? aRow.getData().total_horas;
+          const valorB = b ?? bRow.getData().total_horas;
+
+          return valorA - valorB;
+        },
       },
       {
         title: "Total autorizable",
