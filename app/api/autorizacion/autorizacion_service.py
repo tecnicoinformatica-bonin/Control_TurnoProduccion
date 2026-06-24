@@ -1,4 +1,5 @@
 from datetime import datetime
+import traceback
 
 import pytz
 
@@ -174,15 +175,21 @@ class Autorizacion_Service():
         except Exception as ex:
             return {"error": f"No se pudo crear el autorizacion. {ex}"}
         
-
+    @staticmethod
     def get_registros_con_horas_extra(db, fecha, idDeparment):
         try:
             data = Autorizacion_Service.get_detalles_autorizaciones_service(db, fecha, fecha, idDeparment)
+
             registros_autorizados = []
             for row in data:
+                total_horas = row.get("total_horas") or 0
+                diferencia = row.get("diferencia")
+
+                if diferencia is None:
+                    continue
+
                 if(
-                    row["total_horas"] > 0
-                    and row["diferencia"] <= 0
+                    total_horas > 0 and diferencia <= 0
                 ):
                     registro = {
                         "idEmpleado": row["idEmpleado"],
@@ -243,7 +250,8 @@ class Autorizacion_Service():
             return autorizaciones_realizadas
 
         except Exception as ex:
-            return {"error": f"No se pudo autorización automática en el servicio: {str(ex)}"}
+            traceback.print_exc()
+            raise
 
 
     @staticmethod

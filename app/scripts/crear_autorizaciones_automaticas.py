@@ -23,12 +23,21 @@ with app.app_context():
 
         departamentos = Departamento_Service.getDepartamentos_aplica_horas_extra_service(db)
 
-        while daysCount < 7: # 7 es para una semana antes
+        while daysCount < 30: # 7 es para una semana antes
             day = fecha_actual - timedelta(days=daysCount)
             day_str = day.strftime("%Y-%m-%d")
 
             for d in departamentos:
-                autorizaciones += Autorizacion_Service.create_autorizacion_automatica(db, day_str, d["idDepartment"])
+                resultado = Autorizacion_Service.create_autorizacion_automatica(
+                    db,
+                    day_str,
+                    d["idDepartment"]
+                )
+
+                if isinstance(resultado, dict):
+                    print(resultado["error"])
+                else:
+                    autorizaciones += resultado
             
             daysCount += 1
 
