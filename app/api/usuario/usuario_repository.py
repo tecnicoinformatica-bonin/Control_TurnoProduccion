@@ -32,7 +32,7 @@ class UsuarioRepository:
             cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
 
             query = """
-            SELECT idUsuario, username, nombre, password_hash, activo, scope_departamentos_global, scope_permisos_global
+            SELECT idUsuario, username, nombre, password_hash, activo, scope_departamentos_global, scope_permisos_global, cambiar_password
 
             FROM turnos_usuario
             WHERE username = %s
@@ -324,7 +324,7 @@ class UsuarioRepository:
             cursor = db.connection.cursor()
             
             query = """
-                UPDATE turnos_usuario SET password_hash = %s
+                UPDATE turnos_usuario SET password_hash = %s, cambiar_password = 1
                 WHERE idUsuario = %s
                 """
             

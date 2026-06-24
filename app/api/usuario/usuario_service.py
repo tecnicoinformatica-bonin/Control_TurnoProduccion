@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import session
+from flask import redirect, session, url_for
 from werkzeug.security import check_password_hash
 from flask_login import login_user
 
@@ -167,6 +167,12 @@ class Usuario_Service():
          
       if not check_password_hash(usuario["password_hash"], password):
          return {"error": "Contraseña incorrecta.", "status": 401}
+      
+      # if usuario["cambiar_password"] == 1:
+      #    return redirect(url_for(
+      #       "usuario_template.change_password",
+      #       username = usuario["username"]
+      #    ))
          
       if usuarioALoguear:
          login_user(usuarioALoguear)
