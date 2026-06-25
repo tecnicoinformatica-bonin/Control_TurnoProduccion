@@ -374,7 +374,6 @@ class AutorizacionRepository:
                 AND tah.fecha = x.fecha
             WHERE 
                 x.total_horas > 0 
-                AND ISNULL(tah.usuario_autorizacion) 
                 AND (x.total_horas - x.total_digitado) > 0
                 AND NOT x.idCentro IN (1)
             ORDER BY x.idEmpleado 
@@ -420,6 +419,7 @@ class AutorizacionRepository:
                 tah.fecha >= %s
                 AND tah.fecha <= %s
                 AND te.idDepartment = %s
+                AND te.idCentro NOT IN (1)
             GROUP BY tah.idEmpleado 
             ORDER BY tah.idEmpleado
             ) x
@@ -456,7 +456,7 @@ class AutorizacionRepository:
                 ) AS nombre_completo,
                 tah.fecha,
                 tcdc.nombreCentro,
-                tl.nameLinea,
+                COALESCE(tl.nameLinea, tcdc.nombreCentro) AS nameLinea,
                 tah.horas_autorizadas
             FROM turnos_autorizacion_horas tah 
             INNER JOIN 
@@ -468,7 +468,7 @@ class AutorizacionRepository:
             INNER JOIN 
                 turnos_centro_de_costo tcdc 
                 ON tcdc.idCentro  = tr.idCentro
-            INNER JOIN 
+            LEFT JOIN 
                 turnos_linea tl
                 ON tl.idLinea = tr.idLinea 
             WHERE 
@@ -507,7 +507,7 @@ class AutorizacionRepository:
                     te.lastName2
                 ) AS nombre_completo,
                 tcdc.nombreCentro,
-                tl.nameLinea,
+                COALESCE(tl.nameLinea, tcdc.nombreCentro) AS nameLinea,
                 SUM(tah.horas_autorizadas) AS horas_autorizadas_linea
             FROM turnos_autorizacion_horas tah 
             INNER JOIN 
@@ -519,7 +519,7 @@ class AutorizacionRepository:
             INNER JOIN 
                 turnos_centro_de_costo tcdc 
                 ON tcdc.idCentro  = tr.idCentro
-            INNER JOIN 
+            LEFT JOIN 
                 turnos_linea tl
                 ON tl.idLinea = tr.idLinea 
             WHERE 
@@ -555,52 +555,56 @@ class AutorizacionRepository:
                 c.nombreCentro,
                 COALESCE(cc.horas_autorizadas, 0) AS horas_centro_costo,
                 COALESCE(li.horas_autorizadas, 0) AS horas_linea,
-                COALESCE(cc.horas_autorizadas, 0) -
-                COALESCE(li.horas_autorizadas, 0) AS diferencia
+                COALESCE(cc.horas_autorizadas, 0)
+                    - COALESCE(li.horas_autorizadas, 0) AS diferencia
             FROM turnos_centro_de_costo c
             LEFT JOIN (
                 SELECT
                     tcdc.nombreCentro,
                     SUM(tah.horas_autorizadas) AS horas_autorizadas
-                FROM turnos_centro_de_costo tcdc
-                LEFT JOIN turnos_registro tr
-                    ON tr.idCentro = tcdc.idCentro
-                    AND tr.fecha >= %s AND tr.fecha <= %s
-                LEFT JOIN turnos_autorizacion_horas tah
-                    ON tah.idRegistro = tr.idRegistro
+                FROM turnos_autorizacion_horas tah
+                INNER JOIN turnos_registro tr
+                    ON tr.idRegistro = tah.idRegistro
+                INNER JOIN turnos_centro_de_costo tcdc
+                    ON tcdc.idCentro = tr.idCentro
                 WHERE
-                    tcdc.idDepartment = %s
-                    AND (
-                        tr.idEmpleado IS NULL
-                        OR tcdc.idCentro  NOT IN (1)
-                    )
+                    tah.fecha >= %s
+                    AND tah.fecha <= %s
+                    AND tcdc.idDepartment = %s
+                    AND tcdc.idCentro NOT IN (1)
                 GROUP BY tcdc.nombreCentro
             ) cc
                 ON cc.nombreCentro = c.nombreCentro
             LEFT JOIN (
                 SELECT
-                    tl.nameLinea,
+                    COALESCE(
+                        tl.nameLinea,
+                        tcdc.nombreCentro
+                    ) AS nombreLinea,
                     SUM(tah.horas_autorizadas) AS horas_autorizadas
-                FROM turnos_linea tl
-                LEFT JOIN turnos_registro tr
-                    ON tr.idLinea = tl.idLinea
-                    AND tr.fecha >= %s AND tr.fecha <= %s
-                LEFT JOIN turnos_autorizacion_horas tah
-                    ON tah.idRegistro = tr.idRegistro
+                FROM turnos_autorizacion_horas tah
+                INNER JOIN turnos_registro tr
+                    ON tr.idRegistro = tah.idRegistro
+                INNER JOIN turnos_centro_de_costo tcdc
+                    ON tcdc.idCentro = tr.idCentro
+                LEFT JOIN turnos_linea tl
+                    ON tl.idLinea = tr.idLinea
                 WHERE
-                    tl.idDepartment = %s
-                    AND (
-                        tr.idEmpleado IS NULL
-                        OR tl.idLinea NOT IN (9)
+                    tah.fecha >= %s
+                    AND tah.fecha <= %s
+                    AND tcdc.idDepartment = %s
+                    AND tcdc.idCentro NOT IN (1)
+                GROUP BY
+                    COALESCE(
+                        tl.nameLinea,
+                        tcdc.nombreCentro
                     )
-                GROUP BY tl.nameLinea
             ) li
-                ON li.nameLinea = c.nombreCentro
+                ON li.nombreLinea = c.nombreCentro
             WHERE
                 c.idDepartment = %s
                 AND c.idCentro NOT IN (1)
-            ORDER BY
-                c.nombreCentro;
+            ORDER BY c.nombreCentro;
             """
             cursor.execute(query, (from_date, to_date, idDepartment, from_date, to_date, idDepartment, idDepartment,))
 
@@ -627,14 +631,14 @@ class AutorizacionRepository:
             SELECT
                 tah.idRegistro,
                 tcdc.nombreCentro,
-                tl.nameLinea,
+                COALESCE(tl.nameLinea, tcdc.nombreCentro) AS nameLinea,
                 SUM(tah.horas_autorizadas) as horas_autorizadas_linea
             FROM turnos_centro_de_costo tcdc 
             INNER JOIN 	
                 turnos_registro tr
                 ON tr.idCentro = tcdc.idCentro 
                 AND tr.fecha >= %s AND tr.fecha <= %s
-            INNER JOIN 
+            LEFT JOIN 
                 turnos_linea tl 
                 ON tl.idLinea = tr.idLinea 
             INNER JOIN
@@ -670,25 +674,30 @@ class AutorizacionRepository:
             query = """
             SELECT
                 tah.idRegistro,
-                tl.nameLinea,
-                tcdc.nombreCentro ,
-                SUM(tah.horas_autorizadas) as horas_autorizadas_centro
-            FROM turnos_linea tl 
-            INNER JOIN 	
-                turnos_registro tr
-                ON tr.idLinea= tl.idLinea
-                AND tr.fecha >= %s AND tr.fecha <= %s
-            INNER JOIN 
-                turnos_centro_de_costo tcdc  
+                COALESCE(tl.nameLinea, tcdc.nombreCentro) AS nameLinea,
+                tcdc.nombreCentro,
+                SUM(tah.horas_autorizadas) AS horas_autorizadas_centro
+            FROM turnos_autorizacion_horas tah
+            INNER JOIN turnos_registro tr
+                ON tr.idRegistro = tah.idRegistro
+            INNER JOIN turnos_centro_de_costo tcdc
                 ON tcdc.idCentro = tr.idCentro
-            INNER JOIN
-                turnos_autorizacion_horas tah 
-                ON tah.idRegistro = tr.idRegistro 
-            WHERE 
-                tcdc.idDepartment = %s
-                AND tl.idLinea NOT IN (9)
-            GROUP BY tah.idRegistro, tcdc.nombreCentro, tl.nameLinea
-            ORDER BY tcdc.nombreCentro 
+            LEFT JOIN turnos_linea tl
+                ON tl.idLinea = tr.idLinea
+            WHERE
+                tah.fecha >= %s
+                AND tah.fecha <= %s
+                AND tcdc.idDepartment = %s
+                AND (
+                    tl.idLinea IS NULL
+                    OR tl.idLinea NOT IN (9)
+                )
+            GROUP BY
+                tah.idRegistro,
+                COALESCE(tl.nameLinea, tcdc.nombreCentro),
+                tcdc.nombreCentro
+            ORDER BY
+                tcdc.nombreCentro;
             """
             cursor.execute(query, (from_date, to_date, idDepartment,))
 
@@ -712,24 +721,25 @@ class AutorizacionRepository:
             cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
 
             query = """
-            SELECT
-                tl.nameLinea,
-                COALESCE(SUM(tah.horas_autorizadas), 0) AS horas_autorizadas
-            FROM turnos_linea tl
-            LEFT JOIN 
-                turnos_registro tr
-                ON tr.idLinea = tl.idLinea
-                AND tr.fecha >= %s AND tr.fecha <= %s
-            LEFT JOIN 
-                turnos_autorizacion_horas tah
-                ON tah.idRegistro = tr.idRegistro
+           SELECT
+                COALESCE(tl.nameLinea, tcdc.nombreCentro) AS nameLinea,
+                SUM(tah.horas_autorizadas) AS horas_autorizadas
+            FROM turnos_autorizacion_horas tah
+            INNER JOIN turnos_registro tr
+                ON tr.idRegistro = tah.idRegistro
+            INNER JOIN turnos_centro_de_costo tcdc
+                ON tcdc.idCentro = tr.idCentro
+            LEFT JOIN turnos_linea tl
+                ON tl.idLinea = tr.idLinea
             WHERE
-                tl.idDepartment = %s
-                AND NOT tr.idEmpleado IN (120,662,921,1315,1429,1466,1477,2007)
+                tah.fecha >= %s
+                AND tah.fecha <= %s
+                AND tcdc.idDepartment = %s
+                AND tr.idEmpleado NOT IN (120,662,921,1315,1429,1466,1477,2007)
             GROUP BY
-                tl.nameLinea
+                COALESCE(tl.nameLinea, tcdc.nombreCentro)
             ORDER BY
-                tl.nameLinea;
+                COALESCE(tl.nameLinea, tcdc.nombreCentro);
             """
             cursor.execute(query, (from_date, to_date, idDepartment,))
 
