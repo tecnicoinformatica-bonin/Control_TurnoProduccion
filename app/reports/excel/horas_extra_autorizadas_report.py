@@ -6,6 +6,8 @@ from openpyxl import load_workbook
 from openpyxl.styles import Font, Alignment, Border, Side
 from openpyxl.drawing.image import Image
 from openpyxl.utils import get_column_letter
+from openpyxl.chart import BarChart, Reference, BarChart3D
+from openpyxl.chart.label import DataLabelList
 
 from app.api.centro_de_costo.centro_de_costo_service import Centro_de_costo_Service
 from app.extensions.db import db
@@ -688,7 +690,8 @@ def generar_reporte_resumen_general(encabezado_detalles_parte1, detalles_parte1,
 
     wb = load_workbook(ruta_plantilla, keep_vba=True)
 
-    ws = wb["Resumen_general"]    
+    ws = wb["Resumen_general"]  
+    ws_graficas = wb["Graficas"]  
     
     ws["C2"] = encabezado_detalles_parte1["nombreDepartamento"]
     ws["C3"] = encabezado_detalles_parte1["from_date"]
@@ -730,6 +733,48 @@ def generar_reporte_resumen_general(encabezado_detalles_parte1, detalles_parte1,
     ws[f"C{fila_contador}"] = f"=SUM(C{fila_inicio}:C{fila_contador - 1})"
     ws[f"D{fila_contador}"] = f"=SUM(D{fila_inicio}:D{fila_contador - 1})"
     ws[f"E{fila_contador}"] = f"=SUM(E{fila_inicio}:E{fila_contador - 1})"
+
+    # Gráfica
+    fila_final = fila_contador - 1
+    chart = BarChart()
+
+    chart.type = "col"
+    chart.title = f"Total HORAS CENTRO RRHH: {encabezado_detalles_parte1['nombreDepartamento']}"
+    chart.style = 10
+
+    # Columna C = Horas Centro
+    data = Reference(
+        ws,
+        min_col=3,      # C
+        min_row=fila_inicio,
+        max_row=fila_final
+    )
+
+    # Columna B = Nombre Centro
+    cats = Reference(
+        ws,
+        min_col=2,      # B
+        min_row=fila_inicio,
+        max_row=fila_final
+    )
+
+    chart.add_data(data)
+    chart.set_categories(cats)
+
+    chart.dLbls = DataLabelList()
+    chart.dLbls.showVal = True
+    chart.dLbls.showCatName = False
+    chart.dLbls.showSerName = False
+    chart.dLbls.showPercent = False
+    chart.dLbls.showLegendKey = False
+
+    chart.x_axis.delete = False
+    chart.x_axis.tickLblPos = "low"
+
+    chart.width = 20
+    chart.height = 10
+
+    ws_graficas.add_chart(chart, "A1")
 
     # =========================================================
     # PARTE 2
@@ -818,6 +863,51 @@ def generar_reporte_resumen_general(encabezado_detalles_parte1, detalles_parte1,
         fila_inicio - 1, 
         fila_contador
     )
+
+    # Gráfica
+    fila_final = fila_contador - 1
+    chart2 = BarChart3D()
+
+    chart2.type = "col"
+    chart2.title = f"Distribución de horas en centro de costo por línea asignada: {encabezado_detalles_parte1['nombreDepartamento']}"
+    chart2.grouping = "stacked"
+    chart2.overlap = 100
+    chart2.style = 10
+
+    data = Reference(
+        ws,
+        min_col=3,              # C
+        max_col=columna_final-1,
+        min_row=fila_inicio-1,  # encabezados líneas
+        max_row=fila_final
+    )
+
+    cats = Reference(
+        ws,
+        min_col=2,              # B
+        min_row=fila_inicio,
+        max_row=fila_final
+    )
+
+    chart2.legend.position = "tr"
+
+    chart2.width = 25
+    chart2.height = 15
+        
+    chart2.add_data(data, titles_from_data=True)
+    chart2.set_categories(cats)
+
+    chart2.dLbls = DataLabelList()
+    chart2.dLbls.showVal = False
+    chart2.dLbls.showCatName = False
+    chart2.dLbls.showSerName = False
+    chart2.dLbls.showPercent = False
+    chart2.dLbls.showLegendKey = False
+
+    chart2.x_axis.delete = False
+    chart2.x_axis.tickLblPos = "low"
+
+    ws_graficas.add_chart(chart2, "A22")
     
     # =========================================================
     # PARTE 3
@@ -907,6 +997,51 @@ def generar_reporte_resumen_general(encabezado_detalles_parte1, detalles_parte1,
         fila_contador
     )
 
+    # Gráfica
+    fila_final = fila_contador - 1
+    chart3 = BarChart3D()
+
+    chart3.type = "col"
+    chart3.title = f"Distribución de horas en línea asignada por centro de costo: {encabezado_detalles_parte1['nombreDepartamento']}"
+    chart3.grouping = "stacked"
+    chart3.overlap = 100
+    chart3.style = 10
+
+    data = Reference(
+        ws,
+        min_col=3,              # C
+        max_col=columna_final-1,
+        min_row=fila_inicio-1,  # encabezados líneas
+        max_row=fila_final
+    )
+
+    cats = Reference(
+        ws,
+        min_col=2,              # B
+        min_row=fila_inicio,
+        max_row=fila_final
+    )
+
+    chart3.legend.position = "tr"
+
+    chart3.width = 25
+    chart3.height = 15
+        
+    chart3.add_data(data, titles_from_data=True)
+    chart3.set_categories(cats)
+
+    chart3.dLbls = DataLabelList()
+    chart3.dLbls.showVal = False
+    chart3.dLbls.showCatName = False
+    chart3.dLbls.showSerName = False
+    chart3.dLbls.showPercent = False
+    chart3.dLbls.showLegendKey = False
+
+    chart3.x_axis.delete = False
+    chart3.x_axis.tickLblPos = "low"
+
+    ws_graficas.add_chart(chart3, "M22")
+
     # =========================================================
     # PARTE 4
     # =========================================================
@@ -936,6 +1071,48 @@ def generar_reporte_resumen_general(encabezado_detalles_parte1, detalles_parte1,
         contador += 1
 
     ws[f"C{fila_contador}"] = f"=SUM(C{fila_inicio}:C{fila_contador - 1})"
+
+    # Gráfica
+    fila_final = fila_contador - 1
+    chart = BarChart()
+
+    chart.type = "col"
+    chart.title = f"Total LÍNEA ASIGNADA: {encabezado_detalles_parte1['nombreDepartamento']}"
+    chart.style = 10
+
+    # Columna C = Horas Centro
+    data = Reference(
+        ws,
+        min_col=3,      # C
+        min_row=fila_inicio,
+        max_row=fila_final
+    )
+
+    # Columna B = Nombre Centro
+    cats = Reference(
+        ws,
+        min_col=2,      # B
+        min_row=fila_inicio,
+        max_row=fila_final
+    )
+
+    chart.add_data(data)
+    chart.set_categories(cats)
+
+    chart.dLbls = DataLabelList()
+    chart.dLbls.showVal = True
+    chart.dLbls.showCatName = False
+    chart.dLbls.showSerName = False
+    chart.dLbls.showPercent = False
+    chart.dLbls.showLegendKey = False
+
+    chart.x_axis.delete = False
+    chart.x_axis.tickLblPos = "low"
+
+    chart.width = 20
+    chart.height = 10
+
+    ws_graficas.add_chart(chart, "K1")
 
     # =========================================================
     # ANCHO COLUMNAS
