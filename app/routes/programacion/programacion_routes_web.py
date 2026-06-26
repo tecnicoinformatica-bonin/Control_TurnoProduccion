@@ -80,19 +80,19 @@ def crearProgramacionPorDepartamentosUsuario_web():
                     "Intento de acceso no autorizado."
                 )
 
-                return redirect(url_for("home_template.index"))
+                return redirect(url_for("programacion_template.programaciones_general"))
 
         result = Programacion_Service.crearProgramacionPorDepartamentosUsuario(db, data)
 
         if "error" in result:
             FlashMessages.flash_error(result["error"])
-            return redirect(url_for("home_template.index"))
+            return redirect(url_for("programacion_template.programaciones_general"))
         else:
             FlashMessages.flash_success(result["mensaje"])
-            return redirect(url_for("home_template.index"))
+            return redirect(url_for("programacion_template.programaciones_general"))
 
     return redirect(url_for(
-        "home_template.index", 
+        "programacion_template.programaciones_general", 
         )
     )
 
