@@ -128,7 +128,7 @@ class AutorizacionRepository:
                     ) / 3600
                     ELSE 0
                 END AS horas_tarde,
-                tr.diferencia_horas AS total_digitado,
+                COALESCE(tr.diferencia_horas, 0) AS total_digitado,
                 tmi.total_horas AS total_horas
             FROM turnos_registro tr
             INNER JOIN turnos_empleado te
@@ -355,7 +355,7 @@ class AutorizacionRepository:
                 ) AS nombre_completo,
                 tr.idCentro,
                 tr.fecha,
-                tr.diferencia_horas AS total_digitado,
+                COALESCE(tr.diferencia_horas, 0) AS total_digitado,
                 tmi.total_horas AS total_horas
             FROM turnos_registro tr
             INNER JOIN 
@@ -374,6 +374,7 @@ class AutorizacionRepository:
                 AND tah.fecha = x.fecha
             WHERE 
                 x.total_horas > 0 
+                AND COALESCE(tah.autorizado, 0) <> 1
                 AND (x.total_horas - x.total_digitado) > 0
                 AND NOT x.idCentro IN (1)
             ORDER BY x.idEmpleado 
