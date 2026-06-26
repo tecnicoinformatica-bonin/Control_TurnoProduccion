@@ -160,16 +160,19 @@ class Programacion_Service():
             programaciones = []
             for row in data:
                 fecha = row["fecha"].strftime("%Y-%m-%d")
+                fecha_creacion = row["fecha_creacion"].strftime("%d/%m/%Y %H:%m") if row["fecha_creacion"] is not None else None
+                fecha_cierre = row["fecha_cierre"].strftime("%d/%m/%Y %H:%m") if row["fecha_cierre"] is not None else None
+                fecha_reapertura = row["fecha_reapertura"].strftime("%d/%m/%Y %H:%m") if row["fecha_reapertura"] is not None else None
                 programacion = {
                     "idProgramacion": row["idProgramacion"],
                     "fecha": fecha,
                     "idDepartment": row["idDepartment"],
                     "elaborado_por": row["elaborado_por"],
-                    "fecha_creacion": row["fecha_creacion"],
+                    "fecha_creacion": fecha_creacion,
                     "estado": row["estado"],
-                    "fecha_cierre": row["fecha_cierre"],
+                    "fecha_cierre": fecha_cierre,
                     "cerrado_por": row["cerrado_por"],
-                    "fecha_reapertura": row["fecha_reapertura"],
+                    "fecha_reapertura": fecha_reapertura,
                     "reabierto_por": row["reabierto_por"],
                     "motivo_reapertura": row["motivo_reapertura"],
                     "verificado_por": row["verificado_por"],
@@ -187,16 +190,19 @@ class Programacion_Service():
             programaciones = []
             for row in data:
                 fecha = row["fecha"].strftime("%Y-%m-%d")
+                fecha_creacion = row["fecha_creacion"].strftime("%d/%m/%Y %H:%m") if row["fecha_creacion"] is not None else None
+                fecha_cierre = row["fecha_cierre"].strftime("%d/%m/%Y %H:%m") if row["fecha_cierre"] is not None else None
+                fecha_reapertura = row["fecha_reapertura"].strftime("%d/%m/%Y %H:%m") if row["fecha_reapertura"] is not None else None
                 programacion = {
                     "idProgramacion": row["idProgramacion"],
                     "fecha": fecha,
                     "idDepartment": row["idDepartment"],
                     "elaborado_por": row["elaborado_por"],
-                    "fecha_creacion": row["fecha_creacion"],
+                    "fecha_creacion": fecha_creacion,
                     "estado": row["estado"],
-                    "fecha_cierre": row["fecha_cierre"],
+                    "fecha_cierre": fecha_cierre,
                     "cerrado_por": row["cerrado_por"],
-                    "fecha_reapertura": row["fecha_reapertura"],
+                    "fecha_reapertura": fecha_reapertura,
                     "reabierto_por": row["reabierto_por"],
                     "motivo_reapertura": row["motivo_reapertura"],
                     "verificado_por": row["verificado_por"],

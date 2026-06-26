@@ -84,6 +84,7 @@ class Autorizacion_Service():
             
             for row in data:   
                 fecha = row["fecha"].strftime("%Y-%m-%d")
+                fecha_autorizacion = row["fecha_autorizacion"].strftime("%d/%m/%Y %H:%m") if row["fecha_autorizacion"] is not None else None
                 autorizacion = {
                     "idEmpleado": row["idEmpleado"], 
                     "idRegistro": row["idRegistro"], 
@@ -107,7 +108,7 @@ class Autorizacion_Service():
                     "autorizado": row["autorizado"], 
                     "observacion": row["observacion"], 
                     "usuario_autorizacion": row["usuario_autorizacion"], 
-                    "fecha_autorizacion": row["fecha_autorizacion"], 
+                    "fecha_autorizacion": fecha_autorizacion, 
                 }
 
                 if autorizacion["total_horas_autorizables"] is not None and autorizacion["horas_autorizadas"] is not None:
