@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, redirect, url_for, session, request
 from datetime import datetime, timedelta
+from app.api.calendario_feriados.calendario_feriados_service import Feriado_Service
 from app.extensions.error_handlers import register_error_handlers
 from config import DevelopmentConfig
 from flask_login import LoginManager, current_user, logout_user
@@ -10,6 +11,7 @@ from app.extensions.swagger import init_swagger
 
 # API
 from app.api import api_bp
+from app.routes.calendario_feriados.calendario_feriados_routes_api import feriado_api_bp
 from app.routes.centro_de_costo.centro_de_costo_routes_api import centro_de_costo_api_bp
 from app.routes.departamento.departamento_routes_api import departamento_api_bp
 from app.routes.empleado.empleado_routes_api import empleado_api_bp
@@ -31,6 +33,7 @@ from app.routes.usuario_permiso.usuario_permiso_routes_api import usuario_permis
 from app.routes.usuario_rol.usuario_rol_routes_api import usuario_rol_api_bp
 
 # WEB TEMPLATES
+from app.routes.calendario_feriados.calendario_feriados_routes_templates import feriado_template_bp
 from app.routes.autorizacion.autorizacion_routes_templates import autorizacion_template_bp
 from app.routes.centro_de_costo.centro_de_costo_routes_templates import centro_de_costo_template_bp
 from app.routes.departamento.departamento_routes_templates import departamento_template_bp
@@ -55,6 +58,7 @@ from app.routes.usuario_rol.usuario_rol_routes_templates import usuario_rol_temp
 from app.routes.home.home_routes_templates import home_template_bp
 
 # WEB LOGIC
+from app.routes.calendario_feriados.calendario_feriados_routes_web import feriado_web_bp
 from app.routes.autorizacion.autorizacion_routes_web import autorizacion_web_bp
 from app.routes.centro_de_costo.centro_de_costo_routes_web import centro_de_costo_web_bp
 from app.routes.departamento.departamento_routes_web import departamento_web_bp
@@ -77,6 +81,7 @@ from app.routes.usuario_permiso.usuario_permiso_routes_web import usuario_permis
 from app.routes.usuario_rol.usuario_rol_routes_web import usuario_rol_web_bp
 
 # blueprints for JSON APIS
+from app.routes.calendario_feriados.calendario_feriados_routes_json import feriado_json_bp
 from app.routes.autorizacion.autorizacion_routes_json import autorizacion_json_bp
 from app.routes.centro_de_costo.centro_de_costo_routes_json import centro_de_costo_json_bp
 from app.routes.departamento.departamento_routes_json import departamento_json_bp
@@ -106,7 +111,11 @@ def create_app():
     init_swagger(app)
 
     db.init_app(app)
+    
     login_manager.init_app(app)
+    with app.app_context():
+        Feriado_Service.refrescar_cache_feriados(db)
+
     @login_manager.unauthorized_handler
     def unauthorized():
         if request.path.startswith("/json/"):
@@ -155,11 +164,11 @@ def create_app():
                         )
 
                 session['ultima_actividad'] = ahora.isoformat()
-
-    
+        
     # Registro de blueprints
     # API
     app.register_blueprint(api_bp, url_prefix="/api")
+    app.register_blueprint(feriado_api_bp, url_prefix="/api/feriado")
     app.register_blueprint(centro_de_costo_api_bp, url_prefix="/api/centro_de_costo")
     app.register_blueprint(departamento_api_bp, url_prefix="/api/departamento")
     app.register_blueprint(empleado_api_bp, url_prefix="/api/empleado")
@@ -181,6 +190,7 @@ def create_app():
     app.register_blueprint(usuario_rol_api_bp, url_prefix="/api/usuario_rol")
 
     # WEB TEMPLATES
+    app.register_blueprint(feriado_template_bp, url_prefix="/template/feriado")
     app.register_blueprint(autorizacion_template_bp, url_prefix="/template/autorizacion")
     app.register_blueprint(centro_de_costo_template_bp, url_prefix="/template/centro_de_costo")
     app.register_blueprint(departamento_template_bp, url_prefix="/template/departamento")
@@ -205,6 +215,7 @@ def create_app():
     app.register_blueprint(home_template_bp, url_prefix="/template/home")
 
     # WEB LOGIC
+    app.register_blueprint(feriado_web_bp, url_prefix="/web/feriado")
     app.register_blueprint(autorizacion_web_bp, url_prefix="/web/autorizacion")
     app.register_blueprint(centro_de_costo_web_bp, url_prefix="/web/centro_de_costo")
     app.register_blueprint(departamento_web_bp, url_prefix="/web/departamento")
@@ -227,6 +238,7 @@ def create_app():
     app.register_blueprint(usuario_rol_web_bp, url_prefix="/web/usuario_rol")
 
     # JSON APIs
+    app.register_blueprint(feriado_json_bp, url_prefix="/json/feriado")
     app.register_blueprint(autorizacion_json_bp, url_prefix="/json/autorizacion")
     app.register_blueprint(centro_de_costo_json_bp, url_prefix="/json/centro_de_costo")
     app.register_blueprint(departamento_json_bp, url_prefix="/json/departamento")

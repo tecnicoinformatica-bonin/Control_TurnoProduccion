@@ -415,18 +415,13 @@ message in messages %}
 
 <script>
   const idProgramacion = "{{ programacion_actual.idProgramacion }}";
-  const feriadosGT = [
-    "01-01", // Año nuevo
-    "05-01", // Día del Trabajador
-    "06-30", // Día del Ejército
-    "09-15", // Día de la Independencia
-    "10-20", // Día de la REvolución de 1944
-    "11-01", // Día de Todos los Santos
-    "12-25", // Navidad
+  async function obtenerFeriados() {
+    const response = await fetch(
+      "/json/feriado/get_fechas_de_feriados_formateados",
+    );
 
-    // Villa Nueva
-    "12-08", // Feriado en Villa Nueva
-  ];
+    return await response.json();
+  }
 
   async function apiFetch(url, options = {}) {
     try {
@@ -457,15 +452,12 @@ message in messages %}
     }
   }
 
-  (function asignarFeriado() {
+  (async function asignarFeriado() {
     const dataAsueto = document.querySelector(".asueto-data__programacion");
+    const feriadosGT = await obtenerFeriados();
     const fechaMesDia = `${month}-${day}`;
 
-    if (feriadosGT.includes(fechaMesDia)) {
-      dataAsueto.textContent = "SÍ";
-    } else {
-      dataAsueto.textContent = "NO";
-    }
+    dataAsueto.textContent = feriadosGT.includes(fechaMesDia) ? "SÍ" : "NO";
   })();
 
   (async function () {

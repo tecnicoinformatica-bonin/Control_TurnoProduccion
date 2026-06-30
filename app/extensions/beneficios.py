@@ -1,23 +1,22 @@
+from flask import current_app
+
 from datetime import timedelta, datetime, time, date
 
-FERIADOS_GT = {
-    "01-01", # Año nuevo
-    "05-01", # Día del Trabajador
-    "06-30", # Día del Ejército
-    "09-15", # Día de la Independencia
-    "10-20", # Día de la REvolución de 1944
-    "11-01", # Día de Todos los Santos
-    "12-25", # Navidad
+# FERIADOS_GT = {
+#     "01-01", # Año nuevo
+#     "05-01", # Día del Trabajador
+#     "06-30", # Día del Ejército
+#     "09-15", # Día de la Independencia
+#     "10-20", # Día de la REvolución de 1944
+#     "11-01", # Día de Todos los Santos
+#     "12-25", # Navidad
 
-    # Villa Nueva
-    "12-08", # Feriado en Villa Nueva
-}
-
+#     # Villa Nueva
+#     "12-08", # Feriado en Villa Nueva
+# }
 
 def es_feriado(fecha):
-    fecha_str = fecha.strftime("%m-%d")
-    return fecha_str in FERIADOS_GT
-
+    return fecha.strftime("%m-%d") in current_app.config["FERIADOS_GT"]
 
 def calcular_beneficios(fecha, hora_inicio, hora_fin):
 

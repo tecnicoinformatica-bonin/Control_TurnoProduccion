@@ -1,0 +1,324 @@
+{% extends "layout/base.html" %} {% block title %} Calendario de feriados y
+asuetos - Turnos Bonin {% endblock %} {% block content %}
+
+<!-- form card cc payment -->
+<div class="card card-outline-secondary bg-dark text-light">
+  <div class="card-body">
+    <div class="d-flex justify-content-between">
+      <h3>Feriados y asuetos</h3>
+      <form class="d-flex" role="search" onsubmit="return false;">
+        <input
+          class="form-control me-2"
+          type="search"
+          placeholder="Nombre de la línea"
+          id="busqueda"
+        />
+        <button class="btn btn-outline-primary" type="submit">Buscar</button>
+      </form>
+    </div>
+    <hr />
+
+    {% with messages = get_flashed_messages(with_categories=true) %} {% for
+    category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+      <strong>{{ message }}</strong>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% endfor %} {% endwith %}
+
+    <div>
+      <button id="reactivity-add" class="btn btn-success mb-3">
+        Agregar nuevo
+      </button>
+    </div>
+    <div id="tabla-feriados"></div>
+  </div>
+</div>
+<script>
+  const tableFeriados = new Tabulator("#tabla-feriados", {
+    theme: "site-dark",
+    maxHeight: "100%",
+    layout: "fitColumns",
+
+    ajaxURL: `/json/feriado/get_feriados`,
+    ajaxConfig: "GET",
+    columns: [
+      {
+        title: "Estado",
+        field: "_saveStatus",
+        hozAlign: "center",
+        frozen: true,
+
+        formatter: function (cell) {
+          const value = cell.getValue();
+          const row = cell.getRow();
+          const data = row.getData();
+
+          switch (value) {
+            case "draft":
+              return "⬜ Borrador";
+
+            case "saving":
+              return "💾 Guardando";
+
+            case "saved":
+              return "🟢 Guardado";
+
+            case "editing":
+              return "📝 Editando";
+
+            case "error":
+              return "🔴 Error";
+
+            default:
+              return "✅ Confirmado";
+          }
+        },
+      },
+      {
+        title: "ID",
+        field: "idFeriado",
+        editor: false,
+      },
+      {
+        title: "Fecha",
+        field: "fecha",
+        editor: "date",
+        formatter: "datetime",
+
+        formatterParams: {
+          inputFormat: "yyyy-MM-dd",
+          outputFormat: "dd/MM/yyyy",
+          invalidPlaceholder: "",
+        },
+
+        editorParams: {
+          format: "yyyy-MM-dd",
+        },
+      },
+      {
+        title: "Nombre del feriado",
+        field: "nombre",
+        editor: true,
+      },
+      {
+        title: "Tipo",
+        field: "tipo",
+        editor: "list",
+        editorParams: {
+          values: {
+            asueto: "Asueto",
+            feriado: "Feriado",
+            especial: "Especial",
+          },
+        },
+
+        formatter: function (cell) {
+          const tipoCapitalized = `${String(cell.getValue())
+            .slice(0, 1)
+            .toUpperCase()}${String(cell.getValue()).slice(1)}`;
+
+          return tipoCapitalized || "";
+        },
+      },
+      {
+        title: "Dura solo medio día",
+        field: "es_medio_dia",
+        editor: "list",
+        editorParams: {
+          values: {
+            0: "No",
+            1: "Sí",
+          },
+        },
+
+        formatter: function (cell) {
+          return Number(cell.getValue()) === 1 ? "Sí" : "No";
+        },
+      },
+      {
+        title: "Guardar",
+        hozAlign: "center",
+
+        formatter: function () {
+          return `
+            <button class="btn btn-success btn-sm">
+              💾
+            </button>
+          `;
+        },
+
+        cellClick: async function (e, cell) {
+          const row = cell.getRow();
+          const data = row.getData();
+
+          // VALIDACIÓN
+          if (!data.fecha || !data.nombre || !data.tipo) {
+            row.update({
+              _saveStatus: "error",
+            });
+            alert("Complete los campos obligatorios");
+            return;
+          }
+
+          row.update({
+            _saveStatus: "saving",
+          });
+
+          try {
+            let response;
+
+            // CREATE
+            if (data._isNew) {
+              if (!data.idFeriado && !data._isNew) {
+                alert("Fila sin ID válido");
+                return;
+              }
+              response = await fetch("/json/feriado/create_feriado", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+              });
+            } else {
+              // UPDATE
+              response = await fetch(
+                `/json/feriado/update_feriado/${data.idFeriado}`,
+                {
+                  method: "PUT",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(data),
+                },
+              );
+            }
+
+            if (!response.ok) {
+              row.update({
+                _saveStatus: "error",
+              });
+
+              const errorData = await response.json();
+              throw new Error(errorData.error);
+            }
+
+            const resp = await response.json();
+
+            row.update({
+              ...resp,
+
+              _isNew: false,
+              _saveStatus: "saved",
+            });
+          } catch (error) {
+            alert(error.message);
+          }
+        },
+      },
+      {
+        title: "Eliminar",
+        hozAlign: "center",
+
+        formatter: () => {
+          return "<button class='btn btn-danger'>&cross;</button>";
+        },
+        cellClick: async function (e, cell) {
+          let row = cell.getRow();
+          let data = row.getData();
+
+          if (!data.idFeriado) {
+            row.delete();
+            return;
+          }
+          try {
+            const response = await fetch(
+              `/json/feriado/delete_feriado/${data.idFeriado}`,
+              {
+                method: "DELETE",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+              },
+            );
+
+            if (!response.ok) {
+              row.update({
+                _saveStatus: "error",
+              });
+
+              const errorData = await response.json();
+              throw new Error(errorData.error);
+            }
+
+            const resp = await response.json();
+
+            row.delete();
+          } catch (error) {
+            console.error(error);
+
+            row.update({
+              _saveStatus: "error",
+            });
+          }
+        },
+      },
+    ],
+
+    rowFormatter: function (row) {
+      const el = row.getElement();
+      el.classList.remove("red-row");
+      el.classList.remove("green-row");
+      el.classList.remove("yellow-row");
+
+      const { _saveStatus } = row.getData();
+
+      if (_saveStatus === "error") {
+        el.classList.add("red-row");
+      } else if (_saveStatus === "editing") {
+        el.classList.add("yellow-row");
+      } else if (_saveStatus === "saved") {
+        el.classList.add("green-row");
+      }
+    },
+  });
+
+  function changeRowState(cell) {
+    const row = cell.getRow();
+    const data = row.getData();
+
+    data._isDirty = true;
+
+    if (data._saveStatus !== "saving") {
+      row.update({
+        _saveStatus: data._isNew ? "draft" : "editing",
+      });
+    }
+  }
+
+  tableFeriados.on("cellEdited", function (cell) {
+    changeRowState(cell);
+  });
+
+  document
+    .getElementById("reactivity-add")
+    .addEventListener("click", function () {
+      tableFeriados.addRow({
+        // idFeriado: 0,
+        _saveStatus: "draft",
+        _isNew: true,
+        fecha: "",
+        nombre: "Agregue un nombre...",
+        tipo: "",
+        es_medio_dia: 0,
+      });
+    });
+</script>
+{% endblock %}
