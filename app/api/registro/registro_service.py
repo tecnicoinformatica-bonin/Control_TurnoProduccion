@@ -172,6 +172,12 @@ class Registro_Service():
                 dataProceso = Proceso_Service.getProcesoById_service(db, registro["idProceso"])
                 dataCentro = Centro_de_costo_Service.getCentros_de_costoById_service(db, registro["idCentro"])
                 dataModificacion = RegistroRepository.getRegistroLastModification(db, registro["idProgramacion"])
+
+                registro["ultima_modificacion_programacion"] = (
+                    dataModificacion["ultima_modificacion"]
+                    if dataModificacion
+                    else None
+                )
                 
                 if registro["usuario_modificacion"]:
                     dataUsuario = Usuario_Service.getUsuarioById_service(db, registro["usuario_modificacion"])
@@ -185,10 +191,15 @@ class Registro_Service():
                 registro["nombreProceso"] = dataProceso["proceso"]
                 registro["nombreCentro"] = dataCentro["nombreCentro"]
                 registro["nombre_usuario_modificacion"] = dataUsuario["nombre"] if dataUsuario["nombre"] is not None else "-----"
-                registro["ultima_modificacion_programacion"] = dataModificacion["ultima_modificacion"]
-                registro["nombreUsuarioModificacion_programacion"] = dataModificacion["nombreUsuarioModificacion"]
+                registro["ultima_modificacion_programacion"] = (
+                    dataModificacion.get("ultima_modificacion")
+                    if dataModificacion else None
+                )
+                registro["nombreUsuarioModificacion_programacion"] = (
+                    dataModificacion.get("nombreUsuarioModificacion") 
+                    if dataModificacion else None
+                )
 
-                print (f"{registro["nombre_usuario_modificacion"]} \n")
                 registros.append(registro)
                 # print("---------------------------")
                 # print(f"idRegistro: {registro["idRegistro"]}")
@@ -217,9 +228,9 @@ class Registro_Service():
         except Exception as ex:
             traceback.print_exc()
 
-            return {
-                "error": f"No se puede obtener registros desde el servicio: {str(ex)}"
-            }
+            raise Exception(
+                f"No se pudo obtener registros: {str(ex)}"
+            )
         
     @staticmethod
     def getCount_aplica_cena_porProgramacion_service(db, idProgramacion):

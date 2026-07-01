@@ -124,11 +124,11 @@ def generar_reporte_programacion(programacion, detalles):
     
     ws[f"N{fila_footer + 2}"] = "Última modificación:"
 
-    ws[f"O{fila_footer + 2}"] = str(detalle["ultima_modificacion_programacion"])
+    ws[f"O{fila_footer + 2}"] = str(detalle["ultima_modificacion_programacion"]) if detalle["ultima_modificacion_programacion"] is not None else "Sin datos"
     
     ws[f"N{fila_footer + 3}"] = "Por usuario:"
 
-    ws[f"O{fila_footer + 3}"] = detalle["nombreUsuarioModificacion_programacion"]
+    ws[f"O{fila_footer + 3}"] = detalle["nombreUsuarioModificacion_programacion"] if detalle["nombreUsuarioModificacion_programacion"] is not None else "Sin datos"
 
     # =========================================================
     # EXPORTAR EN MEMORIA

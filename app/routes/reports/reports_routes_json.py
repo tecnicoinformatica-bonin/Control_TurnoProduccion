@@ -1,6 +1,6 @@
 import platform
 
-from flask import Blueprint, jsonify, request, send_file
+from flask import Blueprint, jsonify, redirect, request, send_file, url_for
 
 import os
 import subprocess
@@ -13,6 +13,7 @@ from app.api.programacion.programacion_service import Programacion_Service
 from app.api.registro.registro_service import Registro_Service
 from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
+from app.extensions.messages import FlashMessages
 from app.reports.excel.programacion_report import (generar_reporte_programacion)
 from app.reports.excel.horas_extra_autorizadas_report import (generar_reporte_horas_extra_autorizadas, generar_reporte_horas_extra_pendientes, generar_reporte_resumen_horas_autorizadas, generar_reporte_horas_autorizadas_por_empleado_linea_fecha, generar_reporte_horas_autorizadas_por_empleado_linea, generar_reporte_resumen_general)
 
@@ -22,61 +23,72 @@ reports_json_bp = Blueprint("reports_json_pb", __name__)
 @login_required
 @permiso_requerido("programacion.ver")
 def descargar_programacion(idProgramacion, isPDF):
-    programacion_detalles = Programacion_Service.getDetallesProgramacionByIdProgramacion_service(db, idProgramacion)
-    registros_detalles = Registro_Service.getDetalleRegistrosByProgramacion_service(db, idProgramacion)
-    
-    fecha = programacion_detalles["fecha"]
+    try:
+        programacion_detalles = Programacion_Service.getDetallesProgramacionByIdProgramacion_service(db, idProgramacion)
+        registros_detalles = Registro_Service.getDetalleRegistrosByProgramacion_service(db, idProgramacion)
+        
+        fecha = programacion_detalles["fecha"]
 
-    archivo = generar_reporte_programacion(programacion_detalles, registros_detalles)
+        archivo = generar_reporte_programacion(programacion_detalles, registros_detalles)
 
-    isPDF = bool(isPDF)
+        isPDF = bool(isPDF)
 
-    if isPDF:
-        temp_dir = tempfile.mkdtemp()
+        if isPDF:
+            temp_dir = tempfile.mkdtemp()
 
-        ruta_excel = os.path.join(temp_dir, "reporte.xlsm")
-        ruta_pdf = os.path.join(temp_dir, "reporte.pdf")
+            ruta_excel = os.path.join(temp_dir, "reporte.xlsm")
+            ruta_pdf = os.path.join(temp_dir, "reporte.pdf")
 
-        with open(ruta_excel, "wb") as f:
-            f.write(archivo.getbuffer())
+            with open(ruta_excel, "wb") as f:
+                f.write(archivo.getbuffer())
 
-        if platform.system() == "Windows":
-            libreoffice_cmd = r"C:\Program Files\LibreOffice\program\soffice.exe"
-        else:
-            libreoffice_cmd = "/usr/bin/libreoffice"
+            if platform.system() == "Windows":
+                libreoffice_cmd = r"C:\Program Files\LibreOffice\program\soffice.exe"
+            else:
+                libreoffice_cmd = "/usr/bin/libreoffice"
 
-        comando = [
-            libreoffice_cmd,
-            "--headless",
-            "--convert-to",
-            "pdf",
-            ruta_excel,
-            "--outdir",
-            temp_dir
-        ]
+            comando = [
+                libreoffice_cmd,
+                "--headless",
+                "--convert-to",
+                "pdf",
+                ruta_excel,
+                "--outdir",
+                temp_dir
+            ]
 
-        subprocess.run(
-            comando, 
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
+            subprocess.run(
+                comando, 
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
+
+            return send_file(
+                ruta_pdf,
+                as_attachment=True,
+                download_name=f"Programacion_{fecha}.pdf",
+                mimetype="application/pdf"
+            )
 
         return send_file(
-            ruta_pdf,
+            archivo,
             as_attachment=True,
-            download_name=f"Programacion_{fecha}.pdf",
-            mimetype="application/pdf"
+            download_name=f"Programacion_{fecha}.xlsm",
+            mimetype=(
+                "application/vnd.ms-excel.sheet.macroEnabled.12"
+            )
         )
+    
+    except Exception as ex:
+        FlashMessages.flash_error(str(ex))
 
-    return send_file(
-        archivo,
-        as_attachment=True,
-        download_name=f"Programacion_{fecha}.xlsm",
-        mimetype=(
-            "application/vnd.ms-excel.sheet.macroEnabled.12"
-        )
-    )
+        programacion = Programacion_Service.getDetallesProgramacionByIdProgramacion_service(db, idProgramacion)
+        return redirect(url_for(
+            "programacion_template.editarProgramacion_template",
+            idDepartment = programacion["idDepartment"],
+            fecha = programacion["fecha"],
+        ))
 
 @reports_json_bp.route("/autorizacion/descargar_autorizacion_horas_extra/<string:from_date>/<string:to_date>/<int:idDepartment>/isPDF=<int:isPDF>")
 @login_required
