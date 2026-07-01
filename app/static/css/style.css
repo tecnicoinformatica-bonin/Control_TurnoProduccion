@@ -25,6 +25,24 @@
   background: rgba(0, 0, 0, 0.35);
 }
 
+.change-password-bg {
+  /* background: linear-gradient(135deg, #5288ee, #2a5298); */
+  min-height: 100vh;
+  background: url("/static/img/bonin-bg.webp") center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.change-password-bg::before {
+  min-height: 100vh;
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+}
+
 .login-bg > * {
   position: relative;
 }

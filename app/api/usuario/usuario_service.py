@@ -2,7 +2,7 @@ from datetime import datetime
 
 from flask import redirect, session, url_for
 from werkzeug.security import check_password_hash
-from flask_login import login_user
+from flask_login import current_user, login_user
 
 from app.api.usuario.usuario_repository import UsuarioRepository
 from app.api.usuario.usuario_model import Usuario_Rutas
@@ -18,9 +18,10 @@ class Usuario_Service():
                "idUsuario": row[0],
                "username": row[1],
                "nombre": row[2],
-               "activo": row[4],               
-               "scope_departamentos_global": row[5],               
-               "scope_permisos_global": row[6],               
+               "activo": row[4],
+               "scope_departamentos_global": row[5],
+               "scope_permisos_global": row[6],
+               "cambiar_password": row[7],
             }
             usuarios.append(usuario)
 
@@ -39,6 +40,7 @@ class Usuario_Service():
             "activo": data["activo"],
             "scope_departamentos_global": data["scope_departamentos_global"],
             "scope_permisos_global": data["scope_permisos_global"],
+            "cambiar_password": data["cambiar_password"],
          }
 
          return usuario
@@ -111,7 +113,16 @@ class Usuario_Service():
          if password != confirmedPassword:
             return {"error": f"Las contraseñas no son iguales."}
          
-         return UsuarioRepository.updatePassword(db, idUsuario, password)
+         resultado = UsuarioRepository.updatePassword(db, idUsuario, password)
+         
+         if not "error" in resultado:
+            cambiar_password = 0 if current_user.cambiar_password == 1 else 1
+            UsuarioRepository.change_status_cambiar_password(db, idUsuario, cambiar_password)
+         
+         return {
+            "mensaje": "Contraseña cambiada correctamente",
+            "resultado": resultado
+         }
       
       except Exception as ex:
          return {"error": f"No se pudo modificar la contraseña. {ex}"}
@@ -160,6 +171,7 @@ class Usuario_Service():
          departamentos,
          usuario["scope_departamentos_global"],
          usuario["scope_permisos_global"],
+         usuario["cambiar_password"]
          )
          
       if not usuarioALoguear.activo:
@@ -186,6 +198,7 @@ class Usuario_Service():
             "nombre": usuarioALoguear.nombre,
             "activo": usuarioALoguear.activo,
             "rutas": usuarioALoguear.paths,
+            "cambiar_password": usuarioALoguear.cambiar_password,
          }
    
    @staticmethod
@@ -217,6 +230,7 @@ class Usuario_Service():
          departamentos,
          usuario["scope_departamentos_global"],
          usuario["scope_permisos_global"],
+         usuario["cambiar_password"],
       )
 
       return user

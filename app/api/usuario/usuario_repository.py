@@ -57,7 +57,7 @@ class UsuarioRepository:
             cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
 
             query = """
-            SELECT idUsuario, username, nombre, password_hash, activo, scope_departamentos_global, scope_permisos_global
+            SELECT idUsuario, username, nombre, password_hash, activo, scope_departamentos_global, scope_permisos_global, cambiar_password
             FROM turnos_usuario
             WHERE idUsuario = %s
             """
@@ -324,7 +324,7 @@ class UsuarioRepository:
             cursor = db.connection.cursor()
             
             query = """
-                UPDATE turnos_usuario SET password_hash = %s, cambiar_password = 1
+                UPDATE turnos_usuario SET password_hash = %s
                 WHERE idUsuario = %s
                 """
             
@@ -336,12 +336,47 @@ class UsuarioRepository:
                 "idUsuario": idUsuario,
             }
 
-            return {"mensaje": f"Contraseña modificada correctamente. ID de usuario: {editedUsuario['idUsuario']}"}
+            return {
+                "mensaje": f"Contraseña modificada correctamente. ID de usuario: {editedUsuario['idUsuario']}",
+                "resultado": editedUsuario
+            }
 
         except Exception as ex:
             db.connection.rollback()
                         
             return {"error": f"No se pudo modificar contraseña en repositorio: {str(ex)}"}
+
+        finally:
+            if cursor:
+                cursor.close()
+    
+    @staticmethod
+    def change_status_cambiar_password(db, idUsuario, cambiar_password):
+        cursor = None
+
+        try: 
+            cursor = db.connection.cursor()
+            
+            query = """
+                UPDATE turnos_usuario SET cambiar_password = %s
+                WHERE idUsuario = %s
+                """
+            
+            cursor.execute(query, (cambiar_password, idUsuario))
+            
+            db.connection.commit()
+
+            editedUsuario = {
+                "idUsuario": idUsuario,
+                "cambiar_password": cambiar_password,
+            }
+
+            return editedUsuario
+
+        except Exception as ex:
+            db.connection.rollback()
+                        
+            raise Exception(f"No se pudo cambiar el estado del campo cambiar_password: {str(ex)}")
 
         finally:
             if cursor:

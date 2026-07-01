@@ -23,13 +23,13 @@ usuario_template_bp = Blueprint(
 def login():
     return render_template("usuario/login.html")
 
-@usuario_template_bp.route("/change_password/<username>")
-def change_password(username):
-    usernameData = username
+@usuario_template_bp.route("/change_password_template/<idUsuario>")
+def change_password_template(idUsuario):
+    idUsuarioData = idUsuario
 
     return render_template(
         "usuario/change_password.html",
-        usernameData = usernameData
+        idUsuarioData = idUsuarioData
     )
 
 @usuario_template_bp.route("/crearUsuario")

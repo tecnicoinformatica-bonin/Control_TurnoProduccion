@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, abort, request, redirect, session, url_for, flash, get_flashed_messages
-from flask_login import logout_user, login_required
+from flask_login import current_user, logout_user, login_required
 
 # Extensions
 from app.core.auth.permiso_requerido_decorator import permiso_requerido
@@ -29,6 +29,12 @@ def login():
             FlashMessages.flash_error(result["error"])
             """ flash(result["error"], "error") """
             return redirect(url_for("usuario_web.login"))
+        
+        if current_user.cambiar_password == 1:
+            return redirect(url_for(
+                "usuario_template.change_password_template",
+                idUsuario = result["idUsuario"],
+            ))
         
         return redirect(url_for("home_template.index"))
     
@@ -128,7 +134,7 @@ def eliminarUsuario_web():
 
 @usuario_web_bp.route("/cambiarPasswordUsuario_web", methods=["GET", "POST"])
 @login_required
-@permiso_requerido("usuario.editar")
+# @permiso_requerido("usuario.editar")
 def cambiarPasswordUsuario_web():
     if request.method == "POST":
         data = {
@@ -137,18 +143,34 @@ def cambiarPasswordUsuario_web():
             "confirmedPassword": request.form.get("confirmedPassword"), 
         }
 
-        result = Usuario_Service.updatePassword_service(db, data)
+        cambiar_password = current_user.cambiar_password
 
-        if "error" in result:
-            FlashMessages.flash_error(result["error"])
-            return redirect(url_for(
-                "usuario_template.listaUsuarios_template",
-            ))
+        result = Usuario_Service.updatePassword_service(db, data)
+        usuarioResult = result["resultado"]["resultado"]
+
+        if cambiar_password == 1 or cambiar_password == True:
+            if "error" in result:
+                FlashMessages.flash_error(result["error"])
+                return redirect(url_for(
+                    "usuario_template.change_password_template",
+                    idUsuario = usuarioResult
+                ))
+            else:
+                FlashMessages.flash_success(result["mensaje"])
+                return redirect(url_for(
+                    "home_template.index",
+                ))
         else:
-            FlashMessages.flash_success(result["mensaje"])
-            return redirect(url_for(
-                "usuario_template.listaUsuarios_template",
-            ))
+            if "error" in result:
+                FlashMessages.flash_error(result["error"])
+                return redirect(url_for(
+                    "usuario_template.listaUsuarios_template",
+                ))
+            else:
+                FlashMessages.flash_success(result["mensaje"])
+                return redirect(url_for(
+                    "usuario_template.listaUsuarios_template",
+                ))
 
     return redirect(url_for(
         "usuario_template.listaUsuarios_template", 
