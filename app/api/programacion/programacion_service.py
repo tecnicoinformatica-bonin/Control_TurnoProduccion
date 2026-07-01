@@ -6,6 +6,7 @@ from app.api.empleado.empleado_service import Empleado_Service
 from app.api.linea.linea_repository import LineaRepository
 from app.api.programacion.programacion_repository import ProgramacionRepository
 from app.api.registro.registro_repository import RegistroRepository
+from app.api.usuario.usuario_repository import UsuarioRepository
 from app.api.usuario.usuario_service import Usuario_Service
 from app.api.usuario_departamento.usuario_departamento_service import Usuario_Departamento_Service
 
@@ -188,9 +189,21 @@ class Programacion_Service():
             return {"error": f"No se pudieron obtener las programaciones en BORRADOR desde el servicio: {str(ex)}"}
     
     @staticmethod
-    def getProgramacionesActivasByIdDepartment_service(db, idDepartment):
+    def getProgramacionesActivasByIdDepartments_service(db, idUsuario):
         try:
-            data = ProgramacionRepository.getProgramacionesActivasByIdDepartment(db, idDepartment)
+            usuario = Usuario_Service.getUsuarioById_service(db, idUsuario)
+
+            if usuario["scope_departamentos_global"] == 1 or usuario["scope_departamentos_global"] == True:
+                departamentos = Departamento_Service.getDepartamentos_aplica_horas_extra_service(db)
+            else:
+                departamentos = UsuarioRepository.getUserDepartmentsById(db, idUsuario)
+
+            ids_Department = [
+                d["idDepartment"]
+                for d in departamentos
+            ]
+
+            data = ProgramacionRepository.getProgramacionesActivasByIdDepartments(db, ids_Department)
             programaciones = []
             for row in data:
                 fecha = row["fecha"].strftime("%Y-%m-%d")
@@ -248,9 +261,21 @@ class Programacion_Service():
             return {"error": f"No se pudieron obtener las programaciones en BORRADOR desde el servicio: {str(ex)}"}
    
     @staticmethod
-    def getProgramacionesCerradasByIdDepartment_service(db, idDepartment):
+    def getProgramacionesCerradasByIdDepartments_service(db, idUsuario):
         try:
-            data = ProgramacionRepository.getProgramacionesCerradasByIdDepartment(db, idDepartment)
+            usuario = Usuario_Service.getUsuarioById_service(db, idUsuario)
+            
+            if usuario["scope_departamentos_global"] == 1 or usuario["scope_departamentos_global"] == True:
+                departamentos = Departamento_Service.getDepartamentos_aplica_horas_extra_service(db)
+            else:
+                departamentos = UsuarioRepository.getUserDepartmentsById(db, idUsuario)
+
+            ids_Department = [
+                d["idDepartment"]
+                for d in departamentos
+            ]
+
+            data = ProgramacionRepository.getProgramacionesCerradasByIdDepartments(db, ids_Department)
             programaciones = []
             for row in data:
                 fecha = row["fecha"].strftime("%Y-%m-%d")

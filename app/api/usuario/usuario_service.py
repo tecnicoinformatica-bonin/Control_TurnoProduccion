@@ -4,6 +4,7 @@ from flask import redirect, session, url_for
 from werkzeug.security import check_password_hash
 from flask_login import current_user, login_user
 
+from app.api.departamento.departamento_service import Departamento_Service
 from app.api.usuario.usuario_repository import UsuarioRepository
 from app.api.usuario.usuario_model import Usuario_Rutas
 
@@ -158,7 +159,11 @@ class Usuario_Service():
       paths_usuario = UsuarioRepository.getUserPaths(db, idUsuarioEncontrado)
       permisos = UsuarioRepository.getUserPermissionsById(db, idUsuarioEncontrado)
       roles_usuario = UsuarioRepository.getUserRolesById(db, idUsuarioEncontrado)
-      departamentos = UsuarioRepository.getUserDepartmentsById(db, idUsuarioEncontrado)
+
+      if usuario["scope_departamentos_global"] == 1 or usuario["scope_departamentos_global"] == True:
+         departamentos = Departamento_Service.getDepartamentos_aplica_horas_extra_service(db)
+      else:
+         departamentos = UsuarioRepository.getUserDepartmentsById(db, idUsuarioEncontrado)
 
       usuarioALoguear = Usuario_Rutas(
          usuario["idUsuario"],
@@ -217,7 +222,11 @@ class Usuario_Service():
       paths = UsuarioRepository.getUserPaths(db, idUsuarioEncontrado)
       permisos = UsuarioRepository.getUserPermissionsById(db, idUsuarioEncontrado)
       roles = UsuarioRepository.getUserRolesById(db, idUsuarioEncontrado)
-      departamentos = UsuarioRepository.getUserDepartmentsById(db, idUsuarioEncontrado)
+      
+      if usuario["scope_departamentos_global"] == 1 or usuario["scope_departamentos_global"] == True:
+         departamentos = Departamento_Service.getDepartamentos_aplica_horas_extra_service(db)
+      else:
+         departamentos = UsuarioRepository.getUserDepartmentsById(db, idUsuarioEncontrado)
       
       user = Usuario_Rutas(
          usuario["idUsuario"],
