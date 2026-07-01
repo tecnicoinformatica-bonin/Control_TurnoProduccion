@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from app.api.calendario_feriados.calendario_feriados_service import Feriado_Service
 from app.api.departamento.departamento_service import Departamento_Service
 from app.api.empleado.empleado_service import Empleado_Service
 from app.api.linea.linea_repository import LineaRepository
@@ -130,9 +131,12 @@ class Programacion_Service():
 
             [_, month, day] = str(programacion["fecha"]).split("-")
 
-            es_feriado = f"{month}-{day}" in FERIADOS_GT
+            es_feriado = (
+                f"{month}-{day}"
+                in current_app.config.get("FERIADOS_GT", set())
+            )
 
-            programacion["esFeriado"] = "SÍ" if es_feriado else "NO";
+            programacion["esFeriado"] = "SÍ" if es_feriado else "NO"
 
             for row in dataDepartamento:
                 if row["idDepartment"] == programacion["idDepartment"]:
