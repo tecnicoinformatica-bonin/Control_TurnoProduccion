@@ -1,0 +1,90 @@
+{% extends "layout/base.html" %} {% block title %} Ingreso a estadisticas -
+Turnos Bonin {% endblock %} {% block content %}
+
+<div class="">
+  <hr class="mb-5" />
+
+  <div class="card card-outline-secondary bg-light">
+    <div class="card-body">
+      <h3 class="text-left">Ingreso de datos para estadísticas</h3>
+      <hr />
+
+      {% with messages = get_flashed_messages(with_categories=true) %} {% for
+      category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+        <strong>{{ message }}</strong>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+      {% endfor %} {% endwith %}
+      <form
+        class="form"
+        role="form"
+        action="/web/estadisticas/parametros_estadisticas_web"
+        method="POST"
+      >
+        <div class="form-group">
+          <label for="idDepartment">Departamento</label>
+          <select
+            type="text"
+            class="form-control"
+            id="idDepartment"
+            title="Departamento"
+            name="idDepartment"
+            required
+          >
+            <option selected disabled value="{{ None }}">
+              -- Seleccione una opción --
+            </option>
+            {% for d in departamentos %}
+            <option value="{{ d.idDepartment }}">{{ d.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="from_date">Desde</label>
+          <input
+            type="date"
+            class="form-control"
+            id="from_date"
+            name="from_date"
+            title="Desde qué fecha se desea ver"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="to_date">Hasta</label>
+          <input
+            type="date"
+            class="form-control"
+            id="to_date"
+            name="to_date"
+            title="Hasta qué fecha se desea ver"
+            required
+          />
+        </div>
+
+        <hr />
+        <div class="form-group row">
+          <div class="col-md-6">
+            <button type="reset" class="btn btn-light btn-lg btn-block">
+              Borrar información
+            </button>
+          </div>
+          <div class="col-md-6">
+            <button type="submit" class="btn btn-success btn-lg btn-block">
+              Ingresar
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

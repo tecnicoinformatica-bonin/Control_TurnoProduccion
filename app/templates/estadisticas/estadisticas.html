@@ -1,0 +1,279 @@
+{% extends "layout/base.html" %} {% block title %} Estadísticas - Turnos Bonin
+{% endblock %} {% block content %}
+
+<!-- form card cc payment -->
+<div class="card card-outline-secondary bg-dark text-light mt-3">
+  <div class="card-body">
+    <div class="d-flex justify-content-between">
+      <h3>Estadísticas</h3>
+    </div>
+    <hr />
+
+    {% with messages = get_flashed_messages(with_categories=true) %} {% for
+    category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+      <strong>{{ message }}</strong>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% endfor %} {% endwith %}
+
+    <div class="reportes">
+      <div class="accordion" id="accordionPanelsStayOpenExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button
+              class="accordion-button"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#panelsStayOpen-collapseOne"
+              aria-expanded="true"
+              aria-controls="panelsStayOpen-collapseOne"
+            >
+              Horas extra
+            </button>
+          </h2>
+          <div
+            id="panelsStayOpen-collapseOne"
+            class="accordion-collapse collapse"
+          >
+            <div class="accordion-body">
+              <div class="card card-outline-secondary bg-light text-dark">
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table table-light table-striped">
+                      <thead class="text-center">
+                        <tr>
+                          <th scope="col">Descripción</th>
+                          <th scope="col">Opciones</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td scope="row">
+                            Reporte de autorización de horas extra
+                          </td>
+                          <td>
+                            <div class="text-center">
+                              <button
+                                onclick="descargarExcel(1, '{{from_date_value}}', '{{to_date_value}}', '{{idDepartment_value}}')"
+                                class="btn btn-success"
+                              >
+                                Excel
+                              </button>
+                              <button
+                                onclick="descargarPDF(1, '{{from_date_value}}', '{{to_date_value}}', '{{idDepartment_value}}')"
+                                class="btn btn-danger"
+                              >
+                                PDF
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td scope="row">
+                            Reporte de diferencias pendientes de autorizar
+                          </td>
+                          <td>
+                            <div class="text-center">
+                              <button
+                                onclick="descargarExcel(2, '{{from_date_value}}', '{{to_date_value}}', '{{idDepartment_value}}')"
+                                class="btn btn-success"
+                              >
+                                Excel
+                              </button>
+                              <button
+                                onclick="descargarPDF(2, '{{from_date_value}}', '{{to_date_value}}', '{{idDepartment_value}}')"
+                                class="btn btn-danger"
+                              >
+                                PDF
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td scope="row">
+                            Reporte de horas autorizadas por empleado
+                          </td>
+                          <td>
+                            <div class="text-center">
+                              <button
+                                onclick="descargarExcel(3, '{{from_date_value}}', '{{to_date_value}}', '{{idDepartment_value}}')"
+                                class="btn btn-success"
+                              >
+                                Excel
+                              </button>
+                              <button
+                                onclick="descargarPDF(3, '{{from_date_value}}', '{{to_date_value}}', '{{idDepartment_value}}')"
+                                class="btn btn-danger"
+                              >
+                                PDF
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td scope="row">
+                            Reporte de horas autorizadas por empleado y línea
+                            asignada
+                          </td>
+                          <td>
+                            <div class="text-center">
+                              <button
+                                onclick="descargarExcel(4, '{{from_date_value}}', '{{to_date_value}}', '{{idDepartment_value}}')"
+                                class="btn btn-success"
+                              >
+                                Excel
+                              </button>
+                              <button
+                                onclick="descargarPDF(4, '{{from_date_value}}', '{{to_date_value}}', '{{idDepartment_value}}')"
+                                class="btn btn-danger"
+                              >
+                                PDF
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td scope="row">
+                            Reporte de horas autorizadas por empleado, línea
+                            asignada y fecha
+                          </td>
+                          <td>
+                            <div class="text-center">
+                              <button
+                                onclick="descargarExcel(5, '{{from_date_value}}', '{{to_date_value}}', '{{idDepartment_value}}')"
+                                class="btn btn-success"
+                              >
+                                Excel
+                              </button>
+                              <button
+                                onclick="descargarPDF(5, '{{from_date_value}}', '{{to_date_value}}', '{{idDepartment_value}}')"
+                                class="btn btn-danger"
+                              >
+                                PDF
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td scope="row">
+                            Reporte de resumen general de horas extra
+                            autorizadas
+                          </td>
+                          <td>
+                            <div class="text-center">
+                              <button
+                                onclick="descargarExcel(6, '{{from_date_value}}', '{{to_date_value}}', '{{idDepartment_value}}')"
+                                class="btn btn-success"
+                              >
+                                Excel
+                              </button>
+                              <button
+                                onclick="descargarPDF(6, '{{from_date_value}}', '{{to_date_value}}', '{{idDepartment_value}}')"
+                                class="btn btn-danger"
+                              >
+                                PDF
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* DESCARGAR REPORTES */
+  async function descargarExcel(
+    numeroReporte,
+    from_date,
+    to_date,
+    idDepartment,
+  ) {
+    switch (numeroReporte) {
+      case 1:
+        window.open(
+          `/json/reports/autorizacion/descargar_autorizacion_horas_extra/${from_date}/${to_date}/${idDepartment}/isPDF=${0}`,
+        );
+
+      case 2:
+        window.open(
+          `/json/reports/autorizacion/descargar_horas_extra_pendientes/${from_date}/${to_date}/${idDepartment}/isPDF=${0}`,
+        );
+
+      case 3:
+        window.open(
+          `/json/reports/autorizacion/descargar_resumen_horas_autorizadas/${from_date}/${to_date}/${idDepartment}/isPDF=${0}`,
+        );
+
+      case 4:
+        window.open(
+          `/json/reports/autorizacion/descargar_horas_autorizadas_por_empleado_linea/${from_date}/${to_date}/${idDepartment}/isPDF=${0}`,
+        );
+
+      case 5:
+        window.open(
+          `/json/reports/autorizacion/descargar_horas_autorizadas_por_empleado_linea_fecha/${from_date}/${to_date}/${idDepartment}/isPDF=${0}`,
+        );
+
+      case 6:
+        window.open(
+          `/json/reports/autorizacion/descargar_reporte_resumen_general/${from_date}/${to_date}/${idDepartment}/isPDF=${0}`,
+        );
+
+      default:
+        return;
+    }
+  }
+  async function descargarPDF(numeroReporte, from_date, to_date, idDepartment) {
+    switch (numeroReporte) {
+      case 1:
+        window.open(
+          `/json/reports/autorizacion/descargar_autorizacion_horas_extra/${from_date}/${to_date}/${idDepartment}/isPDF=${1}`,
+        );
+
+      case 2:
+        window.open(
+          `/json/reports/autorizacion/descargar_horas_extra_pendientes/${from_date}/${to_date}/${idDepartment}/isPDF=${1}`,
+        );
+
+      case 3:
+        window.open(
+          `/json/reports/autorizacion/descargar_resumen_horas_autorizadas/${from_date}/${to_date}/${idDepartment}/isPDF=${1}`,
+        );
+
+      case 4:
+        window.open(
+          `/json/reports/autorizacion/descargar_horas_autorizadas_por_empleado_linea/${from_date}/${to_date}/${idDepartment}/isPDF=${1}`,
+        );
+
+      case 5:
+        window.open(
+          `/json/reports/autorizacion/descargar_horas_autorizadas_por_empleado_linea_fecha/${from_date}/${to_date}/${idDepartment}/isPDF=${1}`,
+        );
+
+      case 6:
+        window.open(
+          `/json/reports/autorizacion/descargar_reporte_resumen_general/${from_date}/${to_date}/${idDepartment}/isPDF=${1}`,
+        );
+
+      default:
+        return;
+    }
+  }
+</script>
+
+{% endblock %}

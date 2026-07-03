@@ -469,6 +469,7 @@ a {
   grid-column-start: 2;
 }
 
+/* HOME */
 .container__home {
   display: flex;
   justify-content: center;
@@ -480,7 +481,7 @@ a {
 
 .parent-module {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   justify-items: center;
   gap: 2rem;
 }
@@ -504,6 +505,10 @@ a {
 
 .modul__icon-green {
   color: green;
+}
+
+.modul__icon-orange {
+  color: rgb(255, 187, 0);
 }
 
 .module__text {

@@ -38,6 +38,7 @@ from app.routes.autorizacion.autorizacion_routes_templates import autorizacion_t
 from app.routes.centro_de_costo.centro_de_costo_routes_templates import centro_de_costo_template_bp
 from app.routes.departamento.departamento_routes_templates import departamento_template_bp
 from app.routes.empleado.empleado_routes_templates import empleado_template_bp
+from app.routes.estadisticas.estadisticas_routes_templates import estadisticas_template_bp
 from app.routes.horario.horario_routes_templates import horario_template_bp
 from app.routes.importacion.importacion_routes_templates import importacion_template_bp
 from app.routes.linea.linea_routes_templates import linea_template_bp
@@ -63,6 +64,7 @@ from app.routes.autorizacion.autorizacion_routes_web import autorizacion_web_bp
 from app.routes.centro_de_costo.centro_de_costo_routes_web import centro_de_costo_web_bp
 from app.routes.departamento.departamento_routes_web import departamento_web_bp
 from app.routes.empleado.empleado_routes_web import empleado_web_bp
+from app.routes.estadisticas.estadisticas_routes_web import estadisticas_web_bp
 from app.routes.horario.horario_routes_web import horario_web_bp
 from app.routes.linea.linea_routes_web import linea_web_bp
 from app.routes.motivo_desasignacion.motivo_desasignacion_routes_web import motivo_desasignacion_web_bp
@@ -195,6 +197,7 @@ def create_app():
     app.register_blueprint(centro_de_costo_template_bp, url_prefix="/template/centro_de_costo")
     app.register_blueprint(departamento_template_bp, url_prefix="/template/departamento")
     app.register_blueprint(empleado_template_bp, url_prefix="/template/empleado")
+    app.register_blueprint(estadisticas_template_bp, url_prefix="/template/estadisticas")
     app.register_blueprint(horario_template_bp, url_prefix="/template/horario")
     app.register_blueprint(importacion_template_bp, url_prefix="/template/importacion")
     app.register_blueprint(linea_template_bp, url_prefix="/template/linea")
@@ -220,6 +223,7 @@ def create_app():
     app.register_blueprint(centro_de_costo_web_bp, url_prefix="/web/centro_de_costo")
     app.register_blueprint(departamento_web_bp, url_prefix="/web/departamento")
     app.register_blueprint(empleado_web_bp, url_prefix="/web/empleado")
+    app.register_blueprint(estadisticas_web_bp, url_prefix="/web/estadisticas")
     app.register_blueprint(horario_web_bp, url_prefix="/web/horario")
     app.register_blueprint(linea_web_bp, url_prefix="/web/linea")
     app.register_blueprint(motivo_desasignacion_web_bp, url_prefix="/web/motivo_desasignacion")
