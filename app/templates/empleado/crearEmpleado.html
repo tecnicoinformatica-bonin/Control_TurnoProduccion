@@ -182,6 +182,26 @@
               -- Seleccione una opción --
             </option>
           </select>
+        
+          <div class="form-group">
+          <label for="idHorario">Horario</label>
+          <select
+            type="text"
+            class="form-control"
+            id="idHorario"
+            name="idHorario"
+            title="Horario asignado al empleado"
+            required
+          >
+            <option selected disabled value="{{ None }}">
+              -- Seleccione una opción --
+            </option>
+            {% for h in horarios %}
+              <option value="{{ h.idHorario }}">
+                {{ h.hora_inicio }} a {{ h.hora_fin }}
+              </option>
+            {% endfor %}
+          </select>
         </div>
 
         <div class="form-group mt-3">

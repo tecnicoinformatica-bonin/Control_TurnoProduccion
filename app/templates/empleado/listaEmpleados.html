@@ -129,6 +129,16 @@ endblock %} {% block content %}
               </p>
             </th>
             <th scope="col">
+              <p class="title_column" onclick="ordenarTabla(9)">
+                Horario
+                <span class="arrow" data-type="darr" data-column="9"
+                  >&darr;</span
+                ><span class="arrow" data-type="uarr" data-column="9"
+                  >&uarr;</span
+                >
+              </p>
+            </th>
+            <th scope="col">
               <p>Acciones</p>
             </th>
           </tr>
@@ -161,6 +171,10 @@ endblock %} {% block content %}
               p.proceso }} {% endif %} {% endfor %}
             </td>
             <td>{% if e.activo == 1 %} Sí {% else %} No {% endif %}</td>
+            <td>
+              {% for h in horarios %} {% if h.idHorario == e.idHorario %} {{
+              h.hora_inicio }} - {{ h.hora_fin }} {% endif %} {% endfor %}
+            </td>
             <td>
               <div class="d-flex justify-content-between gap-2">
                 <button
@@ -446,6 +460,37 @@ endblock %} {% block content %}
               </option>
               {% else %}
               <option value="{{ p.idProceso }}">{{ p.proceso }}</option>
+              {% endif %} {% endfor %}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="idHorario">Departamento</label>
+            <select
+              type="text"
+              class="form-control select-department"
+              id="idHorario{{ e.idEmpleado }}"
+              name="idHorario"
+              title="Departamento al que pertenece el empleado"
+              required
+            >
+              {% if e.idHorario == None %}
+              <option selected disabled value="{{ None }}">
+                -- Seleccione una opción --
+              </option>
+              {% else %}
+              <option disabled value="{{ None }}">
+                -- Seleccione una opción --
+              </option>
+              {% endif %} {% for h in horarios %} {% if h.idHorario ==
+              e.idHorario %}
+              <option value="{{ h.idHorario }}" selected>
+                {{ h.hora_inicio }} a {{ h.hora_fin }}
+              </option>
+              {% else %}
+              <option value="{{ h.idHorario }}">
+                {{ h.hora_inicio }} a {{ h.hora_fin }}
+              </option>
               {% endif %} {% endfor %}
             </select>
           </div>

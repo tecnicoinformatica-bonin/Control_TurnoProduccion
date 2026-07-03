@@ -4,6 +4,7 @@ from flask_login import login_required
 from app.api.centro_de_costo.centro_de_costo_service import Centro_de_costo_Service
 from app.api.empleado.empleado_service import Empleado_Service
 from app.api.departamento.departamento_service import Departamento_Service
+from app.api.horario.horario_service import Horario_Service
 from app.api.linea.linea_service import Linea_Service
 from app.api.proceso.proceso_service import Proceso_Service
 from app.core.auth.permiso_requerido_decorator import permiso_requerido
@@ -24,6 +25,7 @@ def crearEmpleado_template():
     centros_de_costo = Centro_de_costo_Service.getCentros_de_costo_service(db)
     lineas = Linea_Service.getLineas_service(db)
     procesos = Proceso_Service.getProcesos_service(db)
+    horarios = Horario_Service.getHorarios_service(db)
         
     return render_template(
         f"empleado/crearEmpleado.html", 
@@ -32,6 +34,7 @@ def crearEmpleado_template():
         centros_de_costo = centros_de_costo,
         lineas = lineas,
         procesos = procesos,
+        horarios = horarios,
     )   
 
 @empleado_template_bp.route("/listaEmpleados")
@@ -43,6 +46,7 @@ def listaEmpleados_template():
     centros_de_costo = Centro_de_costo_Service.getCentros_de_costo_service(db)
     lineas = Linea_Service.getLineas_service(db)
     procesos = Proceso_Service.getProcesos_service(db)
+    horarios = Horario_Service.getHorarios_service(db)
             
     return render_template(
         f"empleado/listaEmpleados.html", 
@@ -51,5 +55,5 @@ def listaEmpleados_template():
         centros_de_costo = centros_de_costo,
         lineas = lineas,
         procesos = procesos,
+        horarios = horarios,
     )
-

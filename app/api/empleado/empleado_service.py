@@ -46,6 +46,7 @@ class Empleado_Service():
                     "idCentro": row["idCentro"],
                     "idLinea": row["idLinea"],
                     "idProceso": row["idProceso"],
+                    "idHorario": row["idHorario"],
                 }
                 empleados.append(empleado)
             return empleados
@@ -111,6 +112,7 @@ class Empleado_Service():
             idCentro = data.get("idCentro")
             idLinea = data.get("idLinea")
             idProceso = data.get("idProceso")
+            idHorario = data.get("idHorario")
 
             required_fields = {
                     "idEmpleado": idEmpleado, 
@@ -120,6 +122,7 @@ class Empleado_Service():
                     "position": position, 
                     "idDepartment": idDepartment,
                     "idCentro": idCentro,
+                    "idHorario": idHorario,
                 }
             
             missing_fields = [key for key, value in required_fields.items() if value is None or value == ""]
@@ -127,7 +130,7 @@ class Empleado_Service():
             if missing_fields:
                 return {"error": f"Faltan campos obligatorios: {', '.join(missing_fields)}"}
             
-            return EmpleadoRepository.createEmpleado(db, idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, idLinea, idProceso)
+            return EmpleadoRepository.createEmpleado(db, idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, idLinea, idProceso, idHorario)
         
         except Exception as ex:
             return {"error": f"No se pudo crear el empleado en el servicio: {str(ex)}"}
@@ -149,6 +152,7 @@ class Empleado_Service():
             idCentro = data.get("idCentro")
             idLinea = data.get("idLinea")
             idProceso = data.get("idProceso")
+            idHorario = data.get("idHorario")
 
             required_fields = {
                     "idEmpleado": idEmpleado, 
@@ -160,6 +164,7 @@ class Empleado_Service():
                     "oldIdEmpleado": oldIdEmpleado,
                     "oldBadgeNumber": oldBadgeNumber,
                     "idCentro": idCentro,
+                    "idHorario": idHorario,
                 }
             
             missing_fields = [key for key, value in required_fields.items() if value is None or value == ""]
@@ -167,7 +172,24 @@ class Empleado_Service():
             if missing_fields:
                 return {"error": f"Faltan campos obligatorios: {', '.join(missing_fields)}"}
             
-            return EmpleadoRepository.updateEmpleado(db, idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, oldIdEmpleado, idLinea, idProceso, oldBadgeNumber)
+            return EmpleadoRepository.updateEmpleado(
+                db,
+                idEmpleado,
+                badgeNumber,
+                firstName,
+                secondName,
+                lastName,
+                lastName2,
+                position,
+                idDepartment,
+                activo,
+                idCentro,
+                oldIdEmpleado,
+                idLinea,
+                idProceso,
+                idHorario,
+                oldBadgeNumber
+            )
         
         except Exception as ex:
             return {"error": f"No se pudo modificar el empleado en el servicio: {str(ex)}"}

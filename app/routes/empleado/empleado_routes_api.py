@@ -84,6 +84,9 @@ def createEmpleado():
             idProceso:
               type: integer
               example: 1
+            idHorario:
+              type: integer
+              example: 1
     responses:
       200:
         description: empleado creado correctamente
@@ -154,6 +157,9 @@ def updateEmpleado():
               type: integer
               example: 1
             idProceso:
+              type: integer
+              example: 1
+            idHorario:
               type: integer
               example: 1
     responses:

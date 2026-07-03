@@ -1,5 +1,5 @@
 class Empleado():
-    def __init__(self, idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, idLinea, idProceso):
+    def __init__(self, idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, idLinea, idProceso, idHorario):
         self.idEmpleado = idEmpleado
         self.badgeNumber = badgeNumber
         self.firstName = firstName
@@ -12,3 +12,4 @@ class Empleado():
         self.idCentro = idCentro
         self.idLinea = idLinea
         self.idProceso = idProceso
+        self.idHorario = idHorario

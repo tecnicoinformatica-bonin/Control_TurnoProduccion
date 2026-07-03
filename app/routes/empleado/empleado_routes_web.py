@@ -31,6 +31,7 @@ def crearEmpleado_web():
             "idCentro": request.form.get("idCentro"),
             "idLinea": request.form.get("idLinea"),
             "idProceso": request.form.get("idProceso"),
+            "idHorario": request.form.get("idHorario"),
         }
 
         result = Empleado_Service.createEmpleado_service(db, data)
@@ -63,6 +64,7 @@ def editarEmpleado_web():
             "idLinea": request.form.get("idLinea"),
             "idProceso": request.form.get("idProceso"),
             "oldIdEmpleado": request.form.get("oldIdEmpleado"),
+            "idHorario": request.form.get("idHorario"),
             "oldBadgeNumber": request.form.get("oldBadgeNumber"),
         }
 

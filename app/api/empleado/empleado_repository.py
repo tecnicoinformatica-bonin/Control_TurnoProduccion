@@ -130,7 +130,7 @@ class EmpleadoRepository:
                 cursor.close()
 
     @staticmethod
-    def createEmpleado(db, idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, idLinea, idProceso):
+    def createEmpleado(db, idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, idLinea, idProceso, idHorario):
         cursor = None
 
         try: 
@@ -143,10 +143,10 @@ class EmpleadoRepository:
             cursor = db.connection.cursor()
             
             query = """
-                INSERT INTO turnos_empleado(idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, idLinea, idProceso)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO turnos_empleado(idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, idLinea, idProceso, idHorario)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """
-            cursor.execute(query, (idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, idLinea, idProceso,))
+            cursor.execute(query, (idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, idLinea, idProceso, idHorario))
             
             db.connection.commit()
 
@@ -159,10 +159,11 @@ class EmpleadoRepository:
                 "lastName2": lastName2,
                 "position": position, 
                 "idDepartment": idDepartment,
-                "activo": activo,                
+                "activo": activo,   
                 "idCentro": idCentro,
                 "idLinea": idLinea,
                 "idProceso": idProceso,
+                "idHorario": idHorario,
             }
 
             return {"mensaje": f"Empleado creado correctamente.",
@@ -180,7 +181,7 @@ class EmpleadoRepository:
                 cursor.close()
 
     @staticmethod
-    def updateEmpleado(db, idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, oldIdEmpleado, idLinea, idProceso, oldBadgeNumber):
+    def updateEmpleado(db, idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, oldIdEmpleado, idLinea, idProceso, idHorario, oldBadgeNumber):
         cursor = None
 
         try: 
@@ -196,11 +197,11 @@ class EmpleadoRepository:
             cursor = db.connection.cursor()
             
             query = """
-                UPDATE turnos_empleado SET idEmpleado = %s, badgeNumber = %s, firstName = %s, secondName = %s, lastName = %s, lastName2 = %s, position = %s, idDepartment = %s, activo = %s, idCentro = %s, idLinea = %s, idProceso = %s
+                UPDATE turnos_empleado SET idEmpleado = %s, badgeNumber = %s, firstName = %s, secondName = %s, lastName = %s, lastName2 = %s, position = %s, idDepartment = %s, activo = %s, idCentro = %s, idLinea = %s, idProceso = %s, idHorario = %s
                 WHERE idEmpleado = %s
                 """
             
-            cursor.execute(query, (idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, idLinea, idProceso, oldIdEmpleado))
+            cursor.execute(query, (idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, idLinea, idProceso, idHorario, oldIdEmpleado))
             
             db.connection.commit()
 
@@ -213,8 +214,9 @@ class EmpleadoRepository:
                 "lastName2": lastName2,
                 "position": position, 
                 "idDepartment": idDepartment,
-                "activo": activo,             
-                "idCentro": idCentro,             
+                "activo": activo,
+                "idCentro": idCentro,
+                "idHorario": idHorario,
             }
 
             return {
