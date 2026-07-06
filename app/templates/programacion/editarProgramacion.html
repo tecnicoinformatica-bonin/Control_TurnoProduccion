@@ -564,11 +564,11 @@ message in messages %}
               return;
               } */
             try {
-              if (tieneRol("Control de RRHH")) {
+              if (tieneRol("Control de Programaciones RRHH")) {
                 tieneMotivo = mostrarMotivoDesasignacionModal(data.idRegistro);
               }
 
-              if (!tieneRol("Control de RRHH")) {
+              if (!tieneRol("Control de Programaciones RRHH")) {
                 tieneMotivo = true;
               }
 
