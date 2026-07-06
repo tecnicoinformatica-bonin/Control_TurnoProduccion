@@ -60,7 +60,7 @@ def calcular_beneficios(fecha, hora_inicio, hora_fin):
     # ALMUERZO
     # =====================================================
 
-    es_sabado = fecha.weekday() == 5
+    es_sabado = fecha.weekday() == 5 or fecha.weekday() == 6
 
     if (
         (es_sabado or es_feriado(fecha))
