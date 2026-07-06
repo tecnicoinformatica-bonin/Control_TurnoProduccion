@@ -6,6 +6,15 @@ from app.extensions.db import db
 
 registro_motivo_desasignacion_json_bp = Blueprint("registro_motivo_desasignacion_json_bp", __name__)
 
+@registro_motivo_desasignacion_json_bp.route("/get_count_motivos_desasignacion/<string:from_date>/<string:to_date>", methods=["GET"])
+@login_required
+def get_count_motivos_desasignacion(from_date, to_date):
+    data = Registro_motivo_desasignacion_Service.get_count_motivos_desasignacion_service(db, from_date, to_date)
+    if not data:
+        return jsonify([]), 200
+
+    return jsonify(data), 200
+
 @registro_motivo_desasignacion_json_bp.route("/get_registros_motivo_desasignacion", methods=["GET"])
 @login_required
 def get_registros_motivo_desasignacion():

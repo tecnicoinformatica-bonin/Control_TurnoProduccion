@@ -190,6 +190,64 @@
             </div>
           </div>
         </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button
+              class="accordion-button"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#panelsStayOpen-collapseTwo"
+              aria-expanded="true"
+              aria-controls="panelsStayOpen-collapseTwo"
+            >
+              Programaciones diarias
+            </button>
+          </h2>
+          <div
+            id="panelsStayOpen-collapseTwo"
+            class="accordion-collapse collapse"
+          >
+            <div class="accordion-body">
+              <div class="card card-outline-secondary bg-light text-dark">
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table table-light table-striped">
+                      <thead class="text-center">
+                        <tr>
+                          <th scope="col">Descripción</th>
+                          <th scope="col">Opciones</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td scope="row">
+                            Reporte de motivos de modificación por parte de RRHH
+                          </td>
+                          <td>
+                            <div class="text-center">
+                              <button
+                                onclick="descargarExcel_programaciones(1, '{{from_date_value}}', '{{to_date_value}}')"
+                                class="btn btn-success"
+                              >
+                                Excel
+                              </button>
+                              <button
+                                onclick="descargarPDF_programaciones(1, '{{from_date_value}}', '{{to_date_value}}')"
+                                class="btn btn-danger"
+                              >
+                                PDF
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -268,6 +326,38 @@
       case 6:
         window.open(
           `/json/reports/autorizacion/descargar_reporte_resumen_general/${from_date}/${to_date}/${idDepartment}/isPDF=${1}`,
+        );
+
+      default:
+        return;
+    }
+  }
+
+  /* Programaciones diarias */
+  async function descargarExcel_programaciones(
+    numeroReporte,
+    from_date,
+    to_date,
+  ) {
+    switch (numeroReporte) {
+      case 1:
+        window.open(
+          `/json/reports/estadisticas/descargar_count_motivos_desasignacion/${from_date}/${to_date}/isPDF=${0}`,
+        );
+
+      default:
+        return;
+    }
+  }
+  async function descargarPDF_programaciones(
+    numeroReporte,
+    from_date,
+    to_date,
+  ) {
+    switch (numeroReporte) {
+      case 1:
+        window.open(
+          `/json/reports/estadisticas/descargar_count_motivos_desasignacion/${from_date}/${to_date}/isPDF=${1}`,
         );
 
       default:

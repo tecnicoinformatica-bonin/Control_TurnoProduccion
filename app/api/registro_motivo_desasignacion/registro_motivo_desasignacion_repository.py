@@ -4,6 +4,43 @@ from app.extensions.slugify import Slugify
 
 class Registro_registro_motivo_desasignacionRepository:
     @staticmethod
+    def get_count_motivos_desasignacion(db, from_date, to_date):
+        cursor = None
+
+        try:
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT 
+                tmd.descripcion,
+                COUNT(tmd.descripcion) AS conteo
+            FROM turnos_registro_motivo_desasignacion trmd
+            INNER JOIN 
+                turnos_registro tr 
+                ON tr.idRegistro = trmd.idRegistro 
+            INNER JOIN 
+                turnos_motivo_desasignacion tmd 
+                ON tmd.idMotivo = trmd.idMotivo 
+            WHERE 
+                tr.fecha >= %s
+                AND tr.fecha <= %s
+            GROUP BY tmd.descripcion 
+            ORDER BY tmd.descripcion  
+            """
+
+            cursor.execute(query, (from_date, to_date,))
+            registro_motivo_desasignacion = cursor.fetchall()
+
+            return registro_motivo_desasignacion
+        
+        except Exception as ex:
+            raise Exception(f"No se pudo obtener detalles de motivos de desasignación. {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    @staticmethod
     def get_detalles_motivo_descripcion(db):
         cursor = None
 

@@ -3,6 +3,28 @@ from app.extensions.slugify import Slugify
 
 class Registro_motivo_desasignacion_Service():
     @staticmethod
+    def get_count_motivos_desasignacion_service(db, from_date, to_date):
+        try:
+            data = Registro_registro_motivo_desasignacionRepository.get_count_motivos_desasignacion(db, from_date, to_date)
+            registros_motivo_desasignacion = []
+            for row in data:
+                registro_motivo_desasignacion = {
+                    "descripcion": row["descripcion"],
+                    "conteo": row["conteo"],
+                }
+                registros_motivo_desasignacion.append(registro_motivo_desasignacion)
+
+            encabezado = {
+                "from_date": from_date,
+                "to_date": to_date,
+            }
+            
+            return (encabezado, registros_motivo_desasignacion)
+
+        except Exception as ex:
+            raise Exception(f"No se pudo obtener los datos en el servicio: {str(ex)}")
+    
+    @staticmethod
     def get_detalles_motivo_descripcion_service(db):
         try:
             data = Registro_registro_motivo_desasignacionRepository.get_detalles_motivo_descripcion(db)

@@ -1,3 +1,4 @@
+from datetime import datetime
 import platform
 
 from flask import Blueprint, jsonify, redirect, request, send_file, url_for
@@ -6,16 +7,19 @@ import os
 import subprocess
 import tempfile
 
-from flask_login import login_required
+from flask_login import current_user, login_required
+import pytz
 
 from app.api.autorizacion.autorizacion_service import Autorizacion_Service
 from app.api.programacion.programacion_service import Programacion_Service
 from app.api.registro.registro_service import Registro_Service
+from app.api.registro_motivo_desasignacion.registro_motivo_desasignacion_service import Registro_motivo_desasignacion_Service
 from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 from app.extensions.messages import FlashMessages
 from app.reports.excel.programacion_report import (generar_reporte_programacion)
 from app.reports.excel.horas_extra_autorizadas_report import (generar_reporte_horas_extra_autorizadas, generar_reporte_horas_extra_pendientes, generar_reporte_resumen_horas_autorizadas, generar_reporte_horas_autorizadas_por_empleado_linea_fecha, generar_reporte_horas_autorizadas_por_empleado_linea, generar_reporte_resumen_general)
+from app.reports.excel.registro_motivo_desasignacion_report import generar_reporte_resumen_motivos_desasignacion
 
 reports_json_bp = Blueprint("reports_json_pb", __name__)
 
@@ -430,6 +434,65 @@ def descargar_reporte_resumen_general(from_date, to_date, idDepartment, isPDF):
         archivo,
         as_attachment=True,
         download_name=f"Reporte_general_{from_date}_{to_date}.xlsm",
+        mimetype=(
+            "application/vnd.ms-excel.sheet.macroEnabled.12"
+        )
+    )
+
+@reports_json_bp.route("/estadisticas/descargar_count_motivos_desasignacion/<string:from_date>/<string:to_date>/isPDF=<int:isPDF>")
+@login_required
+@permiso_requerido("estadisticas.ver")
+def descargar_count_motivos_desasignacion(from_date, to_date, isPDF):
+    encabezado_detalles, detalles = Registro_motivo_desasignacion_Service.get_count_motivos_desasignacion_service(db, from_date, to_date)
+    
+    ahora = datetime.now(pytz.timezone("America/Guatemala"))
+
+    archivo = generar_reporte_resumen_motivos_desasignacion(encabezado_detalles, detalles, current_user.nombre, ahora)
+
+    isPDF = bool(isPDF)
+
+    if isPDF:
+        temp_dir = tempfile.mkdtemp()
+
+        ruta_excel = os.path.join(temp_dir, "reporte.xlsm")
+        ruta_pdf = os.path.join(temp_dir, "reporte.pdf")
+
+        with open(ruta_excel, "wb") as f:
+            f.write(archivo.getbuffer())
+
+        if platform.system() == "Windows":
+            libreoffice_cmd = r"C:\Program Files\LibreOffice\program\soffice.exe"
+        else:
+            libreoffice_cmd = "/usr/bin/libreoffice"
+
+        comando = [
+            libreoffice_cmd,
+            "--headless",
+            "--convert-to",
+            "pdf",
+            ruta_excel,
+            "--outdir",
+            temp_dir
+        ]
+
+        subprocess.run(
+            comando, 
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+
+        return send_file(
+            ruta_pdf,
+            as_attachment=True,
+            download_name=f"Motivos_Desasignacion_{from_date}_{to_date}.pdf",
+            mimetype="application/pdf"
+        )
+
+    return send_file(
+        archivo,
+        as_attachment=True,
+        download_name=f"Motivos_Desasignacion_{from_date}_{to_date}.xlsm",
         mimetype=(
             "application/vnd.ms-excel.sheet.macroEnabled.12"
         )
