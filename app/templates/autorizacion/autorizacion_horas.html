@@ -356,12 +356,6 @@ messages %}
   const fromDateValue = "{{ from_date_value }}";
   const toDateValue = "{{ to_date_value }}";
 
-  console.log({
-    idDepartmentValue,
-    fromDateValue,
-    toDateValue,
-  });
-
   async function apiFetch(url, options = {}) {
     try {
       const response = await fetch(url, options);
@@ -502,6 +496,21 @@ messages %}
         hozAlign: "center",
         frozen: true,
 
+        headerFilter: "list",
+        headerFilterFunc: "=",
+
+        headerFilterParams: {
+          values: {
+            "": "Todos",
+            authorized: "Autorizado",
+            // editing: "Editando",
+            // saving: "Guardando",
+            error: "Error",
+            unauthorized: "No Autorizado",
+            pending: "Pendiente",
+          },
+        },
+
         formatter: function (cell) {
           const value = cell.getValue();
           const row = cell.getRow();
@@ -520,8 +529,8 @@ messages %}
             case "unauthorized":
               return "⛔ No autorizado";
 
-            case "editing":
-              return "📝 Editando";
+            /* case "editing":
+              return "📝 Editando"; */
 
             case "error":
               return "🔴 Error";
@@ -547,6 +556,8 @@ messages %}
         hozAlign: "center",
         editor: false,
         frozen: true,
+
+        headerFilter: "input",
       },
       {
         title: "Nombre empleado",
@@ -555,6 +566,8 @@ messages %}
         hozAlign: "left",
         editor: false,
         frozen: true,
+
+        headerFilter: "input",
       },
       {
         title: "Fecha",
@@ -563,6 +576,16 @@ messages %}
         hozAlign: "center",
         editor: false,
         frozen: true,
+
+        headerFilter: "input",
+
+        headerFilterFunc: function (filterValue, cellValue) {
+          const [anio, mes, dia] = cellValue.split("-");
+
+          const fechaFormateada = `${dia}/${mes}/${anio}`;
+
+          return fechaFormateada.includes(filterValue);
+        },
 
         formatter: function (cell) {
           const [anio, mes, dia] = cell.getValue().split("-");
@@ -693,8 +716,8 @@ messages %}
 
           autorizacion = createAutorizacionData(data, 1);
 
-          console.log(autorizacion);
-          console.log(JSON.stringify(autorizacion));
+          // console.log(autorizacion);
+          // console.log(JSON.stringify(autorizacion));
 
           guardarAutorizacionData(row, autorizacion);
         },
@@ -720,8 +743,8 @@ messages %}
 
           autorizacion = createAutorizacionData(data, 0);
 
-          console.log(autorizacion);
-          console.log(JSON.stringify(autorizacion));
+          // console.log(autorizacion);
+          // console.log(JSON.stringify(autorizacion));
 
           guardarAutorizacionData(row, autorizacion);
         },
@@ -742,6 +765,18 @@ messages %}
         field: "usuario_autorizacion",
         hozAlign: "center",
         editor: false,
+
+        sorter: function (a, b) {
+          return (usuarios[a] || "").localeCompare(usuarios[b] || "");
+        },
+
+        headerFilter: "input",
+
+        headerFilterFunc: function (filterValue, cellValue) {
+          return (usuarios[cellValue] || "")
+            .toLowerCase()
+            .includes(filterValue.toLowerCase());
+        },
 
         formatter: function (cell) {
           return usuarios[cell.getValue()] ? usuarios[cell.getValue()] : "";
@@ -765,8 +800,8 @@ messages %}
 
       if (row.getData()._saveStatus === "error") {
         el.classList.add("red-row");
-      } else if (row.getData()._saveStatus === "editing") {
-        el.classList.add("yellow-row");
+        /* } else if (row.getData()._saveStatus === "editing") {
+        el.classList.add("yellow-row"); */
       } else if (_saveStatus === "authorized" && autorizado === 1) {
         el.classList.add("green-row");
       } else if (_saveStatus === "unauthorized" && autorizado === 0) {
@@ -826,7 +861,7 @@ messages %}
         });
         throw new Error(resp.error);
       } else {
-        console.log(resp);
+        // console.log(resp);
 
         row.update({
           ...resp,
@@ -837,6 +872,8 @@ messages %}
             autorizacion.autorizado === 1 ? "authorized" : "unauthorized",
         });
       }
+
+      // console.log(row.getData());
     } catch (error) {
       console.error(error);
 

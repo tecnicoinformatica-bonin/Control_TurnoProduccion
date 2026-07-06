@@ -675,12 +675,11 @@ message in messages %}
           headerFilterParams: {
             values: {
               "": "Todos",
-              draft: "Borrador",
               editing: "Editando",
               error: "Error",
-              unassigned: "Sin asignación",
               saved: "Guardado",
-              saving: "Guardando",
+              // saving: "Guardando",
+              unassigned: "Sin asignación",
             },
           },
         },
@@ -1021,6 +1020,22 @@ message in messages %}
               ? "<span style='color:lime;'>&check;</span>"
               : "<span style='color:red;'>&cross;</span>";
           },
+
+          headerFilter: "list",
+
+          headerFilterParams: {
+            values: {
+              "": "Todos",
+              1: "Sí",
+              0: "No",
+            },
+          },
+
+          headerFilterFunc: function (value, rowValue) {
+            if (value === "") return true;
+
+            return Number(rowValue) === Number(value);
+          },
         },
         {
           title: "Cena sin costo",
@@ -1033,6 +1048,7 @@ message in messages %}
               ? "<span style='color:lime;'>&check;</span>"
               : "<span style='color:red;'>&cross;</span>";
           },
+
           headerFilter: "list",
 
           headerFilterParams: {

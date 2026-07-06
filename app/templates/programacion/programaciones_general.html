@@ -201,14 +201,12 @@ endblock %} {% block content %}
 
 <script>
   const idDepartment = "{{ idDepartment }}";
-  console.log({ idDepartment });
 
   let departamentos = {};
   let usuarios = {};
 
   (async function () {
     async function cargarCatalogos() {
-      console.log("hola adentro de cargarCatalogos");
       const [departamentosResponse, usuariosResponse] = await Promise.all([
         fetch(`/json/departamento/get_departamentos`),
         fetch(`/json/usuario/get_usuarios`),
@@ -223,10 +221,7 @@ endblock %} {% block content %}
       usuariosData.forEach((u) => (usuarios[u.idUsuario] = u.nombre));
     }
     await cargarCatalogos();
-    console.log("hola fuera de cargarCatalogos");
   })();
-
-  console.log(departamentos);
 
   const tableBorradorDepartamento = new Tabulator(
     "#tabla-programaciones-abiertas-departamento",
@@ -250,6 +245,16 @@ endblock %} {% block content %}
           hozAlign: "center",
           editor: false,
 
+          headerFilter: "input",
+
+          headerFilterFunc: function (filterValue, cellValue) {
+            const [anio, mes, dia] = cellValue.split("-");
+
+            const fechaFormateada = `${dia}/${mes}/${anio}`;
+
+            return fechaFormateada.includes(filterValue);
+          },
+
           formatter: function (cell) {
             const [anio, mes, dia] = cell.getValue().split("-");
 
@@ -262,8 +267,18 @@ endblock %} {% block content %}
           editor: false,
           hozAlign: "center",
 
+          headerFilter: "input",
+
+          headerFilterFunc: function (filterValue, cellValue) {
+            return (departamentos[cellValue] || "")
+              .toLowerCase()
+              .includes(filterValue.toLowerCase());
+          },
+
           sorter: function (a, b) {
-            return (empleados[a] || "").localeCompare(empleados[b] || "");
+            return (departamentos[a] || "").localeCompare(
+              departamentos[b] || "",
+            );
           },
 
           formatter: function (cell) {
@@ -275,6 +290,18 @@ endblock %} {% block content %}
           field: "elaborado_por",
           editor: false,
           hozAlign: "center",
+
+          sorter: function (a, b) {
+            return (usuarios[a] || "").localeCompare(usuarios[b] || "");
+          },
+
+          headerFilter: "input",
+
+          headerFilterFunc: function (filterValue, cellValue) {
+            return (usuarios[cellValue] || "")
+              .toLowerCase()
+              .includes(filterValue.toLowerCase());
+          },
 
           formatter: function (cell) {
             return usuarios[cell.getValue()];
@@ -341,6 +368,22 @@ endblock %} {% block content %}
           hozAlign: "center",
           editor: false,
 
+          headerFilter: "input",
+
+          headerFilterFunc: function (filterValue, cellValue) {
+            const [anio, mes, dia] = cellValue.split("-");
+
+            const fechaFormateada = `${dia}/${mes}/${anio}`;
+
+            return fechaFormateada.includes(filterValue);
+          },
+
+          formatter: function (cell) {
+            const [anio, mes, dia] = cell.getValue().split("-");
+
+            return `${dia}/${mes}/${anio}`;
+          },
+
           formatter: function (cell) {
             const [anio, mes, dia] = cell.getValue().split("-");
 
@@ -353,8 +396,18 @@ endblock %} {% block content %}
           editor: false,
           hozAlign: "center",
 
+          headerFilter: "input",
+
+          headerFilterFunc: function (filterValue, cellValue) {
+            return (departamentos[cellValue] || "")
+              .toLowerCase()
+              .includes(filterValue.toLowerCase());
+          },
+
           sorter: function (a, b) {
-            return (empleados[a] || "").localeCompare(empleados[b] || "");
+            return (departamentos[a] || "").localeCompare(
+              departamentos[b] || "",
+            );
           },
 
           formatter: function (cell) {
@@ -366,6 +419,18 @@ endblock %} {% block content %}
           field: "elaborado_por",
           editor: false,
           hozAlign: "center",
+
+          sorter: function (a, b) {
+            return (usuarios[a] || "").localeCompare(usuarios[b] || "");
+          },
+
+          headerFilter: "input",
+
+          headerFilterFunc: function (filterValue, cellValue) {
+            return (usuarios[cellValue] || "")
+              .toLowerCase()
+              .includes(filterValue.toLowerCase());
+          },
 
           formatter: function (cell) {
             return usuarios[cell.getValue()];
