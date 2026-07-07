@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import pytz
 
 from app import create_app
+from app.api.configuracion.configuracion_service import Configuracion_Service
 from app.api.departamento.departamento_service import Departamento_Service
 from app.api.programacion.programacion_service import Programacion_Service
 from app.extensions.db import db
@@ -23,7 +24,13 @@ with app.app_context():
 
         departamentos = Departamento_Service.getDepartamentos_aplica_horas_extra_service(db)
 
-        while daysCount < 30: # 7 es para una semana antes
+        dias_a_analizar = Configuracion_Service.get_value(
+            db,
+            "DIAS_A_ANALIZAR",
+            7
+        )
+
+        while daysCount < dias_a_analizar: # 7 es para una semana antes
             day = fecha_actual - timedelta(days=daysCount)
             day_str = day.strftime("%Y-%m-%d")
 

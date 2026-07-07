@@ -1,10 +1,12 @@
 from flask import Flask, jsonify, redirect, url_for, session, request
 from datetime import datetime, timedelta
-from app.api.calendario_feriados.calendario_feriados_service import Feriado_Service
 from app.extensions.error_handlers import register_error_handlers
 from config import DevelopmentConfig
 from flask_login import LoginManager, current_user, logout_user
+
 from app.api.usuario.usuario_service import Usuario_Service
+from app.api.calendario_feriados.calendario_feriados_service import Feriado_Service
+from app.api.configuracion.configuracion_service import Configuracion_Service
 
 from app.extensions.db import db
 from app.extensions.swagger import init_swagger
@@ -151,10 +153,16 @@ def create_app():
             if current_user.id not in [1, 2, 28]:
                 ahora = datetime.now()
 
+                minutos_inactividad = Configuracion_Service.get_value(
+                    db,
+                    "TIEMPO_INACTIVIDAD_MINUTOS",
+                    5
+                )
+
                 if 'ultima_actividad' in session:
                     ultima = datetime.fromisoformat(session['ultima_actividad'])
 
-                    if ahora - ultima > timedelta(minutes=5):
+                    if ahora - ultima > timedelta(minutes=minutos_inactividad):
                         logout_user()
                         session.clear()
                         # SI ES JSON/API
