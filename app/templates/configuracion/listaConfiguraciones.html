@@ -1,0 +1,311 @@
+{% extends "layout/base.html" %} {% block title %} Configuraciones - Turnos
+Bonin {% endblock %} {% block content %}
+
+<!-- form card cc payment -->
+<div class="card card-outline-secondary bg-dark text-light">
+  <div class="card-body">
+    <div class="d-flex justify-content-between">
+      <h3>Configuraciones</h3>
+    </div>
+    <hr />
+
+    {% with messages = get_flashed_messages(with_categories=true) %} {% for
+    category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+      <strong>{{ message }}</strong>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% endfor %} {% endwith %}
+
+    <div>
+      <button id="reactivity-add" class="btn btn-success mb-3">
+        Agregar nuevo
+      </button>
+    </div>
+    <div id="tabla-configuraciones"></div>
+  </div>
+</div>
+<script>
+  const tableConfiguraciones = new Tabulator("#tabla-configuraciones", {
+    theme: "site-dark",
+    maxHeight: "100%",
+    layout: "fitColumns",
+
+    ajaxURL: `/json/configuracion/get_configuraciones`,
+    ajaxConfig: "GET",
+    columns: [
+      {
+        title: "Estado",
+        field: "_saveStatus",
+        hozAlign: "center",
+        frozen: true,
+
+        formatter: function (cell) {
+          const value = cell.getValue();
+          const row = cell.getRow();
+          const data = row.getData();
+
+          switch (value) {
+            case "draft":
+              return "⬜ Borrador";
+
+            case "saving":
+              return "💾 Guardando";
+
+            case "saved":
+              return "🟢 Guardado";
+
+            case "editing":
+              return "📝 Editando";
+
+            case "error":
+              return "🔴 Error";
+
+            default:
+              return "";
+          }
+        },
+      },
+      {
+        title: "ID",
+        field: "idConfiguracion",
+        editor: false,
+      },
+      {
+        title: "Categoria",
+        field: "categoria",
+        editor: "list",
+        editorParams: {
+          values: [
+            (seguridad = "Seguridad"),
+            (horas_extra = "Horas extra"),
+            (programacion = "Programación"),
+          ],
+        },
+      },
+      {
+        title: "Clave",
+        field: "clave",
+        editor: true,
+      },
+      {
+        title: "Valor",
+        field: "valor",
+        editor: true,
+      },
+      {
+        title: "Tipo",
+        field: "tipo",
+        editor: "list",
+        editorParams: {
+          values: {
+            BOOLEAN: "Boolean",
+            FLOAT: "Float",
+            INT: "Int",
+            STRING: "String",
+          },
+        },
+      },
+      {
+        title: "Descripción",
+        field: "descripcion",
+        editor: "input",
+      },
+      {
+        title: "Guardar",
+        hozAlign: "center",
+
+        formatter: function () {
+          return `
+            <button class="btn btn-success btn-sm">
+              💾
+            </button>
+          `;
+        },
+
+        cellClick: async function (e, cell) {
+          const row = cell.getRow();
+          const data = row.getData();
+
+          console.log(data);
+          console.log("_isNew:", data._isNew);
+          console.log("idConfiguracion:", data.idConfiguracion);
+
+          // VALIDACIÓN
+          if (
+            !data.categoria ||
+            !data.clave ||
+            !data.valor ||
+            !data.tipo ||
+            !data.descripcion
+          ) {
+            row.update({
+              _saveStatus: "error",
+            });
+            alert("Complete los campos obligatorios");
+            return;
+          }
+
+          row.update({
+            _saveStatus: "saving",
+          });
+
+          try {
+            let response;
+            const isCreate = !data.idConfiguracion;
+
+            // CREATE
+            if (isCreate) {
+              if (!data.idConfiguracion && !data._isNew) {
+                alert("Fila sin ID válido");
+                return;
+              }
+              response = await fetch(
+                "/json/configuracion/create_configuracion",
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(data),
+                },
+              );
+            } else {
+              // UPDATE
+              response = await fetch(
+                `/json/configuracion/update_configuracion/${data.idConfiguracion}`,
+                {
+                  method: "PUT",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(data),
+                },
+              );
+            }
+
+            if (!response.ok) {
+              row.update({
+                _saveStatus: "error",
+              });
+
+              const errorData = await response.json();
+              throw new Error(errorData.error);
+            }
+
+            const resp = await response.json();
+
+            row.update({
+              ...resp,
+
+              _isNew: false,
+              _saveStatus: "saved",
+            });
+          } catch (error) {
+            alert(error.message);
+          }
+        },
+      },
+      {
+        title: "Eliminar",
+        hozAlign: "center",
+
+        formatter: () => {
+          return "<button class='btn btn-danger'>&cross;</button>";
+        },
+        cellClick: async function (e, cell) {
+          let row = cell.getRow();
+          let data = row.getData();
+
+          if (!data.idConfiguracion) {
+            row.delete();
+            return;
+          }
+          try {
+            const response = await fetch(
+              `/json/configuracion/delete_configuracion/${data.idConfiguracion}`,
+              {
+                method: "DELETE",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+              },
+            );
+
+            if (!response.ok) {
+              row.update({
+                _saveStatus: "error",
+              });
+
+              const errorData = await response.json();
+              throw new Error(errorData.error);
+            }
+
+            const resp = await response.json();
+
+            row.delete();
+          } catch (error) {
+            console.error(error);
+
+            row.update({
+              _saveStatus: "error",
+            });
+          }
+        },
+      },
+    ],
+
+    rowFormatter: function (row) {
+      const el = row.getElement();
+      el.classList.remove("red-row");
+      el.classList.remove("green-row");
+      el.classList.remove("yellow-row");
+
+      const { _saveStatus } = row.getData();
+
+      if (_saveStatus === "error") {
+        el.classList.add("red-row");
+      } else if (_saveStatus === "editing") {
+        el.classList.add("yellow-row");
+      } else if (_saveStatus === "saved") {
+        el.classList.add("green-row");
+      }
+    },
+  });
+
+  function changeRowState(cell) {
+    const row = cell.getRow();
+    const data = row.getData();
+
+    if (data._saveStatus !== "saving") {
+      row.update({
+        _saveStatus: data._isNew ? "draft" : "editing",
+      });
+    }
+  }
+
+  tableConfiguraciones.on("cellEdited", function (cell) {
+    changeRowState(cell);
+  });
+
+  document
+    .getElementById("reactivity-add")
+    .addEventListener("click", function () {
+      tableConfiguraciones.addRow({
+        _saveStatus: "draft",
+        _isNew: true,
+        categoria: "",
+        clave: "",
+        valor: "",
+        tipo: "",
+        descripcion: "",
+      });
+    });
+</script>
+{% endblock %}

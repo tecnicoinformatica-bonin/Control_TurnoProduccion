@@ -13,6 +13,7 @@ from app.extensions.swagger import init_swagger
 from app.api import api_bp
 from app.routes.calendario_feriados.calendario_feriados_routes_api import feriado_api_bp
 from app.routes.centro_de_costo.centro_de_costo_routes_api import centro_de_costo_api_bp
+from app.routes.configuracion.configuracion_routes_api import configuracion_api_bp
 from app.routes.departamento.departamento_routes_api import departamento_api_bp
 from app.routes.empleado.empleado_routes_api import empleado_api_bp
 from app.routes.horario.horario_routes_api import horario_api_bp
@@ -36,6 +37,7 @@ from app.routes.usuario_rol.usuario_rol_routes_api import usuario_rol_api_bp
 from app.routes.calendario_feriados.calendario_feriados_routes_templates import feriado_template_bp
 from app.routes.autorizacion.autorizacion_routes_templates import autorizacion_template_bp
 from app.routes.centro_de_costo.centro_de_costo_routes_templates import centro_de_costo_template_bp
+from app.routes.configuracion.configuracion_routes_templates import configuracion_template_bp
 from app.routes.departamento.departamento_routes_templates import departamento_template_bp
 from app.routes.empleado.empleado_routes_templates import empleado_template_bp
 from app.routes.estadisticas.estadisticas_routes_templates import estadisticas_template_bp
@@ -62,6 +64,7 @@ from app.routes.home.home_routes_templates import home_template_bp
 from app.routes.calendario_feriados.calendario_feriados_routes_web import feriado_web_bp
 from app.routes.autorizacion.autorizacion_routes_web import autorizacion_web_bp
 from app.routes.centro_de_costo.centro_de_costo_routes_web import centro_de_costo_web_bp
+from app.routes.configuracion.configuracion_routes_web import configuracion_web_bp
 from app.routes.departamento.departamento_routes_web import departamento_web_bp
 from app.routes.empleado.empleado_routes_web import empleado_web_bp
 from app.routes.estadisticas.estadisticas_routes_web import estadisticas_web_bp
@@ -86,6 +89,7 @@ from app.routes.usuario_rol.usuario_rol_routes_web import usuario_rol_web_bp
 from app.routes.calendario_feriados.calendario_feriados_routes_json import feriado_json_bp
 from app.routes.autorizacion.autorizacion_routes_json import autorizacion_json_bp
 from app.routes.centro_de_costo.centro_de_costo_routes_json import centro_de_costo_json_bp
+from app.routes.configuracion.configuracion_routes_json import configuracion_json_bp
 from app.routes.departamento.departamento_routes_json import departamento_json_bp
 from app.routes.empleado.empleado_routes_json import empleado_json_bp
 from app.routes.horario.horario_routes_json import horario_json_bp
@@ -172,6 +176,7 @@ def create_app():
     app.register_blueprint(api_bp, url_prefix="/api")
     app.register_blueprint(feriado_api_bp, url_prefix="/api/feriado")
     app.register_blueprint(centro_de_costo_api_bp, url_prefix="/api/centro_de_costo")
+    app.register_blueprint(configuracion_api_bp, url_prefix="/api/configuracion")
     app.register_blueprint(departamento_api_bp, url_prefix="/api/departamento")
     app.register_blueprint(empleado_api_bp, url_prefix="/api/empleado")
     app.register_blueprint(horario_api_bp, url_prefix="/api/horario")
@@ -195,6 +200,7 @@ def create_app():
     app.register_blueprint(feriado_template_bp, url_prefix="/template/feriado")
     app.register_blueprint(autorizacion_template_bp, url_prefix="/template/autorizacion")
     app.register_blueprint(centro_de_costo_template_bp, url_prefix="/template/centro_de_costo")
+    app.register_blueprint(configuracion_template_bp, url_prefix="/template/configuracion")
     app.register_blueprint(departamento_template_bp, url_prefix="/template/departamento")
     app.register_blueprint(empleado_template_bp, url_prefix="/template/empleado")
     app.register_blueprint(estadisticas_template_bp, url_prefix="/template/estadisticas")
@@ -221,6 +227,7 @@ def create_app():
     app.register_blueprint(feriado_web_bp, url_prefix="/web/feriado")
     app.register_blueprint(autorizacion_web_bp, url_prefix="/web/autorizacion")
     app.register_blueprint(centro_de_costo_web_bp, url_prefix="/web/centro_de_costo")
+    app.register_blueprint(configuracion_web_bp, url_prefix="/web/configuracion")
     app.register_blueprint(departamento_web_bp, url_prefix="/web/departamento")
     app.register_blueprint(empleado_web_bp, url_prefix="/web/empleado")
     app.register_blueprint(estadisticas_web_bp, url_prefix="/web/estadisticas")
@@ -245,6 +252,7 @@ def create_app():
     app.register_blueprint(feriado_json_bp, url_prefix="/json/feriado")
     app.register_blueprint(autorizacion_json_bp, url_prefix="/json/autorizacion")
     app.register_blueprint(centro_de_costo_json_bp, url_prefix="/json/centro_de_costo")
+    app.register_blueprint(configuracion_json_bp, url_prefix="/json/configuracion")
     app.register_blueprint(departamento_json_bp, url_prefix="/json/departamento")
     app.register_blueprint(empleado_json_bp, url_prefix="/json/empleado")
     app.register_blueprint(horario_json_bp, url_prefix="/json/horario")
