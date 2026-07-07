@@ -403,26 +403,32 @@ class Programacion_Service():
 
                 for e in empleados:
                     if e["idLinea"] is not None:
+                        if e["hora_fin"] is not None:
+                            if str(e["hora_inicio"]) == "18:00:00" and str(e["hora_fin"]) == "1:00:00":
+                                hora_fin = "6:00:00"
+                            else:
+                                hora_fin = e["hora_fin"]
+
                         beneficios = calcular_beneficios(
                             fecha,
                             e["hora_inicio"],
-                            e["hora_fin"]
+                            hora_fin
                         )
 
                         aplica_almuerzo = beneficios["aplica_almuerzo"] if beneficios else False
                         aplica_cena = beneficios["aplica_cena"] if beneficios else False
                         cena_con_costo = beneficios["cena_con_costo"] if beneficios else False
 
-                        diferencia_horas = calcular_diferencia_horas(fecha, e["hora_inicio"], e["hora_fin"], e["hora_inicio"], e["hora_fin"])
+                        diferencia_horas = calcular_diferencia_horas(fecha, e["hora_inicio"], e["hora_fin"], e["hora_inicio"], hora_fin)
                     else:
                         aplica_almuerzo = False
                         aplica_cena = False
                         cena_con_costo = False
                         diferencia_horas = 0
                         e["hora_inicio"] = None
-                        e["hora_fin"] = None
+                        hora_fin = None
 
-                    RegistroRepository.createRegistroAutomatico(db, idProgramacion, e["idEmpleado"], e["hora_inicio"], e["hora_fin"], e["idLinea"], e["idProceso"], aplica_almuerzo, aplica_cena, cena_con_costo, fecha, e["idCentro"], e["badgeNumber"], diferencia_horas)
+                    RegistroRepository.createRegistroAutomatico(db, idProgramacion, e["idEmpleado"], e["hora_inicio"], hora_fin, e["idLinea"], e["idProceso"], aplica_almuerzo, aplica_cena, cena_con_costo, fecha, e["idCentro"], e["badgeNumber"], diferencia_horas)
 
                 creados += 1    
                 
