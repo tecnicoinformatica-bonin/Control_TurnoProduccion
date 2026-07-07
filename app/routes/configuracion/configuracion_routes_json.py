@@ -8,6 +8,7 @@ configuracion_json_bp = Blueprint("configuracion_json_bp", __name__)
 
 @configuracion_json_bp.route("/get_configuraciones", methods=["GET"])
 @login_required
+@permiso_requerido("configuracion.ver")
 def get_configuraciones():
     data = Configuracion_Service.getConfiguraciones_service(db)
     if not data:
@@ -17,6 +18,7 @@ def get_configuraciones():
 
 @configuracion_json_bp.route("/create_configuracion", methods=["POST"])
 @login_required
+@permiso_requerido("configuracion.crear")
 def create_configuracion():
     data = request.get_json()
     if not data:
@@ -27,6 +29,7 @@ def create_configuracion():
 
 @configuracion_json_bp.route("/update_configuracion/<int:idConfiguracion>", methods=["PUT"])
 @login_required
+@permiso_requerido("configuracion.editar")
 def update_configuracion(idConfiguracion):
     data = request.get_json()
     if not data:
@@ -39,6 +42,7 @@ def update_configuracion(idConfiguracion):
 
 @configuracion_json_bp.route("/delete_configuracion/<int:idConfiguracion>", methods=["DELETE"])
 @login_required
+@permiso_requerido("configuracion.eliminar")
 def delete_configuracion(idConfiguracion):
     result = Configuracion_Service.deleteConfiguracion_service(db, {"idConfiguracion": idConfiguracion})
     if not result:

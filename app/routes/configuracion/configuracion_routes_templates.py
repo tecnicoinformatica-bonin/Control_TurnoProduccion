@@ -14,7 +14,7 @@ configuracion_template_bp = Blueprint(
 
 @configuracion_template_bp.route("/listaConfiguraciones")
 @login_required
-# @permiso_requerido("configuracion.ver")
+@permiso_requerido("configuracion.ver")
 def listaConfiguraciones_template():
     configuraciones = Configuracion_Service.getConfiguraciones_service(db)
     departamentos = Departamento_Service.getDepartamentos_service(db);
