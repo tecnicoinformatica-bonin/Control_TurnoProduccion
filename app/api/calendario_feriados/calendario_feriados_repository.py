@@ -76,6 +76,56 @@ class FeriadoRepository:
                 cursor.close()
     
     @staticmethod
+    def getFeriados_dia_completo(db):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT * 
+            FROM turnos_calendario_feriados
+            WHERE es_medio_dia = 0
+            """
+            cursor.execute(query)
+
+            feriados = cursor.fetchall()
+
+            return feriados
+        
+        except Exception as ex:
+            raise Exception(f"No se pudo obtener feriados: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
+    
+    @staticmethod
+    def getFeriados_medio_dia(db):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT * 
+            FROM turnos_calendario_feriados
+            WHERE es_medio_dia = 1
+            """
+            cursor.execute(query)
+
+            feriados = cursor.fetchall()
+
+            return feriados
+        
+        except Exception as ex:
+            raise Exception(f"No se pudo obtener feriados: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
+    
+    @staticmethod
     def createFeriado(db, fecha, nombre, tipo, es_medio_dia):
         cursor = None
 

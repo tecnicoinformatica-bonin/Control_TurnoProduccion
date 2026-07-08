@@ -48,7 +48,21 @@ class Feriado_Service():
     @staticmethod
     def get_fechas_de_feriados_formateados_service(db):
         try:
-            data = FeriadoRepository.getFeriados(db)
+            data = FeriadoRepository.getFeriados_dia_completo(db)
+            
+            return [
+                row["fecha"].strftime("%m-%d")
+                for row in data
+                if row["fecha"] is not None
+            ]
+
+        except Exception as ex:
+            return {"error": f"No se pudo obtener feriados en servicio: {str(ex)}"}
+    
+    @staticmethod
+    def getFeriados_medio_dia_formateados_service(db):
+        try:
+            data = FeriadoRepository.getFeriados_medio_dia(db)
             
             return [
                 row["fecha"].strftime("%m-%d")
@@ -160,4 +174,7 @@ class Feriado_Service():
     def refrescar_cache_feriados(db):
         current_app.config["FERIADOS_GT"] = set(
             Feriado_Service.get_fechas_de_feriados_formateados_service(db)
+        )
+        current_app.config["FERIADOS_MEDIO_DIA"] = set(
+            Feriado_Service.getFeriados_medio_dia_formateados_service(db)
         )

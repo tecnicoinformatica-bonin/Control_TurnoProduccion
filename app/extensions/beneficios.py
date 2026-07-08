@@ -18,6 +18,9 @@ from datetime import timedelta, datetime, time, date
 def es_feriado(fecha):
     return fecha.strftime("%m-%d") in current_app.config["FERIADOS_GT"]
 
+def es_feriado_medio_dia(fecha):
+    return fecha.strftime("%m-%d") in current_app.config["FERIADOS_MEDIO_DIA"]
+
 def calcular_beneficios(fecha, hora_inicio, hora_fin):
 
     aplica_almuerzo = False
@@ -61,9 +64,9 @@ def calcular_beneficios(fecha, hora_inicio, hora_fin):
     # =====================================================
 
     es_sabado = fecha.weekday() == 5 or fecha.weekday() == 6
-
+    
     if (
-        (es_sabado or es_feriado(fecha))
+        (es_sabado or es_feriado(fecha) or es_feriado_medio_dia(fecha))
         and hora_salida >= 13
     ):
         aplica_almuerzo = True
