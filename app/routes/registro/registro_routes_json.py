@@ -1,6 +1,12 @@
+
 from flask import Blueprint, jsonify, request
-from flask_login import login_required
+from flask_login import current_user, login_required
+
+from datetime import datetime
+import pytz
+
 from app.api.registro.registro_service import Registro_Service
+
 from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 
@@ -36,6 +42,8 @@ def update_registro(idRegistro):
         return jsonify({"error": "No se enviaron datos"}), 400
     
     data["idRegistro"] = idRegistro
+    data["usuario_modificacion"] = current_user.id
+    data["ultima_modificacion"] = datetime.now(pytz.timezone("America/Guatemala")).strftime("%Y-%m-%d %H:%M:%S")
     result = Registro_Service.updateRegistro_service(db, data)
     return jsonify(result), 200
 

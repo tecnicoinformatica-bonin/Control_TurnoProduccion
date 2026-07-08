@@ -380,6 +380,8 @@ class Registro_Service():
             fecha = data.get("fecha")
             idCentro = data.get("idCentro")
             badgeNumber = data.get("badgeNumber")
+            usuario_modificacion = data.get("usuario_modificacion")
+            ultima_modificacion = data.get("ultima_modificacion")
             
             required_fields = {
                 "idRegistro": idRegistro, 
@@ -449,12 +451,14 @@ class Registro_Service():
                 idCentro, 
                 badgeNumber, 
                 cena_con_costo, 
+                ultima_modificacion,
+                usuario_modificacion,
                 diferencia_horas)
             
             for log in logs:
                 data = {
                     "idRegistro": idRegistro,
-                    "idUsuario": current_user.id,
+                    "idUsuario": usuario_modificacion,
                     "campo_modificado": log["campo"],
                     "valor_anterior": str(log["anterior"]),
                     "valor_nuevo": str(log["nuevo"])
@@ -478,8 +482,8 @@ class Registro_Service():
                 "idCentro": idCentro,
                 "badgeNumber": badgeNumber,
                 "diferencia_horas": diferencia_horas,
-                "ultima_modificacion": dataUpdated["ultima_modificacion"],
-                "usuario_modificacion": dataUpdated["usuario_modificacion"],
+                "ultima_modificacion": ultima_modificacion,
+                "usuario_modificacion": usuario_modificacion,
             }
         
         except Exception as ex:

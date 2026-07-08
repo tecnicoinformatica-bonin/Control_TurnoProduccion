@@ -625,6 +625,8 @@ class RegistroRepository:
         idCentro, 
         badgeNumber, 
         cena_con_costo,
+        ultima_modificacion,
+        usuario_modificacion,
         diferencia_horas
     ):
         cursor = None
@@ -653,14 +655,7 @@ class RegistroRepository:
                     diferencia_horas = %s
                 WHERE idRegistro = %s
                 """
-            
-            # Timezone de Guatemala
-            tz = pytz.timezone("America/Guatemala")
-
-            # Hora actual REAL 
-            ultima_modificacion = datetime.now(tz)
-
-            usuario_modificacion = current_user.id
+           
             
             cursor.execute(query, (
                 idEmpleado, 
@@ -701,8 +696,8 @@ class RegistroRepository:
                 "badgeNumber": badgeNumber,
                 "cena_con_costo": cena_con_costo,
                 "diferencia_horas": diferencia_horas,
-                "ultima_modificacion": ultima_modificacion.strftime("%Y-%m-%d %H:%M:%S"),
-                "usuario_modificacion": current_user.id
+                "ultima_modificacion": ultima_modificacion,
+                "usuario_modificacion": usuario_modificacion
             }
 
             return editedRegistro
