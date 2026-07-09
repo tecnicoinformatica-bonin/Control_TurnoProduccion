@@ -56,6 +56,8 @@ def update_registro_to_nulls(idRegistro):
         return jsonify({"error": "No se enviaron datos"}), 400
     
     data["idRegistro"] = idRegistro
+    data["usuario_modificacion"] = current_user.id
+    data["ultima_modificacion"] = datetime.now(pytz.timezone("America/Guatemala")).strftime("%Y-%m-%d %H:%M:%S")
     result = Registro_Service.updateRegistroToNulls_service(db, data)
     return jsonify(result), 200
 
