@@ -1,9 +1,12 @@
 from datetime import datetime
 
 from app.api.calendario_feriados.calendario_feriados_service import Feriado_Service
+from app.api.centro_de_costo.centro_de_costo_service import Centro_de_costo_Service
 from app.api.departamento.departamento_service import Departamento_Service
 from app.api.empleado.empleado_service import Empleado_Service
 from app.api.linea.linea_repository import LineaRepository
+from app.api.linea.linea_service import Linea_Service
+from app.api.proceso.proceso_service import Proceso_Service
 from app.api.programacion.programacion_repository import ProgramacionRepository
 from app.api.registro.registro_repository import RegistroRepository
 from app.api.usuario.usuario_repository import UsuarioRepository
@@ -301,7 +304,34 @@ class Programacion_Service():
 
         except Exception as ex:
             return {"error": f"No se pudieron obtener las programaciones en BORRADOR desde el servicio: {str(ex)}"}
+
+    @staticmethod
+    def get_filtros_programacion_service(db, idDepartment):
+        try:
+            estados = [
+                "Editando",
+                "Error",
+                "Guardado",
+                "Sin asignación"
+            ]
+            empleados = Empleado_Service.get_filter_empleados_by_department_service(db, idDepartment)
+            centros_de_costo = Centro_de_costo_Service.getCentros_de_costoByDepartment_service(db, idDepartment)
+            lineas = Linea_Service.getLineasByDepartment_service(db, idDepartment)
+            procesos = Proceso_Service.getProcesosByDepartment_service(db, idDepartment)
+            usuarios = Usuario_Service.get_usuarios_by_department_assigned_service(db, idDepartment)
             
+            return {
+                "estados": estados,
+                "empleados": empleados,
+                "centros_de_costo": centros_de_costo,
+                "lineas": lineas,
+                "procesos": procesos,
+                "usuarios": usuarios,
+            }
+
+        except Exception as ex:
+            raise Exception(f"No se pudieron obtener los datos de los filtros en el servicio: {str(ex)}")
+
     @staticmethod
     def createProgramacion_service(db, data):
         try:

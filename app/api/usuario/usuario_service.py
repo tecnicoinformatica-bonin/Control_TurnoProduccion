@@ -31,6 +31,24 @@ class Usuario_Service():
          return {"error": f"No se puede listar los usuarios. {ex}"}
       
    @staticmethod
+   def get_usuarios_by_department_assigned_service(db, idDepartment):
+      try:
+         data = UsuarioRepository.get_usuarios_by_department_assigned(db, idDepartment)
+         usuarios = []
+         
+         for row in data:
+            usuario = {
+               "idUsuario": row["idUsuario"],
+               "nombre": row["nombre"],
+            }
+            usuarios.append(usuario)
+         
+         return usuarios
+      
+      except Exception as ex:
+         raise Exception(f"No se pudo obtener en el servicio. {str(ex)}")
+      
+   @staticmethod
    def getUsuarioById_service(db, idUsuario):
       try:
          data = UsuarioRepository.getUsuarioById(db, idUsuario)

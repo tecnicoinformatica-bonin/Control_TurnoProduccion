@@ -70,9 +70,9 @@ class Empleado_Service():
             return {"error": f"No se pudo obtener empleados en el servicio: {str(ex)}"}
     
     @staticmethod
-    def getActiveEmpleadosByDepartment_service(db, idDeparment):
+    def getActiveEmpleadosByDepartment_service(db, idDepartment):
         try:
-            data = EmpleadoRepository.getActiveEmpleadosByDepartment(db, idDeparment)
+            data = EmpleadoRepository.getActiveEmpleadosByDepartment(db, idDepartment)
             empleados = []
             for row in data:
                 empleado = {
@@ -90,6 +90,23 @@ class Empleado_Service():
                     "idProceso": row["idProceso"],
                     "hora_inicio": row["hora_inicio"],
                     "hora_fin": row["hora_fin"],
+                }
+                empleados.append(empleado)
+            return empleados
+
+        except Exception as ex:
+            return {"error": f"No se pudo obtener empleados activos en el servicio: {str(ex)}"}
+    
+    @staticmethod
+    def get_filter_empleados_by_department_service(db, idDepartment):
+        try:
+            data = EmpleadoRepository.get_filter_empleados_by_department(db, idDepartment)
+            empleados = []
+            for row in data:
+                empleado = {
+                    "idEmpleado": row["idEmpleado"],
+                    "badgeNumber": row["badgeNumber"],
+                    "nombre_completo": row["nombre_completo"],
                 }
                 empleados.append(empleado)
             return empleados

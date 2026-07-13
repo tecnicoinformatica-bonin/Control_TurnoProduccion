@@ -212,6 +212,35 @@ class UsuarioRepository:
         finally: 
             if cursor:
                 cursor.close()
+    
+    @staticmethod
+    def get_usuarios_by_department_assigned(db, idDepartment):
+        cursor = None
+
+        try:
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT ts.idUsuario, ts.nombre
+            FROM turnos_usuario ts
+            INNER JOIN 
+                turnos_usuario_departamento tud
+                ON tud.idUsuario = ts.idUsuario
+            WHERE tud.idDepartment = %s
+            """
+
+            cursor.execute(query, (idDepartment,))
+            
+            usuarios = cursor.fetchall()
+
+            return usuarios
+        
+        except Exception as ex:
+            raise Exception(f"No se pueden obtener departamentos del usuario en el repositorio: {str(ex)}")
+                    
+        finally: 
+            if cursor:
+                cursor.close()
 
     @staticmethod
     def createUsuario(db, username, nombre, password, activo, scope_departamentos_global, scope_permisos_global):

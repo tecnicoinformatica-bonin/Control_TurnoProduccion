@@ -51,6 +51,15 @@ def get_programaciones_cerradas_by_idDepartment():
 
     return jsonify(data), 200
 
+@programacion_json_bp.route("/get_filtros_programacion/<int:idDepartment>", methods=["GET"])
+@login_required
+def get_filtros_programacion(idDepartment):
+    data = Programacion_Service.get_filtros_programacion_service(db, idDepartment)
+    if not data:
+        return jsonify([]), 200
+
+    return jsonify(data), 200
+
 @programacion_json_bp.route("/get_counts_by_line/<int:idProgramacion>/<int:idDepartment>", methods=["GET"])
 @login_required
 @permiso_requerido("programacion.ver")

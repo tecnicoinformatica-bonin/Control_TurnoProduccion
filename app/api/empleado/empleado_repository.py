@@ -130,6 +130,40 @@ class EmpleadoRepository:
                 cursor.close()
 
     @staticmethod
+    def get_filter_empleados_by_department(db, idDepartment):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT 
+                e.idEmpleado, 
+                e.badgeNumber,
+                CONCAT_WS(' ',
+                    e.firstName, 
+                    e.secondName, 
+                    e.lastName, 
+                    e.lastName2	
+                ) AS nombre_completo
+            FROM turnos_empleado e 
+            WHERE e.activo = 1 AND e.idDepartment = %s
+            ORDER BY e.firstName
+            """
+            cursor.execute(query, (idDepartment,))
+
+            empleados = cursor.fetchall()
+
+            return empleados
+        
+        except Exception as ex:
+            raise Exception (f"No se pudo obtener empleados activos en el repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    @staticmethod
     def createEmpleado(db, idEmpleado, badgeNumber, firstName, secondName, lastName, lastName2, position, idDepartment, activo, idCentro, idLinea, idProceso, idHorario):
         cursor = None
 
