@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask_login import current_user
 
 from app.api.centro_de_costo.centro_de_costo_service import Centro_de_costo_Service
@@ -85,12 +87,15 @@ class Registro_Service():
             data = RegistroRepository.getRegistrosByProgramacion(db, idProgramacion)
             registros = []
             for row in data:
+                hora_inicio = (datetime.min + row[3]) if row[3] is not None else None
+                hora_fin = (datetime.min + row[4]) if row[4] is not None else None
+
                 registro = {
                     "idRegistro": row[0],
                     "idProgramacion": row[1],
                     "idEmpleado": row[2],
-                    "hora_inicio": str(row[3]) if row[3] is not None else None,
-                    "hora_fin": str(row[4]) if row[4] is not None else None,
+                    "hora_inicio": hora_inicio.strftime("%H:%M:%S") if row[3] is not None else None,
+                    "hora_fin": hora_fin.strftime("%H:%M:%S") if row[4] is not None else None,
                     "idLinea": row[5],
                     "idProceso": row[6],
                     "aplica_almuerzo": row[7],
