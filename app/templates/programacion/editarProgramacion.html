@@ -172,6 +172,112 @@ message in messages %}
           </div>
         </div>
       </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#flush-collapseTwo"
+            aria-expanded="false"
+            aria-controls="flush-collapseTwo"
+          >
+            Filtros avanzados
+          </button>
+        </h2>
+        <div
+          id="flush-collapseTwo"
+          class="accordion-collapse collapse"
+          data-bs-parent="#accordionFlushExample"
+        >
+          <div class="accordion-body">
+            <div class="filters">
+              <div class="filters__grid">
+                <div class="filter-area filter-estado">
+                  <div class="d-flex justify-content-between p-3">
+                    <h4>Estados</h4>
+                    <div>
+                      <button class="filter-area__btn-select-all btn btn-light">
+                        <i class="bi bi-check2-square"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="filters-container estados-container"></div>
+                </div>
+                <div class="filter-area filter-empleado">
+                  <div class="d-flex justify-content-between p-3">
+                    <h4>Empleados</h4>
+                    <div>
+                      <button class="filter-area__btn-select-all btn btn-light">
+                        <i class="bi bi-check2-square"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="filters-container empleados-container"></div>
+                </div>
+                <div class="filter-area filter-centro">
+                  <div class="d-flex justify-content-between p-3">
+                    <h4>Centros de costo</h4>
+                    <div>
+                      <button class="filter-area__btn-select-all btn btn-light">
+                        <i class="bi bi-check2-square"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="filters-container centros-container"></div>
+                </div>
+                <div class="filter-area filter-linea">
+                  <div class="d-flex justify-content-between p-3">
+                    <h4>Líneas</h4>
+                    <div>
+                      <button class="filter-area__btn-select-all btn btn-light">
+                        <i class="bi bi-check2-square"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="filters-container lineas-container"></div>
+                </div>
+                <div class="filter-area filter-proceso">
+                  <div class="d-flex justify-content-between p-3">
+                    <h4>Procesos</h4>
+                    <div>
+                      <button class="filter-area__btn-select-all btn btn-light">
+                        <i class="bi bi-check2-square"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="filters-container procesos-container"></div>
+                </div>
+                <div class="filter-area filter-usuario">
+                  <div class="d-flex justify-content-between p-3">
+                    <h4>Usuarios</h4>
+                    <div>
+                      <button class="filter-area__btn-select-all btn btn-light">
+                        <i class="bi bi-check2-square"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="filters-container usuarios-container"></div>
+                </div>
+              </div>
+              <div class="filters__button">
+                <button
+                  class="btn btn-warning filters__button-aplicar-filtros"
+                  type="button"
+                >
+                  Aplicar filtros
+                </button>
+                <button
+                  class="btn btn-danger filters__button-borrar-filtros"
+                  type="button"
+                >
+                  Borrar filtros
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -460,21 +566,16 @@ message in messages %}
     dataAsueto.textContent = feriadosGT.includes(fechaMesDia) ? "SÍ" : "NO";
   })();
 
+  let empleados = {};
+  let empleadosDataMap = {};
+  let lineas = {};
+  let procesos = {};
+  let centrosDeCosto = {};
+  let usuarios = {};
+
+  let filtros = {};
+
   (async function () {
-    const [year, month, day] = "{{ programacion_actual.fecha }}"
-      .split("-")
-      .map(Number);
-    const fecha = new Date(year, month - 1, day);
-    const canEdit = "{{ programacion_actual.estado }}" !== "CERRADO";
-    let applyForTransport = false;
-
-    let empleados = {};
-    let empleadosDataMap = {};
-    let lineas = {};
-    let procesos = {};
-    let centrosDeCosto = {};
-    let usuarios = {};
-
     async function cargarCatalogos() {
       const [
         empleadosResponse,
@@ -513,8 +614,26 @@ message in messages %}
     }
 
     await cargarCatalogos();
+    filtros = await cargarFiltros();
+    crearFiltroEstados(filtros.estados);
+    crearFiltroEmpleados(filtros.empleados);
+    crearFiltroCentros(filtros.centros_de_costo);
+    crearFiltroLineas(filtros.lineas);
+    crearFiltroProcesos(filtros.procesos);
+    crearFiltroUsuarios(filtros.usuarios);
+  })();
 
-    const table = new Tabulator("#tabla-registros", {
+  let table;
+  (async function () {
+    await esperarUserContext();
+    const [year, month, day] = "{{ programacion_actual.fecha }}"
+      .split("-")
+      .map(Number);
+    const fecha = new Date(year, month - 1, day);
+    const canEdit = "{{ programacion_actual.estado }}" !== "CERRADO";
+    let applyForTransport = false;
+
+    table = new Tabulator("#tabla-registros", {
       theme: "site-dark",
       maxHeight: "650px",
       layout: "fitData",
@@ -560,9 +679,9 @@ message in messages %}
             if (!tienePermiso("registro.desasignarTurno")) return;
 
             /* if (!data.idRegistro) {
-              row.delete();
-              return;
-              } */
+                row.delete();
+                return;
+                } */
             try {
               if (tieneRol("Control de Programaciones RRHH")) {
                 tieneMotivo = mostrarMotivoDesasignacionModal(data.idRegistro);
@@ -699,10 +818,10 @@ message in messages %}
             }
 
             return `
-              <button class="btn btn-success btn-sm">
-                💾
-              </button>
-            `;
+                <button class="btn btn-success btn-sm">
+                  💾
+                </button>
+              `;
           },
 
           cellClick: async function (e, cell) {
@@ -1193,26 +1312,26 @@ message in messages %}
       await actualizarTotalesPorLinea();
 
       /* if (updateTimeouts[id]) {
-        clearTimeout(updateTimeouts[id]);
-      } */
+          clearTimeout(updateTimeouts[id]);
+        } */
 
       // Espera 800ms antes de guardar (debounce)
       /* updateTimeouts[id] = setTimeout(async () => {
-        try {
-          const response = await fetch(`/json/registro/update_registro/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-          });
-          const resp = await response.json();
-          if (resp.error) {
-            console.error(resp.error);
-            return;
+          try {
+            const response = await fetch(`/json/registro/update_registro/${id}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data),
+            });
+            const resp = await response.json();
+            if (resp.error) {
+              console.error(resp.error);
+              return;
+            }
+          } catch (error) {
+            console.error(error);
           }
-        } catch (error) {
-          console.error(error);
-        }
-      }, 800); */
+        }, 800); */
     });
 
     table.on("tableBuilt", function () {
@@ -1305,34 +1424,34 @@ message in messages %}
       if (field === "hora_inicio" || field === "hora_fin") {
         recalcularTotales();
         /* const row = cell.getRow();
-        const data = row.getData();
+          const data = row.getData();
 
-        if (!data.idRegistro) return;
+          if (!data.idRegistro) return;
 
-        try {
-          const response = await fetch(
-            `/json/registro/update_registro/${data.idRegistro}`,
-            {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
+          try {
+            const response = await fetch(
+              `/json/registro/update_registro/${data.idRegistro}`,
+              {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
               },
-              body: JSON.stringify(data),
-            },
-          );
+            );
 
-          const resp = await response.json();
-          refreshRowAndTotals(resp, row);
+            const resp = await response.json();
+            refreshRowAndTotals(resp, row);
 
-          row.update({
-            aplica_almuerzo: resp.aplica_almuerzo,
-            aplica_cena: resp.aplica_cena,
-            cena_con_costo: resp.cena_con_costo,
-          }); 
+            row.update({
+              aplica_almuerzo: resp.aplica_almuerzo,
+              aplica_cena: resp.aplica_cena,
+              cena_con_costo: resp.cena_con_costo,
+            });
 
-        } catch (error) {
-          console.error(error);
-        }*/
+          } catch (error) {
+            console.error(error);
+          }*/
       }
     }
 
@@ -1372,46 +1491,6 @@ message in messages %}
     }
 
     document
-      .getElementById("reactivity-add")
-      .addEventListener("click", function () {
-        // console.log(!tienePermiso("registro.crear"));
-        // console.log(tienePermiso("registro.crear"));
-
-        if (!tienePermiso("registro.crear")) {
-          alert("No tiene permisos para esta acción.");
-          return;
-        }
-
-        table.addRow(
-          {
-            _isNew: true,
-            _isDirty: false,
-            _saveStatus: "draft",
-
-            fecha: fecha.toISOString().slice(0, 10),
-            idProgramacion: idProgramacion,
-
-            // idEmpleado: "",
-            // badgeNumber: "",
-            // idCentro: "",
-
-            // hora_inicio: "00:00:00",
-            // hora_fin: "00:00:00",
-
-            // idLinea: "",
-            // idProceso: "",
-
-            // aplica_almuerzo: false,
-            // aplica_cena: false,
-            // aplica_transporte: false,
-
-            // observacion_transporte: "",
-          },
-          false,
-        );
-      });
-
-    document
       .getElementById("descargar-pdf")
       .addEventListener("click", function () {
         table.download("pdf", "reporte.pdf", {
@@ -1434,19 +1513,19 @@ message in messages %}
   }
 
   function tienePermiso(permiso) {
-    return window.USER_CONTEXT.permisos.includes(permiso);
+    return window.USER_CONTEXT?.permisos?.includes(permiso) ?? false;
   }
 
   function tieneRol(rol) {
-    return window.USER_CONTEXT.roles.includes(rol);
+    return window.USER_CONTEXT?.roles?.includes(rol) ?? false;
   }
 
   function puedeVerDepartamento(idDepartment) {
-    if (window.USER_CONTEXT.scopeGlobal) {
+    if (window.USER_CONTEXT?.scopeGlobal) {
       return true;
     }
 
-    return window.USER_CONTEXT.departamentos.some(
+    return window.USER_CONTEXT?.departamentos?.some(
       (d) => d.idDepartment === idDepartment,
     );
   }
@@ -1720,6 +1799,290 @@ message in messages %}
 
       form.addEventListener("submit", submitHandler);
     });
+  }
+
+  async function esperarUserContext() {
+    while (!window.USER_CONTEXT) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+  }
+
+  /* FILTROS */
+  async function cargarFiltros() {
+    const response = await fetch(
+      `/json/programacion/get_filtros_programacion/${idDepartmentProgramacion}`,
+    );
+
+    return await response.json();
+  }
+
+  function crearFiltroEstados(estados) {
+    const container = document.querySelector(".estados-container");
+
+    estados.forEach((estado, index) => {
+      const id = `estado_${index}`;
+
+      container.innerHTML += `
+              <input
+                  type="checkbox"
+                  class="btn-check filtro-estado"
+                  id="${id}"
+                  value="${estado}"
+                  autocomplete="off"
+              >
+
+              <label
+                  class="btn btn-outline-success m-1"
+                  for="${id}">
+                  ${estado}
+              </label>
+          `;
+    });
+  }
+
+  function crearFiltroEmpleados(empleados) {
+    const container = document.querySelector(".empleados-container");
+
+    empleados.forEach((empleado, index) => {
+      const id = `empleado_${index}`;
+
+      container.innerHTML += `
+              <input
+                  type="checkbox"
+                  class="btn-check filtro-empleado"
+                  id="${id}"
+                  value="${empleado.idEmpleado}"
+                  autocomplete="off"
+              >
+
+              <label
+                  class="btn btn-outline-success m-1"
+                  for="${id}">
+                  ${empleado.nombre_completo}
+              </label>
+          `;
+    });
+  }
+
+  function crearFiltroCentros(centros) {
+    const container = document.querySelector(".centros-container");
+
+    centros.forEach((centro, index) => {
+      const id = `centro_${index}`;
+
+      container.innerHTML += `
+              <input
+                  type="checkbox"
+                  class="btn-check filtro-centro"
+                  id="${id}"
+                  value="${centro.idCentro}"
+                  autocomplete="off"
+              >
+
+              <label
+                  class="btn btn-outline-success m-1"
+                  for="${id}">
+                  ${centro.nombreCentro}
+              </label>
+          `;
+    });
+  }
+
+  function crearFiltroLineas(lineas) {
+    const container = document.querySelector(".lineas-container");
+
+    lineas.forEach((linea, index) => {
+      const id = `linea_${index}`;
+
+      container.innerHTML += `
+              <input
+                  type="checkbox"
+                  class="btn-check filtro-linea"
+                  id="${id}"
+                  value="${linea.idLinea}"
+                  autocomplete="off"
+              >
+
+              <label
+                  class="btn btn-outline-success m-1"
+                  for="${id}">
+                  ${linea.nameLinea}
+              </label>
+          `;
+    });
+  }
+
+  function crearFiltroProcesos(procesos) {
+    const container = document.querySelector(".procesos-container");
+
+    procesos.forEach((proceso, index) => {
+      const id = `proceso_${index}`;
+
+      container.innerHTML += `
+              <input
+                  type="checkbox"
+                  class="btn-check filtro-proceso"
+                  id="${id}"
+                  value="${proceso.idProceso}"
+                  autocomplete="off"
+              >
+
+              <label
+                  class="btn btn-outline-success m-1"
+                  for="${id}">
+                  ${proceso.proceso}
+              </label>
+          `;
+    });
+  }
+
+  function crearFiltroUsuarios(usuarios) {
+    const container = document.querySelector(".usuarios-container");
+
+    usuarios.forEach((usuario, index) => {
+      const id = `usuario_${index}`;
+
+      container.innerHTML += `
+              <input
+                  type="checkbox"
+                  class="btn-check filtro-usuario"
+                  id="${id}"
+                  value="${usuario.idUsuario}"
+                  autocomplete="off"
+              >
+
+              <label
+                  class="btn btn-outline-success m-1"
+                  for="${id}">
+                  ${usuario.nombre}
+              </label>
+          `;
+    });
+  }
+
+  function convertirEstado(estadoInterno) {
+    const estados = {
+      editing: "Editando",
+      error: "Error",
+      saved: "Guardado",
+      unassigned: "Sin asignación",
+    };
+
+    return estados[estadoInterno] || estadoInterno;
+  }
+
+  document
+    .querySelector(".filters__button-aplicar-filtros")
+    .addEventListener("click", aplicarFiltros);
+
+  function aplicarFiltros() {
+    const estadosSeleccionados = [
+      ...document.querySelectorAll(".filtro-estado:checked"),
+    ].map((c) => c.value);
+
+    const empleadosSeleccionados = [
+      ...document.querySelectorAll(".filtro-empleado:checked"),
+    ].map((c) => Number(c.value));
+
+    const centrosSeleccionados = [
+      ...document.querySelectorAll(".filtro-centro:checked"),
+    ].map((c) => Number(c.value));
+
+    const lineasSeleccionadas = [
+      ...document.querySelectorAll(".filtro-linea:checked"),
+    ].map((c) => Number(c.value));
+
+    const procesosSeleccionados = [
+      ...document.querySelectorAll(".filtro-proceso:checked"),
+    ].map((c) => Number(c.value));
+
+    const usuariosSeleccionados = [
+      ...document.querySelectorAll(".filtro-usuario:checked"),
+    ].map((c) => Number(c.value));
+
+    table.setFilter(function (data) {
+      if (
+        estadosSeleccionados.length &&
+        !estadosSeleccionados.includes(convertirEstado(data._saveStatus))
+      ) {
+        return false;
+      }
+
+      if (
+        empleadosSeleccionados.length &&
+        !empleadosSeleccionados.includes(data.idEmpleado)
+      ) {
+        return false;
+      }
+
+      if (
+        centrosSeleccionados.length &&
+        !centrosSeleccionados.includes(data.idCentro)
+      ) {
+        return false;
+      }
+
+      if (
+        lineasSeleccionadas.length &&
+        !lineasSeleccionadas.includes(data.idLinea)
+      ) {
+        return false;
+      }
+
+      if (
+        procesosSeleccionados.length &&
+        !procesosSeleccionados.includes(data.idProceso)
+      ) {
+        return false;
+      }
+
+      if (
+        usuariosSeleccionados.length &&
+        !usuariosSeleccionados.includes(data.usuario_modificacion)
+      ) {
+        return false;
+      }
+
+      return true;
+    });
+  }
+
+  document
+    .querySelector(".filters__button-borrar-filtros")
+    .addEventListener("click", limpiarFiltros);
+
+  function limpiarFiltros() {
+    document.querySelectorAll(".btn-check").forEach((c) => (c.checked = false));
+
+    table.clearFilter();
+  }
+
+  const btnsSelectAll = document.querySelectorAll(
+    ".filter-area__btn-select-all",
+  );
+
+  btnsSelectAll.forEach((btn) => {
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
+
+      const filterArea = btn.closest(".filter-area");
+      const filtersContainer = filterArea.querySelector(".filters-container");
+
+      filtersContainer.querySelectorAll(".btn-check").forEach((c) => {
+        if (btn.classList.contains("btn-success")) {
+          c.checked = false;
+        } else {
+          c.checked = true;
+        }
+      });
+
+      toggleBtnClass(btn);
+    });
+  });
+
+  function toggleBtnClass(btn) {
+    btn.classList.toggle("btn-light");
+    btn.classList.toggle("btn-success");
   }
 </script>
 
