@@ -1,10 +1,14 @@
 from flask import Blueprint, jsonify, request
+from flask_login import login_required
 from app.api.motivo_desasignacion.motivo_desasignacion_service import Motivo_desasignacion_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 
 motivo_desasignacion_api_bp = Blueprint("motivo_desasignacion_api_bp", __name__)
 
 @motivo_desasignacion_api_bp.route("/getMotivos_desasignacion", methods=["GET"])
+@login_required
+@permiso_requerido("motivo_desasignacion.ver")
 def getMotivos_desasignacion():
     """
     Obtener motivos_desasignacion
@@ -20,6 +24,8 @@ def getMotivos_desasignacion():
     return jsonify(motivos_desasignacion)
 
 @motivo_desasignacion_api_bp.route("/createMotivo_desasignacion", methods=["POST"])
+@login_required
+@permiso_requerido("motivo_desasignacion.crear")
 def createMotivo_desasignacion():
     """
     Crear una nueva motivo_desasignacion
@@ -53,6 +59,8 @@ def createMotivo_desasignacion():
     return jsonify(motivo_desasignacion)
 
 @motivo_desasignacion_api_bp.route("/updateMotivo_desasignacion", methods=["POST"])
+@login_required
+@permiso_requerido("motivo_desasignacion.editar")
 def updateMotivo_desasignacion():
     """
     Modificar una motivo_desasignacion
@@ -90,6 +98,8 @@ def updateMotivo_desasignacion():
     return jsonify(motivo_desasignacion)
 
 @motivo_desasignacion_api_bp.route("/deleteMotivo_desasignacion", methods=["POST"])
+@login_required
+@permiso_requerido("motivo_desasignacion.eliminar")
 def deleteMotivo_desasignacion():
     """
     Eliminar una motivo_desasignacion

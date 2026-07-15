@@ -1,10 +1,14 @@
 from flask import Blueprint, jsonify, request
+from flask_login import login_required
 from app.api.centro_de_costo.centro_de_costo_service import Centro_de_costo_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 
 centro_de_costo_api_bp = Blueprint("centro_de_costo_api_pb", __name__)
 
 @centro_de_costo_api_bp.route("/getCentros_de_costo", methods=["GET"])
+@login_required
+@permiso_requerido("centro_de_costo.ver")
 def getCentros_de_costo():
     """
     Obtener centros_de_costo
@@ -20,6 +24,8 @@ def getCentros_de_costo():
     return jsonify(centros_de_costo)
 
 @centro_de_costo_api_bp.route("/createCentro_de_costo", methods=["POST"])
+@login_required
+@permiso_requerido("centro_de_costo.crear")
 def createCentro_de_costo():
     """
     Crear un nuevo centro_de_costo
@@ -56,6 +62,8 @@ def createCentro_de_costo():
     return jsonify(centro_de_costo)
 
 @centro_de_costo_api_bp.route("/updateCentro_de_costo", methods=["POST"])
+@login_required
+@permiso_requerido("centro_de_costo.editar")
 def updateCentro_de_costo():
     """
     Modificar un centro_de_costo
@@ -95,6 +103,8 @@ def updateCentro_de_costo():
     return jsonify(centro_de_costo)
 
 @centro_de_costo_api_bp.route("/deleteCentro_de_costo", methods=["POST"])
+@login_required
+@permiso_requerido("centro_de_costo.eliminar")
 def deleteCentro_de_costo():
     """
     Eliminar un centro_de_costo

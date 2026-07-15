@@ -1,10 +1,14 @@
 from flask import Blueprint, jsonify, request
+from flask_login import login_required
 from app.api.registro_motivo_desasignacion.registro_motivo_desasignacion_service import Registro_motivo_desasignacion_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 
 registro_motivo_desasignacion_api_bp = Blueprint("registro_motivo_desasignacion_api_bp", __name__)
 
 @registro_motivo_desasignacion_api_bp.route("/get_detalles_motivo_descripcion", methods=["GET"])
+@login_required
+@permiso_requerido("registro_motivo_desasignacion.ver")
 def get_detalles_motivo_descripcion():
     """
     Obtener registros_motivo_desasignacion
@@ -20,6 +24,8 @@ def get_detalles_motivo_descripcion():
     return jsonify(registros_motivo_desasignacion)
 
 @registro_motivo_desasignacion_api_bp.route("/getRegistros_motivo_desasignacion_by_idProgramacion/<int:idProgramacion>", methods=["GET"])
+@login_required
+@permiso_requerido("registro_motivo_desasignacion.ver")
 def getRegistros_motivo_desasignacion_by_idProgramacion(idProgramacion):
     """
     Obtener registros_motivo_desasignacion
@@ -35,6 +41,8 @@ def getRegistros_motivo_desasignacion_by_idProgramacion(idProgramacion):
     return jsonify(registros_motivo_desasignacion)
 
 @registro_motivo_desasignacion_api_bp.route("/createRegistro_motivo_desasignacion", methods=["POST"])
+@login_required
+@permiso_requerido("registro_motivo_desasignacion.crear")
 def createRegistro_motivo_desasignacion():
     """
     Crear una nueva registro_motivo_desasignacion
@@ -69,4 +77,3 @@ def createRegistro_motivo_desasignacion():
     registro_motivo_desasignacion = Registro_motivo_desasignacion_Service.createRegistro_registro_motivo_desasignacion_service(db, data)
 
     return jsonify(registro_motivo_desasignacion)
-

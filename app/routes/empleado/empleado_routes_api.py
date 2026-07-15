@@ -1,10 +1,14 @@
 from flask import Blueprint, jsonify, request
+from flask_login import login_required
 from app.api.empleado.empleado_service import Empleado_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 
 empleado_api_bp = Blueprint("empleado_api_pb", __name__)
 
 @empleado_api_bp.route("/getEmpleados", methods=["GET"])
+@login_required
+@permiso_requerido("empleado.ver")
 def getEmpleados():
     """
     Obtener empleados
@@ -20,6 +24,8 @@ def getEmpleados():
     return jsonify(empleados)
 
 @empleado_api_bp.route("/getActiveEmpleados", methods=["GET"])
+@login_required
+@permiso_requerido("empleado.ver")
 def getActiveEmpleados():
     """
     Obtener empleados activos
@@ -35,6 +41,8 @@ def getActiveEmpleados():
     return jsonify(empleados)
 
 @empleado_api_bp.route("/createEmpleado", methods=["POST"])
+@login_required
+@permiso_requerido("empleado.crear")
 def createEmpleado():
     """
     Crear un nuevo empleado
@@ -104,6 +112,8 @@ def createEmpleado():
     return jsonify(empleado)
 
 @empleado_api_bp.route("/updateEmpleado", methods=["POST"])
+@login_required
+@permiso_requerido("empleado.editar")
 def updateEmpleado():
     """
     Modificar un empleado

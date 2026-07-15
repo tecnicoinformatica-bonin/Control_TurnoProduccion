@@ -1,10 +1,14 @@
 from flask import Blueprint, jsonify, request
+from flask_login import login_required
 from app.api.permiso.permiso_service import Permiso_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 
 permiso_api_bp = Blueprint("permiso_api_bp", __name__)
 
 @permiso_api_bp.route("/getPermisos", methods=["GET"])
+@login_required
+@permiso_requerido("permiso.ver")
 def getPermisos():
     """
     Obtener permisos
@@ -20,6 +24,8 @@ def getPermisos():
     return jsonify(permisos)
 
 @permiso_api_bp.route("/createPermiso", methods=["POST"])
+@login_required
+@permiso_requerido("permiso.crear")
 def createPermiso():
     """
     Crear una nueva permiso
@@ -56,6 +62,8 @@ def createPermiso():
     return jsonify(permiso)
 
 @permiso_api_bp.route("/updatePermiso", methods=["POST"])
+@login_required
+@permiso_requerido("permiso.editar")
 def updatePermiso():
     """
     Modificar una permiso
@@ -95,6 +103,8 @@ def updatePermiso():
     return jsonify(permiso)
 
 @permiso_api_bp.route("/deletePermiso", methods=["POST"])
+@login_required
+@permiso_requerido("permiso.eliminar")
 def deletePermiso():
     """
     Eliminar una permiso

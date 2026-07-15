@@ -1,10 +1,14 @@
 from flask import Blueprint, jsonify, request
+from flask_login import login_required
 from app.api.calendario_feriados.calendario_feriados_service import Feriado_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 
 feriado_api_bp = Blueprint("feriado_api_bp", __name__)
 
 @feriado_api_bp.route("/getFeriados", methods=["GET"])
+@login_required
+@permiso_requerido("feriados.ver")
 def getFeriados():
     """
     Obtener feriados
@@ -20,6 +24,8 @@ def getFeriados():
     return jsonify(feriados)
 
 @feriado_api_bp.route("/getFeriadosFormateadas", methods=["GET"])
+@login_required
+@permiso_requerido("feriados.ver")
 def getFeriadosFormateadas():
     """
     Obtener feriados formateados
@@ -35,6 +41,8 @@ def getFeriadosFormateadas():
     return jsonify(feriados)
 
 @feriado_api_bp.route("/get_fechas_de_feriados_formateados", methods=["GET"])
+@login_required
+@permiso_requerido("feriados.ver")
 def get_fechas_de_feriados_formateados():
     """
     Obtener feriados formateados
@@ -50,6 +58,8 @@ def get_fechas_de_feriados_formateados():
     return jsonify(feriados)
 
 @feriado_api_bp.route("/createFeriado", methods=["POST"])
+@login_required
+@permiso_requerido("feriados.crear")
 def createFeriado():
     """
     Crear un nuevo feriado
@@ -92,6 +102,8 @@ def createFeriado():
     return jsonify(feriado)
 
 @feriado_api_bp.route("/updateFeriado", methods=["POST"])
+@login_required
+@permiso_requerido("feriados.editar")
 def updateFeriado():
     """
     Modificar un feriado
@@ -137,6 +149,8 @@ def updateFeriado():
     return jsonify(feriado)
 
 @feriado_api_bp.route("/deleteFeriado", methods=["POST"])
+@login_required
+@permiso_requerido("feriados.eliminar")
 def deleteFeriado():
     """
     Eliminar una feriado

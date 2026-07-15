@@ -1,10 +1,14 @@
 from flask import Blueprint, jsonify, request
+from flask_login import login_required
 from app.api.rol.rol_service import Rol_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 
 rol_api_bp = Blueprint("rol_api_pb", __name__)
 
 @rol_api_bp.route("/getRoles", methods=["GET"])
+@login_required
+@permiso_requerido("rol.ver")
 def getRoles():
     """
     Obtener roles
@@ -20,6 +24,8 @@ def getRoles():
     return jsonify(roles)
 
 @rol_api_bp.route("/createRol", methods=["POST"])
+@login_required
+@permiso_requerido("rol.crear")
 def createRol():
     """
     Crear un nuevo rol
@@ -56,6 +62,8 @@ def createRol():
     return jsonify(rol)
 
 @rol_api_bp.route("/updateRol", methods=["POST"])
+@login_required
+@permiso_requerido("rol.editar")
 def updateRol():
     """
     Modificar un rol
@@ -95,6 +103,8 @@ def updateRol():
     return jsonify(rol)
 
 @rol_api_bp.route("/deleteRol", methods=["POST"])
+@login_required
+@permiso_requerido("rol.eliminar")
 def deleteRol():
     """
     Eliminar una rol

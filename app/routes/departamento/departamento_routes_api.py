@@ -1,10 +1,14 @@
 from flask import Blueprint, jsonify, request
+from flask_login import login_required
 from app.api.departamento.departamento_service import Departamento_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 
 departamento_api_bp = Blueprint("departamento_api_pb", __name__)
 
 @departamento_api_bp.route("/getDepartamentos", methods=["GET"])
+@login_required
+@permiso_requerido("departamento.ver")
 def get_departamentos():
     """
     Obtener departamentos
@@ -20,6 +24,8 @@ def get_departamentos():
     return jsonify(departamentos)
 
 @departamento_api_bp.route("/getDepartamentos_aplica_horas_extra", methods=["GET"])
+@login_required
+@permiso_requerido("departamento.ver")
 def get_departamentos_aplica_horas_extra():
     """
     Obtener departamentos en los que aplican horas extra
@@ -35,6 +41,8 @@ def get_departamentos_aplica_horas_extra():
     return jsonify(departamentos)
 
 @departamento_api_bp.route("/createDepartamento", methods=["POST"])
+@login_required
+@permiso_requerido("departamento.crear")
 def createDepartamento():
     """
     Crear un nuevo departamento
@@ -71,6 +79,8 @@ def createDepartamento():
     return jsonify(departamento)
 
 @departamento_api_bp.route("/deleteDepartamento", methods=["POST"])
+@login_required
+@permiso_requerido("departamento.editar")
 def updateDepartamento():
     """
     Eliminar un departamento

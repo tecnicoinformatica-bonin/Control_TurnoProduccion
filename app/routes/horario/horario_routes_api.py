@@ -1,10 +1,14 @@
 from flask import Blueprint, jsonify, request
+from flask_login import login_required
 from app.api.horario.horario_service import Horario_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 
 horario_api_bp = Blueprint("horario_api_bp", __name__)
 
 @horario_api_bp.route("/getHorarios", methods=["GET"])
+@login_required
+@permiso_requerido("horario.ver")
 def getHorarios():
     """
     Obtener horarios
@@ -20,6 +24,8 @@ def getHorarios():
     return jsonify(horarios)
 
 @horario_api_bp.route("/createHorario", methods=["POST"])
+@login_required
+@permiso_requerido("horario.crear")
 def createHorario():
     """
     Crear una nueva horario
@@ -59,6 +65,8 @@ def createHorario():
     return jsonify(horario)
 
 @horario_api_bp.route("/updateHorario", methods=["POST"])
+@login_required
+@permiso_requerido("horario.editar")
 def updateHorario():
     """
     Modificar una horario
@@ -101,6 +109,8 @@ def updateHorario():
     return jsonify(horario)
 
 @horario_api_bp.route("/deleteHorario", methods=["POST"])
+@login_required
+@permiso_requerido("horario.eliminar")
 def deleteHorario():
     """
     Eliminar una horario

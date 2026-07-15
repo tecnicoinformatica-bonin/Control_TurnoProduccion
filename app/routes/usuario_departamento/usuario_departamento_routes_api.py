@@ -1,10 +1,14 @@
 from flask import Blueprint, jsonify, request
+from flask_login import login_required
 from app.api.usuario_departamento.usuario_departamento_service import Usuario_Departamento_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 
 usuario_departamento_api_bp = Blueprint("usuario_departamento_api_pb", __name__)
 
 @usuario_departamento_api_bp.route("/getUsuario_Departamentos", methods=["GET"])
+@login_required
+@permiso_requerido("usuario_departamento.ver")
 def getUsuario_Departamentos():
     """
     Obtener Usuario_Departamentos
@@ -20,6 +24,8 @@ def getUsuario_Departamentos():
     return jsonify(usuario_departamentos)
 
 @usuario_departamento_api_bp.route("/createUsuario_Departamento", methods=["POST"])
+@login_required
+@permiso_requerido("usuario_departamento.crear")
 def createUsuario_Departamento():
     """
     Crear una nueva Usuario_Departamento
@@ -56,6 +62,8 @@ def createUsuario_Departamento():
     return jsonify(usuario_departamento)
 
 @usuario_departamento_api_bp.route("/updateUsuario_Departamento", methods=["POST"])
+@login_required
+@permiso_requerido("usuario_departamento.editar")
 def updateUsuario_Departamento():
     """
     Modificar un Usuario_Departamento
@@ -92,6 +100,8 @@ def updateUsuario_Departamento():
     return jsonify(usuario_departamento)
 
 @usuario_departamento_api_bp.route("/deleteUsuario_Departamento", methods=["POST"])
+@login_required
+@permiso_requerido("usuario_departamento.eliminar")
 def deleteUsuario_Departamento():
     """
     Eliminar un Usuario_Departamento

@@ -1,10 +1,14 @@
 from flask import Blueprint, jsonify, request
+from flask_login import login_required
 from app.api.usuario_rol.usuario_rol_service import Usuario_Rol_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 
 usuario_rol_api_bp = Blueprint("usuario_rol_api_pb", __name__)
 
 @usuario_rol_api_bp.route("/getUsuario_Roles", methods=["GET"])
+@login_required
+@permiso_requerido("usuario_rol.ver")
 def getUsuario_Roles():
     """
     Obtener Usuario_Roles
@@ -20,6 +24,8 @@ def getUsuario_Roles():
     return jsonify(usuario_roles)
 
 @usuario_rol_api_bp.route("/createUsuario_Rol", methods=["POST"])
+@login_required
+@permiso_requerido("usuario_rol.crear")
 def createUsuario_Rol():
     """
     Crear una nueva Usuario_Rol
@@ -56,6 +62,8 @@ def createUsuario_Rol():
     return jsonify(usuario_rol)
 
 @usuario_rol_api_bp.route("/updateUsuario_Rol", methods=["POST"])
+@login_required
+@permiso_requerido("usuario_rol.editar")
 def updateUsuario_Rol():
     """
     Modificar un Usuario_Rol
@@ -92,6 +100,8 @@ def updateUsuario_Rol():
     return jsonify(usuario_rol)
 
 @usuario_rol_api_bp.route("/deleteUsuario_Rol", methods=["POST"])
+@login_required
+@permiso_requerido("usuario_rol.eliminar")
 def deleteUsuario_Rol():
     """
     Eliminar un Usuario_Rol

@@ -1,10 +1,14 @@
 from flask import Blueprint, jsonify, request
+from flask_login import login_required
 from app.api.proceso.proceso_service import Proceso_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 
 proceso_api_bp = Blueprint("proceso_api_pb", __name__)
 
 @proceso_api_bp.route("/getProcesos", methods=["GET"])
+@login_required
+@permiso_requerido("proceso.ver")
 def getProcesos():
     """
     Obtener procesos
@@ -20,6 +24,8 @@ def getProcesos():
     return jsonify(procesos)
 
 @proceso_api_bp.route("/createProceso", methods=["POST"])
+@login_required
+@permiso_requerido("proceso.crear")
 def createProceso():
     """
     Crear un nuevo proceso
@@ -56,6 +62,8 @@ def createProceso():
     return jsonify(proceso)
 
 @proceso_api_bp.route("/updateProceso", methods=["POST"])
+@login_required
+@permiso_requerido("proceso.editar")
 def updateProceso():
     """
     Modificar una proceso
@@ -95,6 +103,8 @@ def updateProceso():
     return jsonify(proceso)
 
 @proceso_api_bp.route("/deleteProceso", methods=["POST"])
+@login_required
+@permiso_requerido("proceso.eliminar")
 def deleteProceso():
     """
     Eliminar una proceso

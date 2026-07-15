@@ -1,10 +1,14 @@
 from flask import Blueprint, jsonify, request
+from flask_login import login_required
 from app.api.linea.linea_service import Linea_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 
 linea_api_bp = Blueprint("linea_api_bp", __name__)
 
 @linea_api_bp.route("/getLineas", methods=["GET"])
+@login_required
+@permiso_requerido("linea.ver")
 def getLineas():
     """
     Obtener lineas
@@ -20,6 +24,8 @@ def getLineas():
     return jsonify(lineas)
 
 @linea_api_bp.route("/createLinea", methods=["POST"])
+@login_required
+@permiso_requerido("linea.crear")
 def createLinea():
     """
     Crear una nueva linea
@@ -59,6 +65,8 @@ def createLinea():
     return jsonify(linea)
 
 @linea_api_bp.route("/updateLinea", methods=["POST"])
+@login_required
+@permiso_requerido("linea.editar")
 def updateLinea():
     """
     Modificar una linea
@@ -101,6 +109,8 @@ def updateLinea():
     return jsonify(linea)
 
 @linea_api_bp.route("/deleteLinea", methods=["POST"])
+@login_required
+@permiso_requerido("linea.eliminar")
 def deleteLinea():
     """
     Eliminar una linea

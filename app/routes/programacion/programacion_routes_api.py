@@ -1,10 +1,14 @@
 from flask import Blueprint, jsonify, request
+from flask_login import login_required
 from app.api.programacion.programacion_service import Programacion_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 
 programacion_api_bp = Blueprint("programacion_api_pb", __name__)
 
 @programacion_api_bp.route("/getProgramaciones", methods=["GET"])
+@login_required
+@permiso_requerido("programacion.ver")
 def getProgramaciones():
     """
     Obtener programaciones
@@ -20,6 +24,8 @@ def getProgramaciones():
     return jsonify(programaciones)
 
 @programacion_api_bp.route("/getCountsByLine/<int:idProgramacion>", methods=["GET"])
+@login_required
+@permiso_requerido("programacion.ver")
 def getCountsByLine(idProgramacion):
     """
     Comprobar si cumple el mínimo por línea en la programación
@@ -35,6 +41,8 @@ def getCountsByLine(idProgramacion):
     return jsonify(programaciones)
 
 @programacion_api_bp.route("/getDetallesProgramacionById/<int:idProgramacion>", methods=["GET"])
+@login_required
+@permiso_requerido("programacion.ver")
 def getDetallesProgramacionById(idProgramacion):
     """
     Obtener programaciones
@@ -50,6 +58,8 @@ def getDetallesProgramacionById(idProgramacion):
     return jsonify(programaciones)
 
 @programacion_api_bp.route("/getProgramacionesEnBorrador", methods=["GET"])
+@login_required
+@permiso_requerido("programacion.ver")
 def getProgramacionesEnBorrador():
     """
     Obtener programaciones activos
@@ -65,6 +75,8 @@ def getProgramacionesEnBorrador():
     return jsonify(programaciones)
 
 @programacion_api_bp.route("/createProgramacion", methods=["POST"])
+@login_required
+@permiso_requerido("programacion.crear")
 def createProgramacion():
     """
     Crear un nuevo programacion
@@ -101,6 +113,8 @@ def createProgramacion():
     return jsonify(programacion)
 
 @programacion_api_bp.route("/createProgramacionAutomatica", methods=["POST"])
+@login_required
+@permiso_requerido("programacion.crear")
 def createProgramacionAutomatica():
     """
     Crear programaciones de manera automática
@@ -134,6 +148,8 @@ def createProgramacionAutomatica():
     return jsonify(programacion)
 
 @programacion_api_bp.route("/cerrarProgramacion", methods=["POST"])
+@login_required
+@permiso_requerido("programacion.editar")
 def cerrarProgramacion():
     """
     Cerrar una programación.
@@ -179,6 +195,8 @@ def cerrarProgramacion():
     return jsonify(programacion)
 
 @programacion_api_bp.route("/reOpenProgramacion", methods=["POST"])
+@login_required
+@permiso_requerido("programacion.editar")
 def reOpenProgramacion():
     """
     Reabrir una programación.
@@ -221,6 +239,8 @@ def reOpenProgramacion():
     return jsonify(programacion)
 
 @programacion_api_bp.route("/deleteProgramacion", methods=["POST"])
+@login_required
+@permiso_requerido("programacion.eliminar")
 def deleteProgramacion():
     """
     Eliminar una programación.
