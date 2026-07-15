@@ -8,6 +8,7 @@ marcaje_json_bp = Blueprint("marcaje_json_bp", __name__)
 
 @marcaje_json_bp.route("/get_summary_of_clocks/<string:fecha>", methods=["GET"])
 @login_required
+@permiso_requerido("marcaje.ver")
 def get_marcajes(fecha):
     data = Marcaje_Service.get_summary_of_clocks_service(fecha)
     if not data:

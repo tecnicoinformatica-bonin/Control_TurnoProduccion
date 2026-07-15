@@ -8,6 +8,7 @@ horario_json_bp = Blueprint("horario_json_bp", __name__)
 
 @horario_json_bp.route("/get_horarios", methods=["GET"])
 @login_required
+@permiso_requerido("horario.ver")
 def get_horarios():
     data = Horario_Service.getHorarios_service(db)
     if not data:

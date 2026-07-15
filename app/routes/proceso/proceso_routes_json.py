@@ -8,6 +8,7 @@ proceso_json_bp = Blueprint("proceso_json_bp", __name__)
 
 @proceso_json_bp.route("/get_procesos", methods=["GET"])
 @login_required
+@permiso_requerido("programacion.ver", "proceso.ver")
 def get_procesos():
     data = Proceso_Service.getProcesos_service(db)
     if not data:
@@ -17,6 +18,7 @@ def get_procesos():
 
 @proceso_json_bp.route("/get_procesos_by_department/<int:idDepartment>", methods=["GET"])
 @login_required
+@permiso_requerido("programacion.ver", "proceso.ver")
 def get_procesos_by_department(idDepartment):
     data = Proceso_Service.getProcesosByDepartment_service(db, idDepartment)
     if not data:

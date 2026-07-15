@@ -12,6 +12,7 @@ usuario_json_bp = Blueprint("usuario_json_bp", __name__)
 
 @usuario_json_bp.route("/get_usuarios", methods=["GET"])
 @login_required
+@permiso_requerido("usuario.ver", "programacion.ver", "autorizacion.ver")
 def get_usuarios():
     data = Usuario_Service.getUsuarios_service(db)
     if not data:

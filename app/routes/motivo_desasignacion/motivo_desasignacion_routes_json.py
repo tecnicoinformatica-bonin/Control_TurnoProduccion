@@ -8,6 +8,7 @@ motivo_desasignacion_json_bp = Blueprint("motivo_desasignacion_json_bp", __name_
 
 @motivo_desasignacion_json_bp.route("/get_motivos_desasignacion", methods=["GET"])
 @login_required
+@permiso_requerido("motivo_desasignacion.ver")
 def get_motivos_desasignacion():
     data = Motivo_desasignacion_Service.getMotivos_desasignacion_service(db)
     if not data:

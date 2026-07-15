@@ -24,6 +24,7 @@ def login():
     return render_template("usuario/login.html")
 
 @usuario_template_bp.route("/change_password_template/<idUsuario>")
+@login_required
 def change_password_template(idUsuario):
     idUsuarioData = idUsuario
 

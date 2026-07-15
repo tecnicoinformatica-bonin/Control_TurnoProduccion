@@ -8,6 +8,7 @@ empleado_json_bp = Blueprint("empleado_json_bp", __name__)
 
 @empleado_json_bp.route("/get_empleados", methods=["GET"])
 @login_required
+@permiso_requerido("programacion.ver") # Solo uso en editarProgramacion.html
 def get_empleados():
     data = Empleado_Service.getEmpleados_service(db)
     if not data:
@@ -17,6 +18,7 @@ def get_empleados():
 
 @empleado_json_bp.route("/get_full_name_empleados", methods=["GET"])
 @login_required
+@permiso_requerido("empleado.ver")
 def get_full_name_empleados():
     data = Empleado_Service.get_full_name_empleados_service(db)
     if not data:

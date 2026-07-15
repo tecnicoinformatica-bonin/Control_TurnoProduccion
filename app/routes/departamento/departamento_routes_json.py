@@ -8,6 +8,7 @@ departamento_json_bp = Blueprint("departamento_json_pb", __name__)
 
 @departamento_json_bp.route('/get_departamentos', methods=["GET"]) 
 @login_required
+@permiso_requerido("programacion.ver") # De momento solamente se usa en programaciones_general.html
 def get_departamentos():
     data = Departamento_Service.getDepartamentos_service(db)
     

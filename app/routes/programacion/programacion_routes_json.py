@@ -8,6 +8,7 @@ programacion_json_bp = Blueprint("programacion_json_bp", __name__)
 
 @programacion_json_bp.route("/get_programaciones", methods=["GET"])
 @login_required
+@permiso_requerido("programacion.ver")
 def get_programaciones():
     data = Programacion_Service.getProgramaciones_service(db)
     if not data:
@@ -17,6 +18,7 @@ def get_programaciones():
 
 @programacion_json_bp.route("/get_programaciones_activas", methods=["GET"])
 @login_required
+@permiso_requerido("programacion.ver")
 def get_programaciones_activas():
     data = Programacion_Service.getProgramacionesActivas_service(db)
     if not data:
@@ -26,6 +28,7 @@ def get_programaciones_activas():
 
 @programacion_json_bp.route("/get_programaciones_activas_by_idDepartment", methods=["GET"])
 @login_required
+@permiso_requerido("programacion.ver")
 def get_programaciones_activas_by_idDepartment():
     data = Programacion_Service.getProgramacionesActivasByIdDepartments_service(db, current_user.id)
     if not data:
@@ -35,6 +38,7 @@ def get_programaciones_activas_by_idDepartment():
 
 @programacion_json_bp.route("/get_programaciones_cerradas", methods=["GET"])
 @login_required
+@permiso_requerido("programacion.ver")
 def get_programaciones_cerradas():
     data = Programacion_Service.getProgramacionesCerradas_service(db)
     if not data:
@@ -44,6 +48,7 @@ def get_programaciones_cerradas():
 
 @programacion_json_bp.route("/get_programaciones_cerradas_by_idDepartment", methods=["GET"])
 @login_required
+@permiso_requerido("programacion.ver")
 def get_programaciones_cerradas_by_idDepartment():
     data = Programacion_Service.getProgramacionesCerradasByIdDepartments_service(db, current_user.id)
     if not data:
@@ -53,6 +58,7 @@ def get_programaciones_cerradas_by_idDepartment():
 
 @programacion_json_bp.route("/get_filtros_programacion/<int:idDepartment>", methods=["GET"])
 @login_required
+@permiso_requerido("programacion.ver")
 def get_filtros_programacion(idDepartment):
     data = Programacion_Service.get_filtros_programacion_service(db, idDepartment)
     if not data:
@@ -62,8 +68,7 @@ def get_filtros_programacion(idDepartment):
 
 @programacion_json_bp.route("/get_counts_by_line/<int:idProgramacion>/<int:idDepartment>", methods=["GET"])
 @login_required
-@permiso_requerido("programacion.ver")
-@permiso_requerido("registro.editar")
+@permiso_requerido("programacion.ver", "registro.editar")
 def get_counts_by_line(idProgramacion, idDepartment):
     data = Programacion_Service.getCountsByLine_service(db, idProgramacion, idDepartment)
     
@@ -74,6 +79,7 @@ def get_counts_by_line(idProgramacion, idDepartment):
 
 @programacion_json_bp.route("/cerrarProgramacion_json", methods=["PUT"])
 @login_required
+@permiso_requerido("programacion.editar")
 def cerrarProgramacion_json():
     data = request.get_json()
     

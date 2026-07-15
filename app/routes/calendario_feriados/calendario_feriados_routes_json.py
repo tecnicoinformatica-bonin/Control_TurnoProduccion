@@ -18,7 +18,7 @@ def get_feriados():
 
 @feriado_json_bp.route("/get_fechas_de_feriados_formateados", methods=["GET"])
 @login_required
-# @permiso_requerido("feriado.ver")
+@permiso_requerido("feriado.ver") 
 def get_fechas_de_feriados_formateados():
     data = Feriado_Service.get_fechas_de_feriados_formateados_service(db)
     if not data:
