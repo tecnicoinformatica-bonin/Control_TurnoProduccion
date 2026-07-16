@@ -2060,6 +2060,12 @@ message in messages %}
 
   function limpiarFiltros() {
     document.querySelectorAll(".btn-check").forEach((c) => (c.checked = false));
+    document.querySelectorAll(".filter-area__btn-select-all").forEach((btn) => {
+      if (btn.classList.contains("btn-success")) {
+        btn.classList.remove("btn-success");
+        btn.classList.add("btn-light");
+      }
+    });
 
     table.clearFilter();
   }
