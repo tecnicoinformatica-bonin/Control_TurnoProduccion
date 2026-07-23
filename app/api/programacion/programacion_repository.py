@@ -190,6 +190,35 @@ class ProgramacionRepository:
                 cursor.close()
     
     @staticmethod
+    def getProgramacionesByIdDepartments(db, ids_Department):
+        cursor = None
+        
+        try: 
+            if not ids_Department:
+                return []
+            
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            placeholders = ", ".join(["%s"] * len(ids_Department))
+
+            query = f"""
+            SELECT * 
+            FROM turnos_programacion
+            WHERE idDepartment in ({placeholders})
+            ORDER BY fecha
+            """
+            cursor.execute(query, ids_Department)
+
+            return cursor.fetchall()
+        
+        except Exception as ex:
+            return {"error": f"No se pudo obtener las programaciones en borrador, en el repositorio: {str(ex)}"}
+
+        finally:
+            if cursor:
+                cursor.close()
+    
+    @staticmethod
     def getProgramacionesActivasByIdDepartments(db, ids_Department):
         cursor = None
         
@@ -206,6 +235,7 @@ class ProgramacionRepository:
             FROM turnos_programacion
             WHERE estado in ('BORRADOR', 'VERIFICADO')
             AND idDepartment in ({placeholders})
+            ORDER BY fecha
             """
             cursor.execute(query, ids_Department)
 
@@ -236,7 +266,8 @@ class ProgramacionRepository:
             WHERE estado = 'CERRADO'
             AND idDepartment in ({placeholders})
             AND MONTH(fecha) = MONTH('{fecha_actual}')
-            AND YEAR(fecha) = YEAR('{fecha_actual}');
+            AND YEAR(fecha) = YEAR('{fecha_actual}')
+            ORDER BY fecha
             """
             cursor.execute(query, ids_Department)
 

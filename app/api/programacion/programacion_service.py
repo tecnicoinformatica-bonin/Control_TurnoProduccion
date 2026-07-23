@@ -192,6 +192,48 @@ class Programacion_Service():
             return {"error": f"No se pudieron obtener las programaciones en BORRADOR desde el servicio: {str(ex)}"}
     
     @staticmethod
+    def getProgramacionesByIdDepartments_service(db, idUsuario):
+        try:
+            usuario = Usuario_Service.getUsuarioById_service(db, idUsuario)
+
+            if usuario["scope_departamentos_global"] == 1 or usuario["scope_departamentos_global"] == True:
+                departamentos = Departamento_Service.getDepartamentos_aplica_horas_extra_service(db)
+            else:
+                departamentos = UsuarioRepository.getUserDepartmentsById(db, idUsuario)
+
+            ids_Department = [
+                d["idDepartment"]
+                for d in departamentos
+            ]
+
+            data = ProgramacionRepository.getProgramacionesByIdDepartments(db, ids_Department)
+            programaciones = []
+            for row in data:
+                fecha = row["fecha"].strftime("%Y-%m-%d")
+                fecha_creacion = row["fecha_creacion"].strftime("%d/%m/%Y %H:%m") if row["fecha_creacion"] is not None else None
+                fecha_cierre = row["fecha_cierre"].strftime("%d/%m/%Y %H:%m") if row["fecha_cierre"] is not None else None
+                fecha_reapertura = row["fecha_reapertura"].strftime("%d/%m/%Y %H:%m") if row["fecha_reapertura"] is not None else None
+                programacion = {
+                    "idProgramacion": row["idProgramacion"],
+                    "fecha": fecha,
+                    "idDepartment": row["idDepartment"],
+                    "elaborado_por": row["elaborado_por"],
+                    "fecha_creacion": fecha_creacion,
+                    "estado": row["estado"],
+                    "fecha_cierre": fecha_cierre,
+                    "cerrado_por": row["cerrado_por"],
+                    "fecha_reapertura": fecha_reapertura,
+                    "reabierto_por": row["reabierto_por"],
+                    "motivo_reapertura": row["motivo_reapertura"],
+                    "verificado_por": row["verificado_por"],
+                }
+                programaciones.append(programacion)
+            return programaciones
+
+        except Exception as ex:
+            return {"error": f"No se pudieron obtener las programaciones en BORRADOR desde el servicio: {str(ex)}"}
+    
+    @staticmethod
     def getProgramacionesActivasByIdDepartments_service(db, idUsuario):
         try:
             usuario = Usuario_Service.getUsuarioById_service(db, idUsuario)

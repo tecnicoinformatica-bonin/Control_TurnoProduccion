@@ -29,6 +29,16 @@ def get_programaciones_activas():
 
     return jsonify(data), 200
 
+@programacion_json_bp.route("/get_programaciones_by_idDepartment", methods=["GET"])
+@login_required
+@permiso_requerido("programacion.verHistorico")
+def get_programaciones_by_idDepartment():
+    data = Programacion_Service.getProgramacionesByIdDepartments_service(db, current_user.id)
+    if not data:
+        return jsonify([]), 200
+
+    return jsonify(data), 200
+
 @programacion_json_bp.route("/get_programaciones_activas_by_idDepartment", methods=["GET"])
 @login_required
 @permiso_requerido("programacion.ver")
