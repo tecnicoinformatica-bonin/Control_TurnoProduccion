@@ -264,7 +264,7 @@ class Programacion_Service():
             return {"error": f"No se pudieron obtener las programaciones en BORRADOR desde el servicio: {str(ex)}"}
    
     @staticmethod
-    def getProgramacionesCerradasByIdDepartments_service(db, idUsuario):
+    def getProgramacionesCerradasByIdDepartments_service(db, idUsuario, fecha_actual):
         try:
             usuario = Usuario_Service.getUsuarioById_service(db, idUsuario)
             
@@ -278,7 +278,7 @@ class Programacion_Service():
                 for d in departamentos
             ]
 
-            data = ProgramacionRepository.getProgramacionesCerradasByIdDepartments(db, ids_Department)
+            data = ProgramacionRepository.getProgramacionesCerradasByIdDepartments(db, ids_Department, fecha_actual)
             programaciones = []
             for row in data:
                 fecha = row["fecha"].strftime("%Y-%m-%d")
@@ -303,7 +303,7 @@ class Programacion_Service():
             return programaciones
 
         except Exception as ex:
-            return {"error": f"No se pudieron obtener las programaciones en BORRADOR desde el servicio: {str(ex)}"}
+            return {"error": f"No se pudieron obtener las programaciones CERRADAS desde el servicio: {str(ex)}"}
 
     @staticmethod
     def get_filtros_programacion_service(db, idDepartment):

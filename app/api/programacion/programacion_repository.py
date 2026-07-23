@@ -219,7 +219,7 @@ class ProgramacionRepository:
                 cursor.close()
     
     @staticmethod
-    def getProgramacionesCerradasByIdDepartments(db, ids_Department):
+    def getProgramacionesCerradasByIdDepartments(db, ids_Department, fecha_actual):
         cursor = None
         
         try: 
@@ -235,6 +235,8 @@ class ProgramacionRepository:
             FROM turnos_programacion
             WHERE estado = 'CERRADO'
             AND idDepartment in ({placeholders})
+            AND MONTH(fecha) = MONTH('{fecha_actual}')
+            AND YEAR(fecha) = YEAR('{fecha_actual}');
             """
             cursor.execute(query, ids_Department)
 

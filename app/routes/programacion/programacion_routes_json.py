@@ -1,5 +1,8 @@
+from datetime import datetime
+
 from flask import Blueprint, jsonify, request
 from flask_login import current_user, login_required
+import pytz
 from app.api.programacion.programacion_service import Programacion_Service
 from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
@@ -50,7 +53,10 @@ def get_programaciones_cerradas():
 @login_required
 @permiso_requerido("programacion.ver")
 def get_programaciones_cerradas_by_idDepartment():
-    data = Programacion_Service.getProgramacionesCerradasByIdDepartments_service(db, current_user.id)
+
+    fecha_actual = datetime.now(pytz.timezone('America/Guatemala')).strftime("%Y-%m-%d")
+
+    data = Programacion_Service.getProgramacionesCerradasByIdDepartments_service(db, current_user.id, fecha_actual)
     if not data:
         return jsonify([]), 200
 
