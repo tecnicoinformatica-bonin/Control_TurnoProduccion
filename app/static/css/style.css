@@ -598,3 +598,19 @@ a {
   max-height: 250px;
   overflow: auto;
 }
+
+/* TABS */
+.programaciones__tab-container {
+  margin: 15px 5px;
+}
+.programaciones__tab--active {
+  transform: translateY(-20%);
+}
+
+.programaciones__content {
+  display: none;
+}
+
+.programaciones__content--active {
+  display: block;
+}
