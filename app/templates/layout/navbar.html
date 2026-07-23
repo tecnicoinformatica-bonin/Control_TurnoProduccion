@@ -21,33 +21,29 @@
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
           <a
-            class="nav-link active"
-            aria-current="page"
-            href="/template/home/home"
+            class="nav-link {% if request.endpoint == 'home_template.index' %}active{% endif %}"
+            href="{{ url_for('home_template.index') }}"
             >Inicio</a
           >
         </li>
         <li class="nav-item">
           <a
-            class="nav-link active"
-            aria-current="page"
-            href="/template/programacion/programaciones_general"
+            class="nav-link {% if request.endpoint == 'programacion_template.programaciones_general' %}active{% endif %}"
+            href="{{ url_for('programacion_template.programaciones_general') }}"
             >Programación</a
           >
         </li>
         <li class="nav-item">
           <a
-            class="nav-link active"
-            aria-current="page"
-            href="/template/autorizacion/parametros_autorizacion_horas"
+            class="nav-link {% if request.endpoint == 'autorizacion_template.parametros_autorizacion_horas_template' %}active{% endif %}"
+            href="{{ url_for('autorizacion_template.parametros_autorizacion_horas_template') }}"
             >Autorización de horas</a
           >
         </li>
         <li class="nav-item">
           <a
-            class="nav-link active"
-            aria-current="page"
-            href="/template/estadisticas/parametros_estadisticas"
+            class="nav-link {% if request.endpoint == 'estadisticas_template.parametros_estadisticas_template' %}active{% endif %}"
+            href="{{ url_for('estadisticas_template.parametros_estadisticas_template') }}"
             >Estadísticas</a
           >
         </li>
