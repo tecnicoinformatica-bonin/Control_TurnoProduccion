@@ -1,35 +1,19 @@
 {% extends "layout/base.html" %} {% block title %} Inicio - Turnos Bonin {%
-endblock %} {% block content %}
+endblock %} {% block content %} {% with messages =
+get_flashed_messages(with_categories=true) %} {% for category, message in
+messages %}
+<div class="alert alert-{{ category }} alert-dismissible" role="alert">
+  <strong>{{ message }}</strong>
+  <button
+    type="button"
+    class="btn-close"
+    data-bs-dismiss="alert"
+    aria-label="Close"
+  ></button>
+</div>
+{% endfor %} {% endwith %}
 
-<h2>Bienvenido nuevamente, {{ current_user.nombre }}</h2>
-<table class="table table-light">
-  <thead>
-    <tr>
-      <th>Roles asignados</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% with messages = get_flashed_messages(with_categories=true) %} {% for
-    category, message in messages %}
-    <div class="alert alert-{{ category }} alert-dismissible" role="alert">
-      <strong>{{ message }}</strong>
-      <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="alert"
-        aria-label="Close"
-      ></button>
-    </div>
-    {% endfor %} {% endwith %} {% for ur in usuario_roles %} {% for r in roles
-    %} {% if current_user.id == ur.idUsuario and r.idRol == ur.idRol %}
-    <tr>
-      <td>{{ r.nombre }}</td>
-    </tr>
-    {% endif %} {% endfor %} {% endfor %}
-  </tbody>
-</table>
-
-<div class="card card-outline-secondary bg-dark text-light">
+<div class="card card-outline-secondary bg-dark text-light mt-3">
   <div class="card-body">
     <div class="d-flex justify-content-between">
       <div class="d-flex justify-content-between">
@@ -503,11 +487,38 @@ endblock %} {% block content %}
     "#tabla-programaciones-departamento",
     {
       theme: "site-dark",
-      maxHeight: "400px",
+      height: "calc(75vh - 86px)",
       layout: "fitColumns",
 
       ajaxURL: `/json/programacion/get_programaciones_by_idDepartment`,
       ajaxConfig: "GET",
+
+      pagination: true,
+      paginationMode: "local",
+      paginationSize: 20,
+      paginationSizeSelector: [10, 20, 50, 100],
+
+      locale: true,
+
+      langs: {
+        "es-es": {
+          pagination: {
+            page_size: "Registros",
+            first: "Primero",
+            first_title: "Primera página",
+            last: "Último",
+            last_title: "Última página",
+            prev: "Anterior",
+            prev_title: "Página anterior",
+            next: "Siguiente",
+            next_title: "Página siguiente",
+            all: "Todos",
+          },
+        },
+      },
+
+      locale: "es-es",
+
       columns: [
         {
           title: "ID",
