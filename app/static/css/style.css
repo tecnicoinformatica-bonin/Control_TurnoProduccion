@@ -144,6 +144,16 @@
   display: none;
 }
 
+/* EDITAR PROGRAMACION */
+.programacion__dept--title {
+  text-align: center;
+  text-transform: uppercase;
+
+  font-weight: 700;
+  font-size: 2rem;
+
+  margin: 8px 0;
+}
 /* GRID de Encabezado de editarProgramacion */
 .programacion-parent {
   display: grid;

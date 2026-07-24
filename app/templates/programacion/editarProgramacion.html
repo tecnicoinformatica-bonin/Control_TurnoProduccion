@@ -13,6 +13,14 @@ message in messages %}
   ></button>
 </div>
 {% endfor %} {% endwith %}
+<!-- prettier-ignore-start -->
+{% if current_user.tiene_rol('Control de Programaciones RRHH') %}
+<h1 class="programacion__dept--title">
+  {% for d in departamentos %} {% if d.idDepartment == idDepartment %} {{ d.name
+  }} {% endif %} {% endfor %}
+</h1>
+{% endif %}
+<!-- prettier-ignore-end -->
 <div class="card card-outline-secondary bg-dark text-light mt-3">
   <div class="card-body">
     <div class="accordion accordion-flush" id="accordionFlushExample">
@@ -513,7 +521,18 @@ message in messages %}
     options,
   ).format(fechaHoraLocal);
 
+  const titleProgramacion = document.querySelector(
+    ".programacion__dept--title",
+  ).textContent;
+  const fechaTitle = new Intl.DateTimeFormat(localePrincipal, {
+    month: "numeric",
+    year: "numeric",
+    day: "numeric",
+  }).format(fechaHoraLocal);
+
   diaFecha.textContent = `${fechaConFormato[0].toUpperCase() + fechaConFormato.slice(1)}`;
+  document.querySelector(".programacion__dept--title").textContent =
+    `${titleProgramacion} ${fechaTitle}`;
 </script>
 
 <script>
@@ -2097,6 +2116,8 @@ message in messages %}
     btn.classList.toggle("btn-light");
     btn.classList.toggle("btn-success");
   }
+
+  console.log("{{current_user.tiene_rol('Control de Programaciones RRHH')}}");
 </script>
 
 {% endblock %}
