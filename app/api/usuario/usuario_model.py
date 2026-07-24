@@ -24,6 +24,9 @@ class Usuario_Rutas(UserMixin):
         self.scope_permisos_global = scope_permisos_global
         self.cambiar_password = cambiar_password
 
+    def tiene_rol(self, rol):
+        return rol in self.roles
+
     def tiene_permiso(self, permiso):
         if self.scope_permisos_global:
             return True
