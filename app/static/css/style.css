@@ -624,3 +624,76 @@ a {
 .programaciones__content--active {
   display: block;
 }
+
+/* CENTROS */
+.is-valid {
+  border-color: #18cf00;
+}
+
+.is-valid__text {
+  color: #18cf00;
+}
+
+.is-invalid {
+  border-color: #ff0000;
+}
+
+.is-invalid__text {
+  color: #ff0000;
+}
+
+.centro-lineas {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.centro-lineas__button {
+  display: flex;
+  justify-content: end;
+  gap: 1rem;
+}
+
+.centro-lineas__button > button {
+  font-weight: bold;
+}
+
+.centro-lineas__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(1, auto);
+  gap: 5px;
+
+  align-items: start;
+}
+
+.centro-linea-area {
+  padding: 0.5rem;
+
+  border: #f8f9fa6e solid 1px;
+  border-radius: 0.5;
+}
+
+.centro-linea__centros {
+  grid-column-start: 1;
+  grid-row-start: 1;
+}
+
+.centro-linea__lineas {
+  grid-column-start: 2;
+  grid-row-start: 1;
+}
+
+.centro-lineas-container {
+  max-height: 250px;
+  overflow: auto;
+}
+
+#tabla-centros {
+  display: none;
+}
+
+#tabla-lineas {
+  display: none;
+}

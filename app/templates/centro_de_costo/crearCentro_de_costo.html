@@ -28,60 +28,530 @@ Turnos Bonin {% endblock %} {% block content %}
       </div>
       {% endfor %} {% endwith %}
 
-      <form
-        class="form"
-        role="form"
-        action="/web/centro_de_costo/crearCentro_de_costo_web"
-        method="POST"
-      >
-        <div class="form-group">
-          <label for="nombreCentro">Nombre del centro de costo</label>
-          <input
-            type="text"
-            class="form-control"
-            id="nombreCentro"
-            name="nombreCentro"
-            title="Nombre del centro de costo"
-            required
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="idDepartment"
-            >Departamento al que corresponde la línea</label
-          >
-          <select
-            type="text"
-            class="form-control"
-            id="idDepartment"
-            title="Departamento"
-            required
-            name="idDepartment"
-          >
-            <option selected disabled value="{{ None }}">
-              -- Seleccione una opción --
-            </option>
-            {% for d in departamentos %}
-            <option value="{{ d.idDepartment }}">{{ d.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <hr />
-        <div class="form-group row">
-          <div class="col-md-6">
-            <button type="reset" class="btn btn-light btn-lg btn-block">
-              Borrar información
+      <div class="accordion accordion-flush" id="accordionFlush">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#flush-collapseOne"
+              aria-expanded="false"
+              aria-controls="flush-collapseOne"
+            >
+              Crear solamente centro
             </button>
-          </div>
-          <div class="col-md-6">
-            <button type="submit" class="btn btn-success btn-lg btn-block">
-              Crear
-            </button>
+          </h2>
+          <div
+            id="flush-collapseOne"
+            class="accordion-collapse collapse"
+            data-bs-parent="#accordionFlush"
+          >
+            <div class="accordion-body">
+              <form
+                class="form"
+                role="form"
+                action="/web/centro_de_costo/crearCentro_de_costo_web"
+                method="POST"
+              >
+                <div class="form-group">
+                  <label for="nombreCentro">Nombre del centro de costo</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="nombreCentro"
+                    name="nombreCentro"
+                    title="Nombre del centro de costo"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="idDepartment"
+                    >Departamento al que corresponde la línea</label
+                  >
+                  <select
+                    type="text"
+                    class="form-control"
+                    id="idDepartment"
+                    title="Departamento"
+                    required
+                    name="idDepartment"
+                  >
+                    <option selected disabled value="{{ None }}">
+                      -- Seleccione una opción --
+                    </option>
+                    {% for d in departamentos %}
+                    <option value="{{ d.idDepartment }}">{{ d.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <hr />
+                <div class="form-group row">
+                  <div class="col-md-6">
+                    <button type="reset" class="btn btn-light btn-lg btn-block">
+                      Borrar información
+                    </button>
+                  </div>
+                  <div class="col-md-6">
+                    <button
+                      type="submit"
+                      class="btn btn-success btn-lg btn-block"
+                    >
+                      Crear
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
-      </form>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#flush-collapseTwo"
+              aria-expanded="false"
+              aria-controls="flush-collapseTwo"
+            >
+              Crear centro y línea simultáneamente
+            </button>
+          </h2>
+          <div
+            id="flush-collapseTwo"
+            class="accordion-collapse collapse"
+            data-bs-parent="#accordionFlush"
+          >
+            <div class="accordion-body">
+              <div class="row gy-3 overflow-hidden">
+                <div class="col-12">
+                  <div class="form-floating">
+                    <select
+                      type="text"
+                      class="form-select"
+                      name="idDepartment_data"
+                      id="idDepartment_data"
+                      placeholder="Elija el departamento"
+                      title="Elija el departamento por favor"
+                      required
+                    >
+                      <option selected disabled value="{{ None }}">
+                        -- Seleccione una opción --
+                      </option>
+                      {% for d in departamentos_horas_extra %}
+                      <option value="{{ d.idDepartment }}">{{ d.name }}</option>
+                      {% endfor %}
+                    </select>
+                    <label for="username" class="form-label"
+                      >Departamento</label
+                    >
+                  </div>
+                </div>
+                <div class="row gy-3 overflow-hidden">
+                  <div class="col-12">
+                    <div class="form-floating mb-3">
+                      <input
+                        type="text"
+                        class="form-control"
+                        name="nameInput"
+                        id="nameInput"
+                        placeholder="Usuario"
+                        required
+                      />
+                      <label for="nameInput" class="form-label"
+                        >Centro / Línea a agregar</label
+                      >
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <div class="d-flex justify-content-end">
+                      <button
+                        type="submit"
+                        class="btn btn-success btn-lg btn-block btn-add-centro"
+                      >
+                        Agregar
+                      </button>
+                    </div>
+                  </div>
+                  <hr />
+                  <div class="centro-lineas">
+                    <div class="centro-lineas__grid">
+                      <div class="centro-linea-area centro-linea__centros">
+                        <div class="d-flex justify-content-between p-3">
+                          <h4>Centros de costo</h4>
+                        </div>
+                        <hr />
+                        <div
+                          id="tabla-centros"
+                          class="centro-lineas-container centros-container"
+                        ></div>
+                      </div>
+                      <div class="centro-linea-area centro-linea__lineas">
+                        <div class="d-flex justify-content-between p-3">
+                          <h4>Líneas</h4>
+                        </div>
+                        <hr />
+                        <div
+                          id="tabla-lineas"
+                          class="centro-lineas-container lineas-container"
+                        ></div>
+                      </div>
+                    </div>
+                    <div class="centro-lineas__button">
+                      <button
+                        class="btn btn-warning centro-lineas__button-confirmar-todo"
+                        type="button"
+                      >
+                        Confirmar todo
+                      </button>
+                      <button
+                        class="btn btn-danger centro-lineas__button-borrar-todo"
+                        type="button"
+                      >
+                        Borrar todo
+                      </button>
+                    </div>
+                  </div>
+                  <hr />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <script>
+      let departamentos = {};
+      let centros = {};
+      let lineas = {};
+      let centrosPorDepartamento = {};
+      let lineasPorDepartamento = {};
+
+      (async function () {
+        async function cargarCatalogos() {
+          const [departamentosResponse, centrosResponse, lineasResponse] =
+            await Promise.all([
+              fetch`/json/departamento/get_departamentos_aplica_horas_extra`,
+              fetch`/json/centro_de_costo/get_centros_de_costo`,
+              fetch`/json/linea/get_lineas`,
+            ]);
+
+          const departamentosData = await departamentosResponse.json();
+          const centrosData = await centrosResponse.json();
+          const lineasData = await lineasResponse.json();
+
+          departamentosData.forEach((el) => {
+            departamentos[el.idDepartment] = el.name;
+          });
+          centrosData.forEach((el) => {
+            centros[el.idCentro] = {
+              name: el.nombreCentro,
+              idDepartment: el.idDepartment,
+            };
+          });
+          lineasData.forEach((el) => {
+            lineas[el.idLinea] = {
+              name: el.nameLinea,
+              idDepartment: el.idDepartment,
+            };
+          });
+
+          departamentosData.forEach((el) => {
+            let temp = [];
+            centrosData.forEach((c) => {
+              if (el.idDepartment === c.idDepartment) temp.push(c.nombreCentro);
+            });
+            if (temp.length > 0) centrosPorDepartamento[el.idDepartment] = temp;
+
+            temp.splice(0);
+
+            lineasData.forEach((l) => {
+              if (el.idDepartment === l.idDepartment) temp.push(l.nameLinea);
+            });
+            if (temp.length > 0) lineasPorDepartamento[el.idDepartment] = temp;
+          });
+        }
+
+        await cargarCatalogos();
+      })();
+
+      function init() {}
+      function colocarDepartamentos() {}
+
+      const nameInput = document.querySelector("#nameInput");
+      const idDepartmentData = document.querySelector("#idDepartment_data");
+      const btnAddCentro = document.querySelector(".btn-add-centro");
+      const btnConfirmarTodo = document.querySelector(
+        ".centro-lineas__button-confirmar-todo",
+      );
+      const btnBorrarTodo = document.querySelector(
+        ".centro-lineas__button-borrar-todo",
+      );
+
+      let timer;
+
+      nameInput.addEventListener("input", verificarNombreCentro);
+      idDepartmentData.addEventListener("change", verificarNombreCentro);
+
+      function verificarNombreCentro() {
+        nameInput.value = nameInput.value.replace(/\s{2,}/g, " ");
+        if (!nameInput.value) return;
+
+        const avalaibleText = document.querySelectorAll(".avalaible-text");
+
+        avalaibleText.forEach((el) => (el.innerHTML = ""));
+
+        clearTimeout(timer);
+
+        timer = setTimeout(async () => {
+          const data = await obtenerRespuestaCentroValido();
+
+          if (data.available) {
+            nameInput.classList.remove("is-invalid");
+            nameInput.classList.add("is-valid");
+
+            nameInput.insertAdjacentHTML(
+              "afterend",
+              `
+              <p class="is-valid__text avalaible-text">${data.mensaje}</>
+            `,
+            );
+          } else {
+            nameInput.classList.remove("is-valid");
+            nameInput.classList.add("is-invalid");
+
+            nameInput.insertAdjacentHTML(
+              "afterend",
+              `
+              <p class="is-invalid__text avalaible-text">${data.mensaje}</>
+            `,
+            );
+          }
+        }, 500);
+      }
+
+      async function obtenerRespuestaCentroValido() {
+        let nameValue = nameInput.value.trim().replace(/\s{2,}/g, " ");
+        let idDepartmentValue = idDepartmentData.value;
+        let msg;
+        let result = {};
+
+        if (idDepartmentValue === "None") {
+          msg = "Seleccione un departamento primero";
+          result.mensaje = msg;
+          return result;
+        }
+
+        if (!nameValue) {
+          msg = "Ingrese un nombre de centro / línea primero";
+          result.mensaje = msg;
+          return result;
+        }
+
+        const response = await fetch(
+          `/json/centro_de_costo/isAvailable/${nameValue}/${idDepartmentValue}`,
+        );
+
+        resp = await response.json();
+
+        result.available = resp.available;
+
+        if (result.available) {
+          msg = "Nombre de centro / línea VÁLIDO";
+        } else {
+          msg =
+            "Nombre de centro / línea INVÁLIDO o ya existe para ese departamento";
+        }
+
+        result.mensaje = msg;
+
+        return result;
+      }
+
+      const centrosAgregados = [];
+      const tableCentros = new Tabulator("#tabla-centros", {
+        theme: "site-dark",
+        maxHeight: "100%",
+        layout: "fitColumns",
+
+        columns: [
+          {
+            title: "Nombre del centro de costo",
+            field: "nombreCentro",
+            editor: true,
+          },
+          {
+            title: "Departamento",
+            field: "idDepartment",
+            editor: false,
+            visible: true,
+          },
+          {
+            title: "Eliminar",
+            hozAlign: "center",
+
+            formatter: () => {
+              return "<button class='btn btn-danger'>&cross;</button>";
+            },
+            cellClick: async function (e, cell) {
+              let row = cell.getRow();
+              row.delete();
+            },
+          },
+        ],
+      });
+      const tableLineas = new Tabulator("#tabla-lineas", {
+        theme: "site-dark",
+        maxHeight: "100%",
+        layout: "fitColumns",
+
+        columns: [
+          {
+            title: "Nombre de la línea",
+            field: "nameLinea",
+            editor: true,
+          },
+          {
+            title: "Mínimo requerido",
+            field: "minimo_requerido",
+            editor: "number",
+          },
+          {
+            title: "Departamento",
+            field: "idDepartment",
+            editor: false,
+            visible: true,
+          },
+          {
+            title: "Eliminar",
+            hozAlign: "center",
+
+            formatter: () => {
+              return "<button class='btn btn-danger'>&cross;</button>";
+            },
+            cellClick: async function (e, cell) {
+              let row = cell.getRow();
+              row.delete();
+            },
+          },
+        ],
+      });
+
+      function crearElementosCentroYLinea(centro) {
+        const containerCentro = document.querySelector(".centros-container");
+        const containerlinea = document.querySelector(".lineas-container");
+
+        tableCentros.addRow({
+          nombreCentro: centro,
+          idDepartment: idDepartmentData.value,
+        });
+
+        tableLineas.addRow({
+          nameLinea: centro,
+          minimo_requerido: 0,
+          idDepartment: idDepartmentData.value,
+        });
+      }
+
+      btnAddCentro.addEventListener("click", async function () {
+        result = await obtenerRespuestaCentroValido();
+
+        if (!result.available) return;
+
+        document.querySelectorAll(".centro-lineas-container").forEach((el) => {
+          el.style.display = "block";
+        });
+
+        if (centrosAgregados.includes(nameInput.value)) {
+          Swal.fire({
+            icon: "error",
+            title: "El centro / línea ya fue agregado.",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          return;
+        }
+
+        crearElementosCentroYLinea(nameInput.value);
+        centrosAgregados.push(nameInput.value);
+      });
+
+      btnConfirmarTodo.addEventListener("click", async function () {
+        const centrosData = tableCentros.getData();
+        const lineasData = tableLineas.getData();
+
+        if (!(centrosData.length > 0) && !(lineasData.length > 0)) return;
+
+        let msgCentros, msgLineas;
+
+        const responseCentros = await fetch(
+          "/json/centro_de_costo/guardar_masivo",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(centrosData),
+          },
+        );
+        const responseLineas = await fetch("/json/linea/guardar_masivo", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(lineasData),
+        });
+
+        const respCentros = await responseCentros.json();
+        const respLineas = await responseLineas.json();
+        console.log(respCentros);
+        console.log(respLineas);
+
+        if (respCentros.success) msgCentros = "Centros creados.";
+        else msgCentros = "No se crearon los centros";
+
+        if (respLineas.success) msgLineas = "Líneas creadas.";
+        else msgLineas = "No se crearon las líneas";
+
+        Swal.fire({
+          icon: "success",
+          title: `
+              Centros de costo: ${msgCentros}
+              \nLíneas: ${msgLineas}`,
+          showConfirmButton: true,
+        });
+
+        if (respCentros.success && respLineas.success) {
+          limpiarTablas();
+          document
+            .querySelectorAll(".centro-lineas-container")
+            .forEach((el) => {
+              el.style.display = "none";
+            });
+        }
+      });
+
+      function limpiarTablas() {
+        tableCentros.clearData();
+        tableLineas.clearData();
+      }
+
+      btnBorrarTodo.addEventListener("click", function () {
+        const centrosData = tableCentros.getData();
+        const lineasData = tableLineas.getData();
+
+        if (!(centrosData.length > 0) && !(lineasData.length > 0)) return;
+
+        limpiarTablas();
+        document.querySelectorAll(".centro-lineas-container").forEach((el) => {
+          el.style.display = "block";
+        });
+      });
+    </script>
   </div>
 </div>
 {% endblock %}
