@@ -10,7 +10,8 @@ class Departamento_Service():
                 "idDepartment": data[0],
                 "name": data[1],
                 "aplica_horas_extra" : data[2],
-                "nameSlug": Slugify.slugify(data[1])
+                "nameSlug": Slugify.slugify(data[1]),
+                "dept_color": data[3],
             }
             return department
 
@@ -27,7 +28,8 @@ class Departamento_Service():
                     "idDepartment": row[0],
                     "name": row[1],
                     "aplica_horas_extra" : row[2],
-                    "nameSlug": Slugify.slugify(row[1])
+                    "nameSlug": Slugify.slugify(row[1]),
+                    "dept_color": row[3],
                 }
                 departments.append(department)
             return departments
@@ -45,7 +47,8 @@ class Departamento_Service():
                     "idDepartment": row[0],
                     "name": row[1],
                     "aplica_horas_extra" : row[2],
-                    "nameSlug": Slugify.slugify(row[1])
+                    "nameSlug": Slugify.slugify(row[1]),
+                    "dept_color": row[3],
                 }
                 departamentos.append(departamento)
             return departamentos
