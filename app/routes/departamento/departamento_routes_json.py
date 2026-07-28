@@ -19,7 +19,7 @@ def get_departamentos():
 
 @departamento_json_bp.route('/get_departamentos_aplica_horas_extra', methods=["GET"]) 
 @login_required
-@permiso_requerido("departamento.ver") 
+@permiso_requerido("departamento.ver", "programacion.ver") 
 def get_departamentos_aplica_horas_extra():
     data = Departamento_Service.getDepartamentos_aplica_horas_extra_service(db)
     
