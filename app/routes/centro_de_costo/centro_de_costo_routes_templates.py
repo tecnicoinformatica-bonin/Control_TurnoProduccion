@@ -18,11 +18,13 @@ centro_de_costo_template_bp = Blueprint(
 def crearCentro_de_costo_template():
     centros_de_costo = Centro_de_costo_Service.getCentros_de_costo_service(db)
     departamentos = Departamento_Service.getDepartamentos_service(db)
+    departamentos_horas_extra = Departamento_Service.getDepartamentos_aplica_horas_extra_service(db)
         
     return render_template(
         f"centro_de_costo/crearCentro_de_costo.html", 
         centros_de_costo = centros_de_costo,
         departamentos = departamentos,
+        departamentos_horas_extra = departamentos_horas_extra,
     )
 
 @centro_de_costo_template_bp.route("/listaCentros_de_costo")

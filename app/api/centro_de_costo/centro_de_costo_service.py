@@ -9,9 +9,9 @@ class Centro_de_costo_Service():
             centros_de_costo = []
             for row in data:
                 centro_de_costo = {
-                    "idCentro": row[0], 
-                    "nombreCentro": row[1], 
-                    "idDepartment": row[2], 
+                    "idCentro": row["idCentro"], 
+                    "nombreCentro": row["nombreCentro"], 
+                    "idDepartment": row["idDepartment"], 
                 }
                 centros_de_costo.append(centro_de_costo)
             return centros_de_costo
@@ -108,3 +108,21 @@ class Centro_de_costo_Service():
         
         except Exception as ex:
             return {"error": f"No se pudo eliminar el centro de costo en el servicio: {str(ex)}"}
+
+    @staticmethod
+    def exist_centro(db, nombreCentro_input, idDepartment):
+        try:
+            centros = Centro_de_costo_Service.getCentros_de_costo_service(db)
+
+            avaliable = any(
+                Slugify.slugify(nombreCentro_input) == Slugify.slugify(c["nombreCentro"])
+                and int(idDepartment) == int(c["idDepartment"])
+                for c in centros
+            )
+
+            return {
+                "available": not avaliable
+            }
+
+        except Exception as ex:
+            raise Exception(f"No se pudo validar en el servicio: {str(ex)}")

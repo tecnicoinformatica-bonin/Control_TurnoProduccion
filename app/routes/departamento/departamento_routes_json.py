@@ -16,3 +16,14 @@ def get_departamentos():
         return jsonify([]), 200
     
     return jsonify(data), 200
+
+@departamento_json_bp.route('/get_departamentos_aplica_horas_extra', methods=["GET"]) 
+@login_required
+@permiso_requerido("departamento.ver") 
+def get_departamentos_aplica_horas_extra():
+    data = Departamento_Service.getDepartamentos_aplica_horas_extra_service(db)
+    
+    if not data:
+        return jsonify([]), 200
+    
+    return jsonify(data), 200

@@ -25,3 +25,26 @@ def getLineasByDepartment(idDepartment):
         return jsonify([]), 200
 
     return jsonify(data), 200
+
+@linea_json_bp.route("/guardar_masivo", methods=["POST"])
+@login_required
+@permiso_requerido("linea.crear")
+def guardar_masivo():
+    data = request.get_json()
+
+    if not data:
+        return {
+            "success": False
+        }, 400
+
+    for row in data:
+        result = Linea_Service.exist_linea(db, row["nameLinea"], row["idDepartment"])
+        
+        if not result["available"]:
+            continue
+
+        Linea_Service.createLinea_service(db, row)
+
+    return {
+        "success": True,
+    }, 201

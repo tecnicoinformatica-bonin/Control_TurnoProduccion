@@ -113,4 +113,22 @@ class Linea_Service():
             return LineaRepository.deleteLinea(db, idLinea)
         
         except Exception as ex:
-            return {"error": f"No se pudo eliminar la línea. {ex}"}
+            return {"error": f"No se pudo eliminar la línea. {str(ex)}"}
+
+    @staticmethod
+    def exist_linea(db, nameLinea, idDepartment):
+        try:
+            lineas = Linea_Service.getLineas_service(db)
+
+            avaliable = any(
+                Slugify.slugify(nameLinea) == Slugify.slugify(l["nameLinea"])
+                and int(idDepartment) == int(l["idDepartment"])
+                for l in lineas
+            )
+
+            return {
+                "available": not avaliable
+            }
+
+        except Exception as ex:
+            raise Exception(f"No se pudo validar en el servicio: {str(ex)}")

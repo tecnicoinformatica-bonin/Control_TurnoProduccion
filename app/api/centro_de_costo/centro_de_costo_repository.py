@@ -1,3 +1,5 @@
+import MySQLdb
+
 from app.extensions.slugify import Slugify
 
 class Centro_de_costoRepository:
@@ -80,7 +82,7 @@ class Centro_de_costoRepository:
         cursor = None
         
         try: 
-            cursor = db.connection.cursor()
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
 
             query = """
             SELECT * 
@@ -88,12 +90,10 @@ class Centro_de_costoRepository:
             """
             cursor.execute(query)
 
-            centros_de_costo = cursor.fetchall()
-
-            return centros_de_costo
+            return cursor.fetchall()
         
         except Exception as ex:
-            return {"error": f"No se pudo encontrar centros de costo en repositorio: {str(ex)}"}
+            raise Exception(f"No se pudo encontrar centros de costo en repositorio: {str(ex)}")
 
         finally:
             if cursor:
@@ -110,7 +110,7 @@ class Centro_de_costoRepository:
 
             """  Row[2] is the idDepartment an row[1] es el nombreCentro """
             exists = any(
-                int(row[2]) == idDepartment and Slugify.slugify(row[1]) == slugNameCentro_de_costo
+                int(row["idDepartment"]) == idDepartment and Slugify.slugify(row["nombreCentro"]) == slugNameCentro_de_costo
                 for row in data
             )
 
@@ -158,7 +158,7 @@ class Centro_de_costoRepository:
 
             """  Row[2] is the idDepartment an row[1] es el nombreCentro """
             exists = any(
-                int(row[2]) == idDepartment and slugNameCentro_de_costo == Slugify.slugify(row[1]) and idCentro != int(row[0])
+                int(row["idDepartment"]) == idDepartment and slugNameCentro_de_costo == Slugify.slugify(row["nombreCentro"]) and idCentro != int(row["idCentro"])
                 for row in data
             )
 
