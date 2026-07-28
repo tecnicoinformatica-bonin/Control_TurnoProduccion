@@ -75,6 +75,24 @@
         scopeGlobal: JSON.parse('{{ current_user.scope_departamentos_global | tojson }}')
     }
 
+    function tienePermiso(permiso) {
+      return window.USER_CONTEXT?.permisos?.includes(permiso) ?? false;
+    }
+
+    function tieneRol(rol) {
+      return window.USER_CONTEXT?.roles?.includes(rol) ?? false;
+    }
+
+    function puedeVerDepartamento(idDepartment) {
+      if (window.USER_CONTEXT?.scopeGlobal) {
+        return true;
+      }
+
+      return window.USER_CONTEXT?.departamentos?.some(
+        (d) => d.idDepartment === idDepartment,
+      );
+    }
+
     // console.log(window.USER_CONTEXT.departamentosUsuario);
     // console.log(window.USER_CONTEXT.permisos);
   </script>
