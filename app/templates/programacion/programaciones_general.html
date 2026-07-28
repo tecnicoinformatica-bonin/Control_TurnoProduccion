@@ -29,6 +29,9 @@ messages %}
         </button>
       </div>
     </div>
+    {% if current_user.puede_ver_departamento("*") %}
+    <div id="leyenda-departamentos" class="mt-2"></div>
+    {% endif %}
     <hr />
 
     <div class="programaciones">
@@ -211,12 +214,13 @@ messages %}
   const idDepartment = "{{ idDepartment }}";
 
   let departamentos = {};
+  let departamentosFullData = {};
   let usuarios = {};
 
   (async function () {
     async function cargarCatalogos() {
       const [departamentosResponse, usuariosResponse] = await Promise.all([
-        fetch(`/json/departamento/get_departamentos`),
+        fetch(`/json/departamento/get_departamentos_aplica_horas_extra`),
         fetch(`/json/usuario/get_usuarios`),
       ]);
 
@@ -227,120 +231,134 @@ messages %}
         (d) => (departamentos[d.idDepartment] = d.name),
       );
       usuariosData.forEach((u) => (usuarios[u.idUsuario] = u.nombre));
+
+      departamentosData.forEach((d) => {
+        departamentosFullData[d.idDepartment] = {
+          name: d.name,
+          aplica_horas_extra: d.aplica_horas_extra,
+          nameSlug: d.nameSlug,
+          dept_color: d.dept_color,
+        };
+      });
     }
     await cargarCatalogos();
+    cargarLeyendaDepartamentos();
+    crearTablaBorrador();
+    crearTablaActivas();
+    crearTablaHistorial();
   })();
 
-  const tableBorradorDepartamento = new Tabulator(
-    "#tabla-programaciones-abiertas-departamento",
-    {
-      theme: "site-dark",
-      maxHeight: "400px",
-      layout: "fitColumns",
+  function crearTablaBorrador() {
+    const tableBorradorDepartamento = new Tabulator(
+      "#tabla-programaciones-abiertas-departamento",
+      {
+        theme: "site-dark",
+        maxHeight: "400px",
+        layout: "fitColumns",
 
-      ajaxURL: `/json/programacion/get_programaciones_activas_by_idDepartment`,
-      ajaxConfig: "GET",
-      columns: [
-        {
-          title: "ID",
-          field: "idProgramacion",
-          hozAlign: "center",
-          editor: false,
-        },
-        {
-          title: "Fecha",
-          field: "fecha",
-          hozAlign: "center",
-          editor: false,
-
-          headerFilter: "input",
-
-          headerFilterFunc: function (filterValue, cellValue) {
-            const [anio, mes, dia] = cellValue.split("-");
-
-            const fechaFormateada = `${dia}/${mes}/${anio}`;
-
-            return fechaFormateada.includes(filterValue);
+        ajaxURL: `/json/programacion/get_programaciones_activas_by_idDepartment`,
+        ajaxConfig: "GET",
+        columns: [
+          {
+            title: "ID",
+            field: "idProgramacion",
+            hozAlign: "center",
+            editor: false,
           },
+          {
+            title: "Fecha",
+            field: "fecha",
+            hozAlign: "center",
+            editor: false,
 
-          formatter: function (cell) {
-            const [anio, mes, dia] = cell.getValue().split("-");
+            headerFilter: "input",
 
-            return `${dia}/${mes}/${anio}`;
+            headerFilterFunc: function (filterValue, cellValue) {
+              const [anio, mes, dia] = cellValue.split("-");
+
+              const fechaFormateada = `${dia}/${mes}/${anio}`;
+
+              return fechaFormateada.includes(filterValue);
+            },
+
+            formatter: function (cell) {
+              const [anio, mes, dia] = cell.getValue().split("-");
+
+              return `${dia}/${mes}/${anio}`;
+            },
           },
-        },
-        {
-          title: "Departamento",
-          field: "idDepartment",
-          editor: false,
-          hozAlign: "center",
+          {
+            title: "Departamento",
+            field: "idDepartment",
+            editor: false,
+            hozAlign: "center",
 
-          headerFilter: "input",
+            headerFilter: "input",
 
-          headerFilterFunc: function (filterValue, cellValue) {
-            return (departamentos[cellValue] || "")
-              .toLowerCase()
-              .includes(filterValue.toLowerCase());
+            headerFilterFunc: function (filterValue, cellValue) {
+              return (departamentos[cellValue] || "")
+                .toLowerCase()
+                .includes(filterValue.toLowerCase());
+            },
+
+            sorter: function (a, b) {
+              return (departamentos[a] || "").localeCompare(
+                departamentos[b] || "",
+              );
+            },
+
+            formatter: function (cell) {
+              return departamentos[cell.getValue()];
+            },
           },
+          {
+            title: "Creado por",
+            field: "elaborado_por",
+            editor: false,
+            hozAlign: "center",
 
-          sorter: function (a, b) {
-            return (departamentos[a] || "").localeCompare(
-              departamentos[b] || "",
-            );
+            sorter: function (a, b) {
+              return (usuarios[a] || "").localeCompare(usuarios[b] || "");
+            },
+
+            headerFilter: "input",
+
+            headerFilterFunc: function (filterValue, cellValue) {
+              return (usuarios[cellValue] || "")
+                .toLowerCase()
+                .includes(filterValue.toLowerCase());
+            },
+
+            formatter: function (cell) {
+              return usuarios[cell.getValue()];
+            },
           },
-
-          formatter: function (cell) {
-            return departamentos[cell.getValue()];
+          {
+            title: "Estado",
+            field: "estado",
+            editor: false,
+            hozAlign: "center",
           },
-        },
-        {
-          title: "Creado por",
-          field: "elaborado_por",
-          editor: false,
-          hozAlign: "center",
+          {
+            title: "Fecha de cierre",
+            field: "fecha_cierre",
+            editor: false,
+            hozAlign: "center",
 
-          sorter: function (a, b) {
-            return (usuarios[a] || "").localeCompare(usuarios[b] || "");
+            formatter: function (cell) {
+              return cell.getValue()
+                ? cell.getValue()
+                : "<span style='color:gray'>No ha sido cerrada<span>";
+            },
           },
+          {
+            title: "Enlace",
+            hozAlign: "center",
 
-          headerFilter: "input",
+            formatter: function (cell) {
+              const data = cell.getRow().getData();
 
-          headerFilterFunc: function (filterValue, cellValue) {
-            return (usuarios[cellValue] || "")
-              .toLowerCase()
-              .includes(filterValue.toLowerCase());
-          },
-
-          formatter: function (cell) {
-            return usuarios[cell.getValue()];
-          },
-        },
-        {
-          title: "Estado",
-          field: "estado",
-          editor: false,
-          hozAlign: "center",
-        },
-        {
-          title: "Fecha de cierre",
-          field: "fecha_cierre",
-          editor: false,
-          hozAlign: "center",
-
-          formatter: function (cell) {
-            return cell.getValue()
-              ? cell.getValue()
-              : "<span style='color:gray'>No ha sido cerrada<span>";
-          },
-        },
-        {
-          title: "Enlace",
-          hozAlign: "center",
-
-          formatter: function (cell) {
-            const data = cell.getRow().getData();
-
-            return `<a
+              return `<a
               href="/template/programacion/editarProgramacion/${data.idDepartment}/${data.fecha}"
               class='btn btn-success'
               style="width:100%; height:100%;"
@@ -348,284 +366,143 @@ messages %}
               Ir
              </a>
              `;
+            },
           },
-        },
-      ],
-    },
-  );
+        ],
 
-  const tableActivasDepartamento = new Tabulator(
-    "#tabla-programaciones-cerradas-departamento",
-    {
-      theme: "site-dark",
-      maxHeight: "400px",
-      layout: "fitColumns",
+        rowFormatter: function (row) {
+          if (!puedeVerDepartamento("*")) return;
 
-      ajaxURL: `/json/programacion/get_programaciones_cerradas_by_idDepartment`,
-      ajaxConfig: "GET",
-      columns: [
-        {
-          title: "ID",
-          field: "idProgramacion",
-          hozAlign: "center",
-          editor: false,
-        },
-        {
-          title: "Fecha",
-          field: "fecha",
-          hozAlign: "center",
-          editor: false,
+          const el = row.getElement();
 
-          headerFilter: "input",
+          const { idDepartment } = row.getData();
 
-          headerFilterFunc: function (filterValue, cellValue) {
-            const [anio, mes, dia] = cellValue.split("-");
+          if (!departamentosFullData[idDepartment]) return;
 
-            const fechaFormateada = `${dia}/${mes}/${anio}`;
-
-            return fechaFormateada.includes(filterValue);
-          },
-
-          formatter: function (cell) {
-            const [anio, mes, dia] = cell.getValue().split("-");
-
-            return `${dia}/${mes}/${anio}`;
-          },
-
-          formatter: function (cell) {
-            const [anio, mes, dia] = cell.getValue().split("-");
-
-            return `${dia}/${mes}/${anio}`;
-          },
-        },
-        {
-          title: "Departamento",
-          field: "idDepartment",
-          editor: false,
-          hozAlign: "center",
-
-          headerFilter: "input",
-
-          headerFilterFunc: function (filterValue, cellValue) {
-            return (departamentos[cellValue] || "")
-              .toLowerCase()
-              .includes(filterValue.toLowerCase());
-          },
-
-          sorter: function (a, b) {
-            return (departamentos[a] || "").localeCompare(
-              departamentos[b] || "",
-            );
-          },
-
-          formatter: function (cell) {
-            return departamentos[cell.getValue()];
-          },
-        },
-        {
-          title: "Creado por",
-          field: "elaborado_por",
-          editor: false,
-          hozAlign: "center",
-
-          sorter: function (a, b) {
-            return (usuarios[a] || "").localeCompare(usuarios[b] || "");
-          },
-
-          headerFilter: "input",
-
-          headerFilterFunc: function (filterValue, cellValue) {
-            return (usuarios[cellValue] || "")
-              .toLowerCase()
-              .includes(filterValue.toLowerCase());
-          },
-
-          formatter: function (cell) {
-            return usuarios[cell.getValue()];
-          },
-        },
-        {
-          title: "Estado",
-          field: "estado",
-          editor: false,
-          hozAlign: "center",
-        },
-        {
-          title: "Fecha de cierre",
-          field: "fecha_cierre",
-          editor: false,
-          hozAlign: "center",
-
-          formatter: function (cell) {
-            return cell.getValue()
-              ? cell.getValue()
-              : "<span style='color:gray'>No ha sido cerrada<span>";
-          },
-        },
-        {
-          title: "Enlace",
-          hozAlign: "center",
-
-          formatter: function (cell) {
-            const data = cell.getRow().getData();
-
-            return `<a
-              href="/template/programacion/editarProgramacion/${data.idDepartment}/${data.fecha}"
-              class='btn btn-success'
-              style="width:100%; height:100%;"
-             >
-              Ir
-             </a>
-             `;
-          },
-        },
-      ],
-    },
-  );
-
-  const tableDepartamento = new Tabulator(
-    "#tabla-programaciones-departamento",
-    {
-      theme: "site-dark",
-      height: "calc(75vh - 86px)",
-      layout: "fitColumns",
-
-      ajaxURL: `/json/programacion/get_programaciones_by_idDepartment`,
-      ajaxConfig: "GET",
-
-      pagination: true,
-      paginationMode: "local",
-      paginationSize: 20,
-      paginationSizeSelector: [10, 20, 50, 100],
-
-      locale: true,
-
-      langs: {
-        "es-es": {
-          pagination: {
-            page_size: "Registros",
-            first: "Primero",
-            first_title: "Primera página",
-            last: "Último",
-            last_title: "Última página",
-            prev: "Anterior",
-            prev_title: "Página anterior",
-            next: "Siguiente",
-            next_title: "Página siguiente",
-            all: "Todos",
-          },
+          el.style.backgroundColor =
+            departamentosFullData[idDepartment].dept_color;
         },
       },
+    );
+  }
 
-      locale: "es-es",
+  function crearTablaActivas() {
+    const tableActivasDepartamento = new Tabulator(
+      "#tabla-programaciones-cerradas-departamento",
+      {
+        theme: "site-dark",
+        maxHeight: "400px",
+        layout: "fitColumns",
 
-      columns: [
-        {
-          title: "ID",
-          field: "idProgramacion",
-          hozAlign: "center",
-          editor: false,
-        },
-        {
-          title: "Fecha",
-          field: "fecha",
-          hozAlign: "center",
-          editor: false,
-
-          headerFilter: "input",
-
-          headerFilterFunc: function (filterValue, cellValue) {
-            const [anio, mes, dia] = cellValue.split("-");
-
-            const fechaFormateada = `${dia}/${mes}/${anio}`;
-
-            return fechaFormateada.includes(filterValue);
+        ajaxURL: `/json/programacion/get_programaciones_cerradas_by_idDepartment`,
+        ajaxConfig: "GET",
+        columns: [
+          {
+            title: "ID",
+            field: "idProgramacion",
+            hozAlign: "center",
+            editor: false,
           },
+          {
+            title: "Fecha",
+            field: "fecha",
+            hozAlign: "center",
+            editor: false,
 
-          formatter: function (cell) {
-            const [anio, mes, dia] = cell.getValue().split("-");
+            headerFilter: "input",
 
-            return `${dia}/${mes}/${anio}`;
+            headerFilterFunc: function (filterValue, cellValue) {
+              const [anio, mes, dia] = cellValue.split("-");
+
+              const fechaFormateada = `${dia}/${mes}/${anio}`;
+
+              return fechaFormateada.includes(filterValue);
+            },
+
+            formatter: function (cell) {
+              const [anio, mes, dia] = cell.getValue().split("-");
+
+              return `${dia}/${mes}/${anio}`;
+            },
+
+            formatter: function (cell) {
+              const [anio, mes, dia] = cell.getValue().split("-");
+
+              return `${dia}/${mes}/${anio}`;
+            },
           },
+          {
+            title: "Departamento",
+            field: "idDepartment",
+            editor: false,
+            hozAlign: "center",
 
-          formatter: function (cell) {
-            const [anio, mes, dia] = cell.getValue().split("-");
+            headerFilter: "input",
 
-            return `${dia}/${mes}/${anio}`;
+            headerFilterFunc: function (filterValue, cellValue) {
+              return (departamentos[cellValue] || "")
+                .toLowerCase()
+                .includes(filterValue.toLowerCase());
+            },
+
+            sorter: function (a, b) {
+              return (departamentos[a] || "").localeCompare(
+                departamentos[b] || "",
+              );
+            },
+
+            formatter: function (cell) {
+              return departamentos[cell.getValue()];
+            },
           },
-        },
-        {
-          title: "Departamento",
-          field: "idDepartment",
-          editor: false,
-          hozAlign: "center",
+          {
+            title: "Creado por",
+            field: "elaborado_por",
+            editor: false,
+            hozAlign: "center",
 
-          headerFilter: "input",
+            sorter: function (a, b) {
+              return (usuarios[a] || "").localeCompare(usuarios[b] || "");
+            },
 
-          headerFilterFunc: function (filterValue, cellValue) {
-            return (departamentos[cellValue] || "")
-              .toLowerCase()
-              .includes(filterValue.toLowerCase());
+            headerFilter: "input",
+
+            headerFilterFunc: function (filterValue, cellValue) {
+              return (usuarios[cellValue] || "")
+                .toLowerCase()
+                .includes(filterValue.toLowerCase());
+            },
+
+            formatter: function (cell) {
+              return usuarios[cell.getValue()];
+            },
           },
-
-          sorter: function (a, b) {
-            return (departamentos[a] || "").localeCompare(
-              departamentos[b] || "",
-            );
+          {
+            title: "Estado",
+            field: "estado",
+            editor: false,
+            hozAlign: "center",
           },
+          {
+            title: "Fecha de cierre",
+            field: "fecha_cierre",
+            editor: false,
+            hozAlign: "center",
 
-          formatter: function (cell) {
-            return departamentos[cell.getValue()];
+            formatter: function (cell) {
+              return cell.getValue()
+                ? cell.getValue()
+                : "<span style='color:gray'>No ha sido cerrada<span>";
+            },
           },
-        },
-        {
-          title: "Creado por",
-          field: "elaborado_por",
-          editor: false,
-          hozAlign: "center",
+          {
+            title: "Enlace",
+            hozAlign: "center",
 
-          sorter: function (a, b) {
-            return (usuarios[a] || "").localeCompare(usuarios[b] || "");
-          },
+            formatter: function (cell) {
+              const data = cell.getRow().getData();
 
-          headerFilter: "input",
-
-          headerFilterFunc: function (filterValue, cellValue) {
-            return (usuarios[cellValue] || "")
-              .toLowerCase()
-              .includes(filterValue.toLowerCase());
-          },
-
-          formatter: function (cell) {
-            return usuarios[cell.getValue()];
-          },
-        },
-        {
-          title: "Estado",
-          field: "estado",
-          editor: false,
-          hozAlign: "center",
-        },
-        {
-          title: "Fecha de cierre",
-          field: "fecha_cierre",
-          editor: false,
-          hozAlign: "center",
-
-          formatter: function (cell) {
-            return cell.getValue()
-              ? cell.getValue()
-              : "<span style='color:gray'>No ha sido cerrada<span>";
-          },
-        },
-        {
-          title: "Enlace",
-          hozAlign: "center",
-
-          formatter: function (cell) {
-            const data = cell.getRow().getData();
-
-            return `<a
+              return `<a
               href="/template/programacion/editarProgramacion/${data.idDepartment}/${data.fecha}"
               class='btn btn-success'
               style="width:100%; height:100%;"
@@ -633,11 +510,196 @@ messages %}
               Ir
              </a>
              `;
+            },
+          },
+        ],
+
+        rowFormatter: function (row) {
+          if (!puedeVerDepartamento("*")) return;
+
+          const el = row.getElement();
+
+          const { idDepartment } = row.getData();
+
+          if (!departamentosFullData[idDepartment]) return;
+
+          el.style.backgroundColor =
+            departamentosFullData[idDepartment].dept_color;
+        },
+      },
+    );
+  }
+
+  function crearTablaHistorial() {
+    const tableDepartamento = new Tabulator(
+      "#tabla-programaciones-departamento",
+      {
+        theme: "site-dark",
+        height: "calc(75vh - 86px)",
+        layout: "fitColumns",
+
+        ajaxURL: `/json/programacion/get_programaciones_by_idDepartment`,
+        ajaxConfig: "GET",
+
+        pagination: true,
+        paginationMode: "local",
+        paginationSize: 20,
+        paginationSizeSelector: [10, 20, 50, 100],
+
+        locale: true,
+
+        langs: {
+          "es-es": {
+            pagination: {
+              page_size: "Registros",
+              first: "Primero",
+              first_title: "Primera página",
+              last: "Último",
+              last_title: "Última página",
+              prev: "Anterior",
+              prev_title: "Página anterior",
+              next: "Siguiente",
+              next_title: "Página siguiente",
+              all: "Todos",
+            },
           },
         },
-      ],
-    },
-  );
+
+        locale: "es-es",
+
+        columns: [
+          {
+            title: "ID",
+            field: "idProgramacion",
+            hozAlign: "center",
+            editor: false,
+          },
+          {
+            title: "Fecha",
+            field: "fecha",
+            hozAlign: "center",
+            editor: false,
+
+            headerFilter: "input",
+
+            headerFilterFunc: function (filterValue, cellValue) {
+              const [anio, mes, dia] = cellValue.split("-");
+
+              const fechaFormateada = `${dia}/${mes}/${anio}`;
+
+              return fechaFormateada.includes(filterValue);
+            },
+
+            formatter: function (cell) {
+              const [anio, mes, dia] = cell.getValue().split("-");
+
+              return `${dia}/${mes}/${anio}`;
+            },
+
+            formatter: function (cell) {
+              const [anio, mes, dia] = cell.getValue().split("-");
+
+              return `${dia}/${mes}/${anio}`;
+            },
+          },
+          {
+            title: "Departamento",
+            field: "idDepartment",
+            editor: false,
+            hozAlign: "center",
+
+            headerFilter: "input",
+
+            headerFilterFunc: function (filterValue, cellValue) {
+              return (departamentos[cellValue] || "")
+                .toLowerCase()
+                .includes(filterValue.toLowerCase());
+            },
+
+            sorter: function (a, b) {
+              return (departamentos[a] || "").localeCompare(
+                departamentos[b] || "",
+              );
+            },
+
+            formatter: function (cell) {
+              return departamentos[cell.getValue()];
+            },
+          },
+          {
+            title: "Creado por",
+            field: "elaborado_por",
+            editor: false,
+            hozAlign: "center",
+
+            sorter: function (a, b) {
+              return (usuarios[a] || "").localeCompare(usuarios[b] || "");
+            },
+
+            headerFilter: "input",
+
+            headerFilterFunc: function (filterValue, cellValue) {
+              return (usuarios[cellValue] || "")
+                .toLowerCase()
+                .includes(filterValue.toLowerCase());
+            },
+
+            formatter: function (cell) {
+              return usuarios[cell.getValue()];
+            },
+          },
+          {
+            title: "Estado",
+            field: "estado",
+            editor: false,
+            hozAlign: "center",
+          },
+          {
+            title: "Fecha de cierre",
+            field: "fecha_cierre",
+            editor: false,
+            hozAlign: "center",
+
+            formatter: function (cell) {
+              return cell.getValue()
+                ? cell.getValue()
+                : "<span style='color:gray'>No ha sido cerrada<span>";
+            },
+          },
+          {
+            title: "Enlace",
+            hozAlign: "center",
+
+            formatter: function (cell) {
+              const data = cell.getRow().getData();
+
+              return `<a
+              href="/template/programacion/editarProgramacion/${data.idDepartment}/${data.fecha}"
+              class='btn btn-success'
+              style="width:100%; height:100%;"
+             >
+              Ir
+             </a>
+             `;
+            },
+          },
+        ],
+
+        rowFormatter: function (row) {
+          if (!puedeVerDepartamento("*")) return;
+
+          const el = row.getElement();
+
+          const { idDepartment } = row.getData();
+
+          if (!departamentosFullData[idDepartment]) return;
+
+          el.style.backgroundColor =
+            departamentosFullData[idDepartment].dept_color;
+        },
+      },
+    );
+  }
 
   /* TABS */
   const programacionesContainer = document.querySelector(
@@ -671,6 +733,38 @@ messages %}
       .querySelector(`.programaciones__content--${clicked.dataset.tab}`)
       .classList.add("programaciones__content--active");
   });
+
+  function cargarLeyendaDepartamentos() {
+    const contenedor = document.getElementById("leyenda-departamentos");
+
+    if (!contenedor) return;
+
+    contenedor.innerHTML = "";
+
+    Object.values(departamentosFullData)
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .forEach((depto) => {
+        contenedor.insertAdjacentHTML(
+          "beforeend",
+          `
+        <span class="me-3 d-inline-flex align-items-center">
+          <span
+            style="
+              width:14px;
+              height:14px;
+              background:${depto.dept_color};
+              border:1px solid #000;
+              display:inline-block;
+              margin-right:6px;
+              border-radius:50%;
+            "
+          ></span>
+          ${depto.name}
+        </span>
+        `,
+        );
+      });
+  }
 </script>
 
 {% endblock %}
