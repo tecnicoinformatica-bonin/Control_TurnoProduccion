@@ -697,3 +697,7 @@ a {
 #tabla-lineas {
   display: none;
 }
+
+.clr-picker {
+  z-index: 1060 !important;
+}
