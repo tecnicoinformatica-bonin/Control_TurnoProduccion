@@ -4,21 +4,31 @@
     <meta charset="UTF-8" />
     <title>{% block title %}Control de Turnos{% endblock %}</title>
 
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='libs/bootstrap-icons/bootstrap-icons.min.css') }}"
-    />
+    <!-- ICON -->
     <link
       rel="icon"
       type="image/png"
       href="{{ url_for('static', filename='img/favicon.png') }}"
     />
+
+    <!-- BOOTSTRAP 5 -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='libs/bootstrap-icons/bootstrap-icons.min.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/bootstrap.min.css') }}"
+    />
+
+    <!-- SWEETALERT2 -->
     <script src="{{ url_for('static', filename='libs/sweetalert/sweetalert2.all.min.js') }}"></script>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='libs/sweetalert/sweetalert2.min.css') }}"
     />
 
+    <!-- TABULATOR -->
     <script src="{{ url_for('static', filename='libs/tabulator/tabulator.min.js') }}"></script>
     <script src="{{ url_for('static', filename='libs/luxon/luxon.min.js') }}"></script>
     <link
@@ -33,10 +43,15 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='libs/tabulator/tabulator_site_dark.min.css') }}"
     />
-    <link
+
+    <!-- COLORIS -->
+     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='css/bootstrap.min.css') }}"
+      href="{{ url_for('static', filename='libs/Coloris/coloris.min.css') }}"
     />
+    <script src="{{ url_for('static', filename='libs/Coloris/coloris.min.js') }}"></script>
+
+    <!-- STYLE CSS -->
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/style.css') }}"
