@@ -129,7 +129,7 @@ class DepartamentoRepository:
                 cursor.close()
 
     @staticmethod
-    def createDepartamento(db, name, aplica_horas_extra):
+    def createDepartamento(db, name, aplica_horas_extra, dept_color):
         cursor = None
 
         try:
@@ -137,6 +137,7 @@ class DepartamentoRepository:
             name_DB = ""
             if data:
                 name_DB = Slugify.slugify(data[1]) 
+
             name_slugified = Slugify.slugify(name) 
             
             if(name_DB == name_slugified):
@@ -145,11 +146,11 @@ class DepartamentoRepository:
             cursor = db.connection.cursor()
             
             query = """
-                INSERT INTO turnos_departamento(name, aplica_horas_extra)
-                VALUES (%s, %s)
+                INSERT INTO turnos_departamento(name, aplica_horas_extra, dept_color)
+                VALUES (%s, %s, %s)
                 """
             
-            cursor.execute(query, (name, aplica_horas_extra,))
+            cursor.execute(query, (name, aplica_horas_extra, dept_color,))
             
             db.connection.commit()
 
@@ -157,6 +158,7 @@ class DepartamentoRepository:
                 "idDepartment": cursor.lastrowid,
                 "name": name,
                 "aplica_horas_extra": aplica_horas_extra,
+                "dept_color": dept_color,
             }
 
             return {"mensaje": f"Departamento creado correctamente. ID: {newDepartamento['idDepartment']}, Nombre: {newDepartamento['name']}, Aplica para horas extra: {newDepartamento['aplica_horas_extra']}"}
@@ -164,14 +166,14 @@ class DepartamentoRepository:
         
         except Exception as ex:
             db.connection.rollback()
-            return {"error": f"No se pudo crear el departamento en el repositorio: {str(ex)}"}
+            raise Exception(f"No se pudo crear el departamento en el repositorio: {str(ex)}")
         
         finally:
             if cursor:
                 cursor.close()
 
     @staticmethod
-    def updateDepartamento(db, idDepartment, name, aplica_horas_extra):
+    def updateDepartamento(db, idDepartment, name, aplica_horas_extra, dept_color):
         cursor = None
 
         try: 
@@ -190,11 +192,11 @@ class DepartamentoRepository:
             cursor = db.connection.cursor()
             
             query = """
-                UPDATE turnos_departamento SET name = %s, aplica_horas_extra = %s
+                UPDATE turnos_departamento SET name = %s, aplica_horas_extra = %s, dept_color = %s
                 WHERE idDepartment = %s
                 """
             
-            cursor.execute(query, (name, aplica_horas_extra, idDepartment))
+            cursor.execute(query, (name, aplica_horas_extra, dept_color, idDepartment,))
             
             db.connection.commit()
 
@@ -202,6 +204,7 @@ class DepartamentoRepository:
                 "idDepartment": idDepartment,
                 "name": name,
                 "aplica_horas_extra": aplica_horas_extra,
+                "dept_color": dept_color,
             }
 
             return {"mensaje": f"Departamento modificado correctamente. ID: {editedDepartamento['idDepartment']}, Nombre: {editedDepartamento['name']}, Aplica para horas extra: {editedDepartamento['aplica_horas_extra']}"}

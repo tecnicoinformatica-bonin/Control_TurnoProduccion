@@ -21,6 +21,7 @@ def crearDepartamento_web():
         data = {
             "name": request.form.get("name"),
             "aplica_horas_extra": request.form.get("aplica_horas_extra"),
+            "dept_color": request.form.get("dept_color"),
         }
 
         result = Departamento_Service.createDepartamento_service(db, data)
@@ -43,6 +44,7 @@ def editarDepartamento_web():
             "idDepartment": request.form.get("idDepartment"),
             "name": request.form.get("name"),
             "aplica_horas_extra": request.form.get("aplica_horas_extra"),
+            "dept_color": request.form.get("dept_color"),
         }
 
         result = Departamento_Service.updateDepartamento_service(db, data)

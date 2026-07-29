@@ -61,11 +61,12 @@ class Departamento_Service():
         try:
             name = data.get("name")
             aplica_horas_extra = bool(data.get("aplica_horas_extra"))
+            dept_color = data.get("dept_color")
 
             if not name:
                 return {"error": "ID y Nombre del departamento son requeridos."}
             
-            return DepartamentoRepository.createDepartamento(db, name, aplica_horas_extra)
+            return DepartamentoRepository.createDepartamento(db, name, aplica_horas_extra, dept_color)
         
         except Exception as ex:
             return {"error": f"No se pudo crear el departamento en el servicio {str(ex)}"}
@@ -76,11 +77,12 @@ class Departamento_Service():
             idDepartment = data.get("idDepartment")
             name = data.get("name")
             aplica_horas_extra = bool(data.get("aplica_horas_extra"))
+            dept_color = data.get("dept_color")
 
             if not idDepartment or not name:
                 return {"error": "ID y Nombre del departamento son requeridos."}
             
-            return DepartamentoRepository.updateDepartamento(db, idDepartment, name, aplica_horas_extra)
+            return DepartamentoRepository.updateDepartamento(db, idDepartment, name, aplica_horas_extra, dept_color)
         
         except Exception as ex:
             return {"error": f"No se pudo modificar el departamento en el servicio: {str(ex)}"}
