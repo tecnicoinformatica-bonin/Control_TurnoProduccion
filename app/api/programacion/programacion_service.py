@@ -474,7 +474,7 @@ class Programacion_Service():
                 empleados = Empleado_Service.getActiveEmpleadosByDepartment_service(db, idDepartment)
 
                 for e in empleados:
-                    if e["idLinea"] is not None:
+                    if e["idLinea"] is not None and (e["idProceso"] is not None):
                         if e["hora_fin"] is not None:
                             if str(e["hora_inicio"]) == "18:00:00" and str(e["hora_fin"]) == "1:00:00":
                                 hora_fin = "6:00:00"
