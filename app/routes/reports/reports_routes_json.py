@@ -72,7 +72,7 @@ def descargar_programacion(idProgramacion, isPDF):
             return send_file(
                 ruta_pdf,
                 as_attachment=True,
-                download_name=f"Programacion_{fecha}.pdf",
+                download_name=f"{nombreDepartamento}_Programacion_{fecha}.pdf",
                 mimetype="application/pdf"
             )
 
