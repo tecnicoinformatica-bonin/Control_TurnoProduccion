@@ -14,14 +14,9 @@ message in messages %}
 </div>
 {% endfor %} {% endwith %}
 <!-- prettier-ignore-start -->
-{% if current_user.tiene_rol('Control de Programaciones RRHH') %}
-<h1 class="programacion__dept--title">
-  {% for d in departamentos %} {% if d.idDepartment == idDepartment %} {{ d.name
-  }} {% endif %} {% endfor %}
-</h1>
-{% endif %}
+<h1 class="programacion__dept--title"></h1>
 <!-- prettier-ignore-end -->
-<div class="card card-outline-secondary bg-dark text-light mt-3">
+<div class="card card-outline-secondary text-light mt-3">
   <div class="card-body">
     <div class="accordion accordion-flush" id="accordionFlushExample">
       <div class="accordion-item">
@@ -167,7 +162,7 @@ message in messages %}
                 programacion_actual.verificado_por %} {{ u.nombre }} {% endif %}
                 {% endfor %}
               </div>
-              <div class="card card-tabla-totales card-outline-white bg-dark">
+              <div class="card card-tabla-totales card-outline-white">
                 <div class="card-body">
                   <h5 class="text-light">
                     Resumen de empleados asignados por línea
@@ -523,7 +518,8 @@ message in messages %}
 
   const titleProgramacion = document.querySelector(
     ".programacion__dept--title",
-  ).textContent;
+  );
+
   const fechaTitle = new Intl.DateTimeFormat(localePrincipal, {
     month: "numeric",
     year: "numeric",
@@ -531,8 +527,6 @@ message in messages %}
   }).format(fechaHoraLocal);
 
   diaFecha.textContent = `${fechaConFormato[0].toUpperCase() + fechaConFormato.slice(1)}`;
-  document.querySelector(".programacion__dept--title").textContent =
-    `${titleProgramacion} ${fechaTitle}`;
 </script>
 
 <script>
@@ -585,9 +579,10 @@ message in messages %}
   }
 
   (async function asignarFeriado() {
+    const [year1, month1, day1] = "{{ fecha }}".split("-");
     const dataAsueto = document.querySelector(".asueto-data__programacion");
     const feriadosGT = await obtenerFeriados();
-    const fechaMesDia = `${month}-${day}`;
+    const fechaMesDia = `${month1}-${day1}`;
 
     dataAsueto.textContent = feriadosGT.includes(fechaMesDia) ? "SÍ" : "NO";
   })();
@@ -598,6 +593,7 @@ message in messages %}
   let procesos = {};
   let centrosDeCosto = {};
   let usuarios = {};
+  let departamentos = {};
 
   let filtros = {};
 
@@ -609,6 +605,7 @@ message in messages %}
         procesoResponse,
         centrosResponse,
         usuariosResponse,
+        departamentosResponse,
       ] = await Promise.all([
         fetch("/json/empleado/get_empleados"),
         fetch(
@@ -619,6 +616,7 @@ message in messages %}
         ),
         fetch("/json/centro_de_costo/get_centros_de_costo"),
         fetch("/json/usuario/get_usuarios"),
+        fetch("/json/departamento/get_departamentos_aplica_horas_extra"),
       ]);
 
       const empleadosData = await empleadosResponse.json();
@@ -626,6 +624,7 @@ message in messages %}
       const procesosData = await procesoResponse.json();
       const centrosData = await centrosResponse.json();
       const usuariosData = await usuariosResponse.json();
+      const departamentosData = await departamentosResponse.json();
 
       empleadosData.forEach((e) => {
         empleados[e.idEmpleado] =
@@ -637,6 +636,12 @@ message in messages %}
       procesosData.forEach((p) => (procesos[p.idProceso] = p.proceso));
       centrosData.forEach((c) => (centrosDeCosto[c.idCentro] = c.nombreCentro));
       usuariosData.forEach((u) => (usuarios[u.idUsuario] = u.nombre));
+      departamentosData.forEach((d) => {
+        departamentos[d.idDepartment] = {
+          name: d.name,
+          dept_color: d.dept_color,
+        };
+      });
     }
 
     await cargarCatalogos();
@@ -647,7 +652,24 @@ message in messages %}
     crearFiltroLineas(filtros.lineas);
     crearFiltroProcesos(filtros.procesos);
     crearFiltroUsuarios(filtros.usuarios);
+    colorearIntefazPorDepartamento();
   })();
+
+  function colorearIntefazPorDepartamento() {
+    const cards = document.querySelectorAll(".card");
+    if (puedeVerDepartamento("*")) {
+      titleProgramacion.textContent = `${departamentos[idDepartmentProgramacion].name} ${fechaTitle}`;
+
+      cards.forEach((el) => {
+        el.style.backgroundColor =
+          departamentos[idDepartmentProgramacion].dept_color;
+      });
+    } else {
+      cards.forEach((el) => {
+        el.style.backgroundColor = "#010007";
+      });
+    }
+  }
 
   let table;
   (async function () {
@@ -2098,8 +2120,6 @@ message in messages %}
     btn.classList.toggle("btn-light");
     btn.classList.toggle("btn-success");
   }
-
-  console.log("{{current_user.tiene_rol('Control de Programaciones RRHH')}}");
 </script>
 
 {% endblock %}
