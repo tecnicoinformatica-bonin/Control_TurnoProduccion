@@ -9,7 +9,7 @@ from openpyxl.drawing.image import Image
 from copy import copy
 
 @login_required
-def generar_reporte_programacion(programacion, detalles):
+def generar_reporte_programacion(programacion, detalles, nombreUsuario, horaFecha):
     ruta_plantilla = "app/templates/excel/programacion.xlsm"
 
     wb = load_workbook(ruta_plantilla, keep_vba=True)
@@ -115,12 +115,139 @@ def generar_reporte_programacion(programacion, detalles):
 
     ws[f"N{fila_footer}"] = "Generado el:"
 
-    ws[f"O{fila_footer}"] = datetime.now().strftime(
-        "%Y-%m-%d %H:%M:%S"
-    )
+    ws[f"O{fila_footer}"] = horaFecha
     ws[f"N{fila_footer + 1}"] = "Por:"
 
-    ws[f"O{fila_footer + 1}"] = current_user.nombre
+    ws[f"O{fila_footer + 1}"] = nombreUsuario
+    
+    ws[f"N{fila_footer + 2}"] = "Última modificación:"
+
+    ws[f"O{fila_footer + 2}"] = str(detalle["ultima_modificacion_programacion"]) if detalle["ultima_modificacion_programacion"] is not None else "Sin datos"
+    
+    ws[f"N{fila_footer + 3}"] = "Por usuario:"
+
+    ws[f"O{fila_footer + 3}"] = detalle["nombreUsuarioModificacion_programacion"] if detalle["nombreUsuarioModificacion_programacion"] is not None else "Sin datos"
+
+    # =========================================================
+    # EXPORTAR EN MEMORIA
+    # =========================================================
+    
+    archivo = BytesIO()
+
+    wb.save(archivo)
+
+    archivo.seek(0)
+
+    return archivo
+
+@login_required
+def generar_reporte_programacion_RRHH(programacion, detalles, nombreUsuario, horaFecha):
+    ruta_plantilla = "app/templates/excel/programacion_RRHH.xlsm"
+
+    wb = load_workbook(ruta_plantilla, keep_vba=True)
+
+    ws = wb["Programación"]
+
+    ws["G4"] = programacion["fecha"]
+    ws["G5"] = programacion["nombreDepartamento"]
+    ws["G6"] = programacion["nombre_elaborado_por"]
+    ws["P6"] = programacion["esFeriado"]
+    
+    # =========================================================
+    # DETALLE EMPLEADOS
+    # =========================================================
+
+    fila_inicio = 13
+    fila_contador = fila_inicio
+    fila_plantilla = 13
+
+    contador = 1
+
+    if len(detalles) > 1:
+        ws.insert_rows(fila_inicio + 1, len(detalles) - 1)
+
+    for fila in range(fila_inicio + 1, fila_inicio + len(detalles)):
+        copiar_estilo_fila(ws, fila_plantilla, fila)
+
+    for detalle in detalles:
+
+        ws[f"A{fila_contador}"] = contador
+
+        ws[f"B{fila_contador}"] = detalle["badgeNumber"]
+        
+        ws[f"C{fila_contador}"] = detalle["idEmpleado"]
+
+        ws[f"D{fila_contador}"] =  detalle["nombreEmpleado"] #f"{detalle["firstName"]} {detalle["secondName"] or ""} {detalle["lastName"]} {detalle["lastName2"] or ""}"
+
+        ws[f"E{fila_contador}"] = detalle["nombreCentro"]
+
+        ws[f"F{fila_contador}"] = detalle["nombreLinea"]
+
+        ws[f"G{fila_contador}"] = detalle["nombreProceso"]
+
+        ws[f"H{fila_contador}"] = detalle["hora_inicio"]
+
+        ws[f"I{fila_contador}"] = detalle["hora_fin"]
+        
+        ws[f"J{fila_contador}"] = "SÍ" if detalle["aplica_almuerzo"] else "NO"
+        
+        ws[f"K{fila_contador}"] = "SÍ" if detalle["aplica_cena"] else "NO"
+        
+        ws[f"L{fila_contador}"] = "SÍ" if detalle["cena_con_costo"] else "NO"
+        
+        ws[f"M{fila_contador}"] = "SÍ" if detalle["aplica_transporte"] == 1  else "NO"
+        
+        ws[f"N{fila_contador}"] = detalle["observacion_transporte"] if detalle["observacion_transporte"] else "----"
+
+        fila_contador += 1
+        contador += 1
+
+    ws[f"J{fila_contador}"] = f'=COUNTIF(J{fila_inicio}:J{fila_contador - 1},"SÍ")'
+    ws[f"K{fila_contador}"] = f'=COUNTIF(K{fila_inicio}:K{fila_contador - 1},"SÍ")'
+    ws[f"L{fila_contador}"] = f'=COUNTIF(L{fila_inicio}:L{fila_contador - 1},"SÍ")'
+    ws[f"M{fila_contador}"] = f'=COUNTIF(M{fila_inicio}:M{fila_contador - 1},"SÍ")'
+
+    ws["E6"] = f"=K{fila_contador}"
+    ws["E7"] = f"=L{fila_contador}"
+    ws["E8"] = f"=J{fila_contador}"
+    ws["E9"] = f"=M{fila_contador}"
+
+    # =========================================================
+    # ANCHO COLUMNAS
+    # =========================================================
+
+    ws.column_dimensions["A"].width = 5.5
+    ws.column_dimensions["B"].width = 12
+    ws.column_dimensions["C"].width = 12
+    ws.column_dimensions["D"].width = 35
+    ws.column_dimensions["E"].width = 15
+    ws.column_dimensions["F"].width = 20
+    ws.column_dimensions["G"].width = 20
+    ws.column_dimensions["H"].width = 15
+    ws.column_dimensions["I"].width = 15
+    ws.column_dimensions["J"].width = 15
+    ws.column_dimensions["K"].width = 16
+    ws.column_dimensions["L"].width = 16
+    ws.column_dimensions["M"].width = 15
+    ws.column_dimensions["N"].width = 45
+    ws.column_dimensions["O"].width = 20
+    ws.column_dimensions["P"].width = 20
+    ws.column_dimensions["Q"].width = 25
+    ws.column_dimensions["R"].width = 25
+
+    # =========================================================
+    # PIE DE REPORTE
+    # =========================================================
+
+    fila_footer = fila_contador + 2
+
+    ws[f"N{fila_footer}"] = "Generado el:"
+
+    ws[f"O{fila_footer}"] = horaFecha
+
+    ws[f"N{fila_footer + 1}"] = "Por:"
+
+    ws[f"O{fila_footer + 1}"] = nombreUsuario
     
     ws[f"N{fila_footer + 2}"] = "Última modificación:"
 

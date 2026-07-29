@@ -17,7 +17,7 @@ from app.api.registro_motivo_desasignacion.registro_motivo_desasignacion_service
 from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 from app.extensions.messages import FlashMessages
-from app.reports.excel.programacion_report import (generar_reporte_programacion)
+from app.reports.excel.programacion_report import (generar_reporte_programacion, generar_reporte_programacion_RRHH)
 from app.reports.excel.horas_extra_autorizadas_report import (generar_reporte_horas_extra_autorizadas, generar_reporte_horas_extra_pendientes, generar_reporte_resumen_horas_autorizadas, generar_reporte_horas_autorizadas_por_empleado_linea_fecha, generar_reporte_horas_autorizadas_por_empleado_linea, generar_reporte_resumen_general)
 from app.reports.excel.registro_motivo_desasignacion_report import generar_reporte_resumen_motivos_desasignacion
 
@@ -28,13 +28,21 @@ reports_json_bp = Blueprint("reports_json_pb", __name__)
 @permiso_requerido("programacion.ver")
 def descargar_programacion(idProgramacion, isPDF):
     try:
+        isRRHH = "Control de Programaciones RRHH" in current_user.roles
+        nombreUsuario = current_user.nombre
+        horaFecha = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
         programacion_detalles = Programacion_Service.getDetallesProgramacionByIdProgramacion_service(db, idProgramacion)
-        registros_detalles = Registro_Service.getDetalleRegistrosByProgramacion_service(db, idProgramacion)
+        registros_detalles = Registro_Service.getDetalleRegistrosByProgramacion_service(db, idProgramacion, isRRHH)
         
         fecha = programacion_detalles["fecha"]
         nombreDepartamento = programacion_detalles["nombreDepartamento"].upper()
 
-        archivo = generar_reporte_programacion(programacion_detalles, registros_detalles)
+        if isRRHH:
+            archivo = generar_reporte_programacion_RRHH(programacion_detalles, registros_detalles, nombreUsuario, horaFecha)
+        else:
+            archivo = generar_reporte_programacion(programacion_detalles, registros_detalles, nombreUsuario, horaFecha)
+
 
         isPDF = bool(isPDF)
 

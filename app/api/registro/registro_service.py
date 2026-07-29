@@ -87,28 +87,32 @@ class Registro_Service():
             data = RegistroRepository.getRegistrosByProgramacion(db, idProgramacion)
             registros = []
             for row in data:
-                hora_inicio = (datetime.min + row[3]) if row[3] is not None else None
-                hora_fin = (datetime.min + row[4]) if row[4] is not None else None
+                hora_inicio = (datetime.min + row["hora_inicio"]) if row["hora_inicio"] is not None else None
+                hora_fin = (datetime.min + row["hora_fin"]) if row["hora_fin"] is not None else None
 
                 registro = {
-                    "idRegistro": row[0],
-                    "idProgramacion": row[1],
-                    "idEmpleado": row[2],
-                    "hora_inicio": hora_inicio.strftime("%H:%M:%S") if row[3] is not None else None,
-                    "hora_fin": hora_fin.strftime("%H:%M:%S") if row[4] is not None else None,
-                    "idLinea": row[5],
-                    "idProceso": row[6],
-                    "aplica_almuerzo": row[7],
-                    "aplica_cena": row[8],
-                    "aplica_transporte": row[9],
-                    "observacion_transporte": row[10],
-                    "fecha": row[11].isoformat(),
-                    "idCentro": row[12],
-                    "badgeNumber": row[13],
-                    "cena_con_costo": row[14],
-                    "ultima_modificacion": str(row[15]) if row[15] else "",
-                    "usuario_modificacion": row[16],
-                    "diferencia_horas": row[17],
+                    "idRegistro": row["idRegistro"],
+                    "idProgramacion": row["idProgramacion"],
+                    "idEmpleado": row["idEmpleado"],
+                    "hora_inicio": hora_inicio.strftime("%H:%M:%S") if row["hora_inicio"] is not None else None,
+                    "hora_fin": hora_fin.strftime("%H:%M:%S") if row["hora_fin"] is not None else None,
+                    "idLinea": row["idLinea"],
+                    "idProceso": row["idProceso"],
+                    "aplica_almuerzo": row["aplica_almuerzo"],
+                    "aplica_cena": row["aplica_cena"],
+                    "aplica_transporte": row["aplica_transporte"],
+                    "observacion_transporte": row["observacion_transporte"],
+                    "fecha": row["fecha"].isoformat(),
+                    "idCentro": row["idCentro"],
+                    "badgeNumber": row["badgeNumber"],
+                    "cena_con_costo": row["cena_con_costo"],
+                    "ultima_modificacion": str(row["ultima_modificacion"]) if row["ultima_modificacion"] else "",
+                    "usuario_modificacion": row["usuario_modificacion"],
+                    "diferencia_horas": row["diferencia_horas"],
+                    "nombreEmpleado": row["nombreEmpleado"],
+                    "nombreCentro": row["nombreCentro"],
+                    "nombreLinea": row["nombreLinea"],
+                    "nombreProceso": row["nombreProceso"],
                 }
                 if(
                     registro["idLinea"] is None or
@@ -127,40 +131,43 @@ class Registro_Service():
             return {"error": f"No se puede obtener registros desde el servicio: {str(ex)}"}
     
     @staticmethod
-    def getDetalleRegistrosByProgramacion_service(db, idProgramacion):
+    def getDetalleRegistrosByProgramacion_service(db, idProgramacion, isRRHH):
         try:
             dataRegistro = RegistroRepository.getRegistrosByProgramacion(db, idProgramacion)
                         
             registros = []
             for row in dataRegistro:
                 registro = {
-                    "idRegistro": row[0],
-                    "idProgramacion": row[1],
-                    "idEmpleado": row[2],
-                    "idLinea": row[5],
-                    "idProceso": row[6],
-                    "aplica_almuerzo": row[7],
-                    "aplica_cena": row[8],
-                    "aplica_transporte": row[9],
-                    "observacion_transporte": row[10],
-                    "fecha": row[11].isoformat(),
-                    "idCentro": row[12],
-                    "badgeNumber": row[13],
-                    "cena_con_costo": row[14],
-                    "ultima_modificacion": row[15],
-                    "usuario_modificacion": row[16],
-                    "diferencia_horas": row[17],
+                    "idRegistro": row["idRegistro"],
+                    "idProgramacion": row["idProgramacion"],
+                    "idEmpleado": row["idEmpleado"],
+                    "hora_inicio": str(row["hora_inicio"]) if row["hora_inicio"] else None,
+                    "hora_fin": str(row["hora_fin"]) if row["hora_fin"] else None,
+                    "idLinea": row["idLinea"],
+                    "idProceso": row["idProceso"],
+                    "aplica_almuerzo": row["aplica_almuerzo"],
+                    "aplica_cena": row["aplica_cena"],
+                    "aplica_transporte": row["aplica_transporte"],
+                    "observacion_transporte": row["observacion_transporte"],
+                    "fecha": row["fecha"].isoformat(),
+                    "idCentro": row["idCentro"],
+                    "badgeNumber": row["badgeNumber"],
+                    "cena_con_costo": row["cena_con_costo"],
+                    "ultima_modificacion": row["ultima_modificacion"],
+                    "usuario_modificacion": row["usuario_modificacion"],
+                    "diferencia_horas": row["diferencia_horas"],
+                    "nombreEmpleado": row["nombreEmpleado"],
+                    "nombreCentro": row["nombreCentro"],
+                    "nombreLinea": row["nombreLinea"],
+                    "nombreProceso": row["nombreProceso"],
                 }
                 
                 if not registro["idLinea"] or not registro["idProceso"]:
                     continue
 
-                hora_inicio = row[3]
-                hora_fin = row[4]
-                fecha = row[11]
-
-                registro["hora_inicio"] = str(row[3]) if row[3] else None
-                registro["hora_fin"] = str(row[4]) if row[4] else None
+                hora_inicio = row["hora_inicio"]
+                hora_fin = row["hora_fin"]
+                fecha = row["fecha"]
 
                 beneficios = calcular_beneficios(
                     fecha,
@@ -172,10 +179,9 @@ class Registro_Service():
                 registro["aplica_cena"] = beneficios["aplica_cena"]
                 registro["cena_con_costo"] = beneficios["cena_con_costo"]
 
-                dataEmpleado = Empleado_Service.getEmpleadoById_service(db, registro["idEmpleado"])
-                dataLinea = Linea_Service.getLineaById_service(db, registro["idLinea"])
-                dataProceso = Proceso_Service.getProcesoById_service(db, registro["idProceso"])
-                dataCentro = Centro_de_costo_Service.getCentros_de_costoById_service(db, registro["idCentro"])
+                if isRRHH and not (registro["aplica_almuerzo"] or registro["aplica_cena"] or registro["cena_con_costo"] or registro["aplica_transporte"]):
+                    continue
+
                 dataModificacion = RegistroRepository.getRegistroLastModification(db, registro["idProgramacion"])
 
                 registro["ultima_modificacion_programacion"] = (
@@ -187,14 +193,10 @@ class Registro_Service():
                 if registro["usuario_modificacion"]:
                     dataUsuario = Usuario_Service.getUsuarioById_service(db, registro["usuario_modificacion"])
                 else:
-                    dataUsuario = {
+                    dataUsuario = { 
                         "nombre": None
                     }
                 
-                registro["nombreEmpleado"] = f"{dataEmpleado["firstName"]} {dataEmpleado["secondName"] or ""} {dataEmpleado["lastName"]} {dataEmpleado["lastName2"] or ""}"
-                registro["nombreLinea"] = dataLinea["nameLinea"]
-                registro["nombreProceso"] = dataProceso["proceso"]
-                registro["nombreCentro"] = dataCentro["nombreCentro"]
                 registro["nombre_usuario_modificacion"] = dataUsuario["nombre"] if dataUsuario["nombre"] is not None else "-----"
                 registro["ultima_modificacion_programacion"] = (
                     dataModificacion.get("ultima_modificacion")
@@ -206,35 +208,13 @@ class Registro_Service():
                 )
 
                 registros.append(registro)
-                # print("---------------------------")
-                # print(f"idRegistro: {registro["idRegistro"]}")
-                # print(f"idProgramacion: {registro["idProgramacion"]}")
-                # print(f"idEmpleado: {registro["idEmpleado"]}")
-                # print(f"idLinea: {registro["idLinea"]}")
-                # print(f"idProceso: {registro["idProceso"]}")
-                # print(f"aplica_almuerzo: {registro["aplica_almuerzo"]}")
-                # print(f"aplica_cena: {registro["aplica_cena"]}")
-                # print(f"aplica_transporte: {registro["aplica_transporte"]}")
-                # print(f"observacion_transporte: {registro["observacion_transporte"]}")
-                # print(f"fecha: {registro["fecha"]}")
-                # print(f"idCentro: {registro["idCentro"]}")
-                # print(f"badgeNumber: {registro["badgeNumber"]}")
-                # print(f"cena_con_costo: {registro["cena_con_costo"]}")
-                # print(f"aplica_almuerzo: {registro["aplica_almuerzo"]}")
-                # print(f"aplica_cena: {registro["aplica_cena"]}")
-                # print(f"cena_con_costo: {registro["cena_con_costo"]}")
-                # print(f"nombreEmpleado: {registro["nombreEmpleado"]}")
-                # print(f"nombreLinea: {registro["nombreLinea"]}")
-                # print(f"nombreProceso: {registro["nombreProceso"]}")
-                # print(f"nombreCentro: {registro["nombreCentro"]}")
-                # print(f"nombreUsuarioModificaion: {registro["nombreUsuarioModificacion"]}")
             return registros
 
         except Exception as ex:
             traceback.print_exc()
 
             raise Exception(
-                f"No se pudo obtener registros: {str(ex)}"
+                f"No se pudo obtener registros en getDetalleRegistrosByProgramacion_service: {str(ex)}"
             )
         
     @staticmethod

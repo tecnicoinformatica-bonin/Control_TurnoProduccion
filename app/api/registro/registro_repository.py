@@ -37,12 +37,35 @@ class RegistroRepository:
         cursor = None
 
         try:
-            cursor = db.connection.cursor()
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
 
             query = """
-            SELECT *
-            FROM turnos_registro
+            SELECT 
+                tr.*,
+                CONCAT_WS(' ',
+                    te.firstName,
+                    te.secondName,
+                    te.lastName,
+                    te.lastName2
+                ) AS nombreEmpleado,
+                tcdc.nombreCentro,
+                tl.nameLinea AS nombreLinea,
+                tp.proceso AS nombreProceso
+            FROM turnos_registro tr
+            INNER JOIN 
+                turnos_empleado te 
+                ON te.idEmpleado = tr.idEmpleado 
+            LEFT JOIN 
+                turnos_centro_de_costo tcdc 
+                ON tcdc.idCentro = tr.idCentro
+            LEFT JOIN 
+                turnos_linea tl 
+                ON tl.idLinea = tr.idLinea 
+            LEFT JOIN 
+                turnos_proceso tp 
+                ON tp.idProceso = tr.idProceso 
             WHERE idProgramacion = %s
+            ORDER BY tcdc.nombreCentro 
             """
 
             cursor.execute(query, (idProgramacion,))
