@@ -32,6 +32,7 @@ def descargar_programacion(idProgramacion, isPDF):
         registros_detalles = Registro_Service.getDetalleRegistrosByProgramacion_service(db, idProgramacion)
         
         fecha = programacion_detalles["fecha"]
+        nombreDepartamento = programacion_detalles["nombreDepartamento"].upper()
 
         archivo = generar_reporte_programacion(programacion_detalles, registros_detalles)
 
@@ -78,7 +79,7 @@ def descargar_programacion(idProgramacion, isPDF):
         return send_file(
             archivo,
             as_attachment=True,
-            download_name=f"Programacion_{fecha}.xlsm",
+            download_name=f"{nombreDepartamento}_Programacion_{fecha}.xlsm",
             mimetype=(
                 "application/vnd.ms-excel.sheet.macroEnabled.12"
             )
