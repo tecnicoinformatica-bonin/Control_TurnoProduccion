@@ -179,7 +179,13 @@ class Registro_Service():
                 registro["aplica_cena"] = beneficios["aplica_cena"]
                 registro["cena_con_costo"] = beneficios["cena_con_costo"]
 
-                if isRRHH and not (registro["aplica_almuerzo"] or registro["aplica_cena"] or registro["cena_con_costo"] or registro["aplica_transporte"]):
+                tiene_algun_beneficio = registro["aplica_almuerzo"] or registro["aplica_cena"] or registro["cena_con_costo"] or registro["aplica_transporte"]
+                
+                if (
+                    isRRHH 
+                    and not tiene_algun_beneficio
+                    and registro["hora_inicio"] != "6:00:00"
+                ):
                     continue
 
                 dataModificacion = RegistroRepository.getRegistroLastModification(db, registro["idProgramacion"])
