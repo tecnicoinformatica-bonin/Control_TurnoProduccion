@@ -123,6 +123,21 @@ class Autorizacion_Service():
                 if (autorizacion["autorizado"] == 0 or autorizacion["autorizado"] == False) and autorizacion["usuario_autorizacion"] is not None: 
                     autorizacion["_saveStatus"] = "unauthorized"
 
+                if (autorizacion["horas_autorizadas"] is None):
+                    autorizacion["tipo_autorizacion"] = ""
+                elif(autorizacion["horas_autorizadas"] == autorizacion["total_horas"]): 
+                    autorizacion["tipo_autorizacion"] = "reloj"
+                elif(autorizacion["horas_autorizadas"] == autorizacion["total_digitado"]): 
+                    autorizacion["tipo_autorizacion"] = "digitado"
+                elif(
+                    autorizacion["horas_autorizadas"] != autorizacion["total_horas"] 
+                    and autorizacion["horas_autorizadas"] != autorizacion["total_digitado"]
+                ): 
+                    autorizacion["tipo_autorizacion"] = "parcial"
+                else:
+                    autorizacion["tipo_autorizacion"] = ""
+
+
                 autorizacion["hora_entrada_reloj"] = autorizacion["hora_entrada_marcaje"] if autorizacion["hora_entrada_marcaje"] is not None else autorizacion["hora_entrada_garita"]
                 autorizacion["hora_salida_reloj"] = autorizacion["hora_salida_marcaje"] if autorizacion["hora_salida_marcaje"] is not None else autorizacion["hora_salida_garita"]
                 
