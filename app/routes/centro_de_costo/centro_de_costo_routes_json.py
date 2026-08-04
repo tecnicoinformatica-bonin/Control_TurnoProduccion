@@ -8,7 +8,7 @@ centro_de_costo_json_bp = Blueprint("centro_de_costo_json_bp", __name__)
 
 @centro_de_costo_json_bp.route("/get_centros_de_costo", methods=["GET"])
 @login_required
-@permiso_requerido("programacion.ver") # De momento se usa solamente en editarProgramacion.html
+@permiso_requerido("programacion.ver", "centro_de_costo.ver") 
 def get_centros_de_costo():
     data = Centro_de_costo_Service.getCentros_de_costo_service(db)
     if not data:
