@@ -961,9 +961,11 @@ messages %}
   });
 
   function createAutorizacionData(data, isAuthorized, isPartial) {
-    const fromWhichTotalComment = isAuthorized
-      ? "Según marcaje del reloj"
-      : "Según lo digitado";
+    const fromWhichTotalComment = isPartial
+      ? "Parcialmente"
+      : isAuthorized
+        ? "Según marcaje del reloj"
+        : "Según lo digitado";
 
     const horasAutorizadas = isPartial
       ? data.horas_autorizadas
