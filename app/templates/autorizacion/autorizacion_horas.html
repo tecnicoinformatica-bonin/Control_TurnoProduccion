@@ -641,8 +641,33 @@ messages %}
         hozAlign: "center",
         editor: false,
 
-        formatter: function (cell) {
+        /* formatter: function (cell) {
           return cell.getValue() ? cell.getValue() : "0.00";
+        }, */
+
+        formatter: function (cell) {
+          return `
+            <button class="btn btn-warning">
+              <strong>
+                <i class="bi bi-file-earmark-medical"></i> ${cell.getValue()}
+              </strong>
+            </button>
+          `;
+        },
+        cellClick: async function (e, cell) {
+          let row = cell.getRow();
+          let data = row.getData();
+
+          autorizacion = createAutorizacionData(data, 0, 0);
+
+          // console.log(autorizacion);
+          // console.log(JSON.stringify(autorizacion));
+
+          guardarAutorizacionData(row, autorizacion);
+
+          row.update({
+            tipo_autorizacion: "digitado",
+          });
         },
       },
       {
@@ -650,6 +675,31 @@ messages %}
         field: "total_horas",
         hozAlign: "center",
         editor: false,
+
+        formatter: function (cell) {
+          return `
+            <button class="btn btn-success">
+              <strong>
+                <i class="bi bi-clock"></i> ${cell.getValue()}
+              </strong>
+            </button>
+          `;
+        },
+        cellClick: async function (e, cell) {
+          let row = cell.getRow();
+          let data = row.getData();
+
+          autorizacion = createAutorizacionData(data, 1, 0);
+
+          // console.log(autorizacion);
+          // console.log(JSON.stringify(autorizacion));
+
+          guardarAutorizacionData(row, autorizacion);
+
+          row.update({
+            tipo_autorizacion: "reloj",
+          });
+        },
       },
       {
         title: "Diferencia",
@@ -677,10 +727,110 @@ messages %}
         editor: false,
       },
       {
+        title: "Tipo autorización",
+        field: "tipo_autorizacion",
+        hozAlign: "center",
+        editor: "list",
+        editorParams: {
+          values: {
+            reloj: "Reloj",
+            digitado: "Digitado",
+            parcial: "Parcial",
+          },
+        },
+
+        cellEdited: function (cell) {
+          const row = cell.getRow();
+          const data = row.getData();
+
+          let horas = 0;
+          let isAuthorized, isPartial;
+
+          switch (data.tipo_autorizacion) {
+            case "reloj":
+              horas = data.total_horas;
+              isAuthorized = 1;
+              isPartial = 0;
+              break;
+
+            case "digitado":
+              horas = data.total_digitado;
+              isAuthorized = 0;
+              isPartial = 0;
+              break;
+
+            case "parcial":
+              horas = data.horas_autorizadas || 0;
+              isAuthorized = isPartial = 1;
+              break;
+          }
+
+          autorizacion = createAutorizacionData(data, isAuthorized, isPartial);
+
+          guardarAutorizacionData(row, autorizacion);
+
+          row.update({
+            horas_autorizadas: horas,
+          });
+
+          // Si es parcial abrir automáticamente el editor
+          if (data.tipo_autorizacion === "parcial") {
+            setTimeout(() => {
+              const horasCell = row.getCell("horas_autorizadas");
+
+              if (horasCell) {
+                horasCell.edit();
+              }
+            }, 100);
+          }
+        },
+
+        formatter: function (cell) {
+          const tipoCapitalized = `${String(cell.getValue())
+            .slice(0, 1)
+            .toUpperCase()}${String(cell.getValue()).slice(1)}`;
+
+          return tipoCapitalized || "";
+        },
+      },
+      {
         title: "Horas autorizadas",
         field: "horas_autorizadas",
         hozAlign: "center",
-        editor: false,
+
+        editable: function (cell) {
+          return cell.getRow().getData().tipo_autorizacion === "parcial";
+        },
+
+        editor: "number",
+
+        editorParams: function (cell) {
+          const data = cell.getRow().getData();
+
+          return {
+            min: 0,
+            max: data.total_horas_autorizables,
+            step: 0.5,
+          };
+        },
+
+        mutatorEdit: function (value, data) {
+          let valor = Math.round(parseFloat(value) * 2) / 2;
+
+          return Math.min(valor, data.total_horas_autorizables);
+        },
+
+        cellEdited: async function (cell) {
+          let row = cell.getRow();
+          let data = row.getData();
+
+          autorizacion = createAutorizacionData(data, 1, 1);
+
+          // console.log(autorizacion);
+          // console.log(JSON.stringify(autorizacion));
+
+          guardarAutorizacionData(row, autorizacion);
+        },
       },
       {
         title: "Pendiente de autorizar",
@@ -714,7 +864,7 @@ messages %}
           let row = cell.getRow();
           let data = row.getData();
 
-          autorizacion = createAutorizacionData(data, 1);
+          autorizacion = createAutorizacionData(data, 1, 0);
 
           // console.log(autorizacion);
           // console.log(JSON.stringify(autorizacion));
@@ -741,7 +891,7 @@ messages %}
           let row = cell.getRow();
           let data = row.getData();
 
-          autorizacion = createAutorizacionData(data, 0);
+          autorizacion = createAutorizacionData(data, 0, 0);
 
           // console.log(autorizacion);
           // console.log(JSON.stringify(autorizacion));
@@ -810,18 +960,24 @@ messages %}
     },
   });
 
-  function createAutorizacionData(data, isAuthorized) {
+  function createAutorizacionData(data, isAuthorized, isPartial) {
     const fromWhichTotalComment = isAuthorized
       ? "Según marcaje del reloj"
       : "Según lo digitado";
 
+    const horasAutorizadas = isPartial
+      ? data.horas_autorizadas
+      : isAuthorized
+        ? data.total_horas
+        : data.total_digitado;
+
     return {
       idEmpleado: data.idEmpleado,
       fecha: data.fecha,
-      horas_autorizadas: isAuthorized ? data.total_horas : data.total_digitado,
+      horas_autorizadas: horasAutorizadas,
       autorizado: isAuthorized ? 1 : 0,
       observacion: data.observacion
-        ? `${data.observacion}: ${fromWhichTotalComment}`
+        ? `Autorizado: ${fromWhichTotalComment}`
         : `Autorizado: ${fromWhichTotalComment}`,
       fecha_autorizacion: new Date()
         .toISOString()
