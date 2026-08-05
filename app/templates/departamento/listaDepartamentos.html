@@ -6,15 +6,15 @@
   <div class="card-body">
     <div class="d-flex justify-content-between">
       <h3>Departamentos</h3>
-      <form class="d-flex" role="search" onsubmit="return false;">
-        <input
-          class="form-control me-2"
-          type="search"
-          placeholder="Escriba el nombre del departamento"
-          id="busqueda"
-        />
-        <button class="btn btn-outline-primary" type="submit">Buscar</button>
-      </form>
+      <button
+        type="button"
+        class="btn btn-success"
+        data-bs-toggle="modal"
+        data-bs-target="#createModal"
+      >
+        <i class="bi bi-plus-circle"></i>
+        <strong>Crear</strong>
+      </button>
     </div>
     <hr />
 
@@ -31,295 +31,373 @@
     </div>
     {% endfor %} {% endwith %}
 
-    <table class="table table-dark table-striped">
-      <thead>
-        <tr>
-          <th scope="col">
-            <p class="title_column" onclick="ordenarTabla(0, 'numero')">
-              ID
-              <span class="arrow" data-type="darr" data-column="0"
-                ><strong>&darr;</strong></span
-              ><span class="arrow" data-type="uarr" data-column="0"
-                >&uarr;</span
-              >
-            </p>
-          </th>
-          <th scope="col">
-            <p class="title_column" onclick="ordenarTabla(1)">
-              Nombre
-              <span class="arrow" data-type="darr" data-column="1">&darr;</span
-              ><span class="arrow arrow-active" data-type="uarr" data-column="1"
-                >&uarr;</span
-              >
-            </p>
-          </th>
-          <th scope="col">
-            <p class="title_column" onclick="ordenarTabla(2)">
-              Aplica para horas extra
-              <span class="arrow" data-type="darr" data-column="2">&darr;</span
-              ><span class="arrow" data-type="uarr" data-column="2"
-                >&uarr;</span
-              >
-            </p>
-          </th>
-          <th scope="col">
-            <p class="title_column" onclick="ordenarTabla(3)">
-              Color
-              <span class="arrow" data-type="darr" data-column="3">&darr;</span
-              ><span class="arrow" data-type="uarr" data-column="3"
-                >&uarr;</span
-              >
-            </p>
-          </th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody class="tbody-list">
-        {% for d in departamentos %}
-        <tr class="record tr-list">
-          <th scope="row">{{ d.idDepartment }}</th>
-          <td class="record-name">{{ d.name }}</td>
-          <td>
-            {% if d.aplica_horas_extra == 1 %} Sí {% else %} No {% endif %}
-          </td>
-          <td>
-            <span class="badge" data-id-Department="{{ d.idDepartment }}">
-              {{ d.dept_color or 'NA' }}
-            </span>
-          </td>
-          <td>
+    <div id="tabla-departamentos"></div>
+    <!-- Create Modal -->
+    <div
+      class="modal fade"
+      id="createModal"
+      tabindex="-1"
+      aria-labelledby="createModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="createModalLabel">
+              Crear Departamento
+            </h1>
             <button
               type="button"
-              class="btn btn-warning"
-              data-bs-toggle="modal"
-              data-bs-target="#editModal{{ d.idDepartment }}"
-            >
-              <img src="/static/img/edit-icon.png" height="15px" width="15px" />
-              <strong>Editar</strong>
-            </button>
-
-            <button
-              type="button"
-              class="btn btn-danger"
-              data-bs-toggle="modal"
-              data-bs-target="#deleteModal{{ d.idDepartment }}"
-            >
-              <img
-                src="/static/img/delete-icon.png"
-                height="15px"
-                width="15px"
-              />
-              <strong>Eliminar</strong>
-            </button>
-          </td>
-        </tr>
-
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
-
-{% for d in departamentos %}
-<!-- Edit Modal -->
-<div
-  class="modal fade"
-  id="editModal{{ d.idDepartment }}"
-  tabindex="-1"
-  aria-labelledby="exampleModalLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog modal-xl">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">
-          Editar Departamento
-        </h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            {% include "departamento/formCrearDepartamento.html" %}
+          </div>
+        </div>
       </div>
-      <div class="modal-body">
-        <form
-          class="form"
-          role="form"
-          action="/web/departamento/editarDepartamento_web"
-          method="POST"
-        >
-          <div hidden class="form-group">
-            <label for="idDepartment">ID del departamento</label>
-            <input
-              type="number"
-              class="form-control"
-              id="idDepartment"
-              name="idDepartment"
-              title="ID del departamento"
-              min="1"
-              required
-              value="{{ d.idDepartment }}"
-            />
+    </div>
+    {% for d in departamentos %}
+    <!-- Edit Modal -->
+    <div
+      class="modal fade"
+      id="editModal{{ d.idDepartment }}"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">
+              Editar Departamento
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
-          <div class="form-group">
-            <label for="name">Nombre del departamento</label>
-            <input
-              type="text"
-              class="form-control"
-              id="name"
-              name="name"
-              title="Nombre del departamento"
-              required
-              value="{{ d.name }}"
-            />
-          </div>
-          <div class="form-group mt-3">
-            <label for="dept_color">Color del departamento</label>
-            <input
-              type="text"
-              data-coloris
-              id="dept_color"
-              name="dept_color"
-              title="Color del departamento"
-              value="{{ d.dept_color or '' }}"
-            />
-          </div>
-          <div class="form-group mt-3">
-            <input type="hidden" name="activo_hidden" value="0" />
-            <div class="form-check form-switch">
-              {% if d.aplica_horas_extra == 1 %}
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                name="aplica_horas_extra"
-                id="aplica_horas_extra"
-                value="1"
-                checked
-              />
-              {% else %}
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                name="aplica_horas_extra"
-                id="aplica_horas_extra"
-                value="1"
-              />
-              {% endif %}
-              <label class="form-check-label" for="aplica_horas_extra"
-                >Activo</label
-              >
+          <div class="modal-body">
+            <div class="card card-outline-secondary bg-dark text-light">
+              <div class="card-body">
+                <form
+                  class="form"
+                  role="form"
+                  action="/web/departamento/editarDepartamento_web"
+                  method="POST"
+                >
+                  <div hidden class="form-group">
+                    <label for="idDepartment">ID del departamento</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="idDepartment"
+                      name="idDepartment"
+                      title="ID del departamento"
+                      min="1"
+                      required
+                      value="{{ d.idDepartment }}"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="name">Nombre del departamento</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="name"
+                      name="name"
+                      title="Nombre del departamento"
+                      required
+                      value="{{ d.name }}"
+                    />
+                  </div>
+                  <div class="form-group mt-3">
+                    <label for="dept_color">Color del departamento</label>
+                    <input
+                      type="text"
+                      data-coloris
+                      id="dept_color"
+                      name="dept_color"
+                      title="Color del departamento"
+                      value="{{ d.dept_color or '' }}"
+                    />
+                  </div>
+                  <div class="form-group mt-3">
+                    <input type="hidden" name="activo_hidden" value="0" />
+                    <div class="form-check form-switch">
+                      {% if d.aplica_horas_extra == 1 %}
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        role="switch"
+                        name="aplica_horas_extra"
+                        id="aplica_horas_extra"
+                        value="1"
+                        checked
+                      />
+                      {% else %}
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        role="switch"
+                        name="aplica_horas_extra"
+                        id="aplica_horas_extra"
+                        value="1"
+                      />
+                      {% endif %}
+                      <label class="form-check-label" for="aplica_horas_extra"
+                        >Aplica a horas extra</label
+                      >
+                    </div>
+                  </div>
+
+                  <hr />
+                  <div class="d-flex justify-content-end">
+                    <button
+                      type="button"
+                      class="btn btn-secondary btn-lg m-1"
+                      data-bs-dismiss="modal"
+                    >
+                      Cerrar
+                    </button>
+                    <button
+                      type="submit"
+                      class="btn btn-success btn-lg btn-block m-1"
+                    >
+                      Confirmar
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
 
-          <hr />
-          <div class="d-flex justify-content-end">
+    <!-- Delete modal -->
+    <div class="modal fade" id="deleteModal{{ d.idDepartment }}" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">
+              Eliminar Departamento
+            </h1>
             <button
               type="button"
-              class="btn btn-secondary btn-lg m-1"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p>¿Seguro que quiere eliminar el registro?</p>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary btn-lg"
               data-bs-dismiss="modal"
             >
-              Cerrar
+              Close
             </button>
-            <button type="submit" class="btn btn-success btn-lg btn-block m-1">
-              Confirmar
-            </button>
+            <form
+              action="/web/departamento/eliminarDepartamento_web"
+              method="POST"
+            >
+              <input
+                type="number"
+                value="{{d.idDepartment}}"
+                name="idDepartment"
+                hidden
+              />
+              <button type="submit" class="btn btn-danger btn-lg">
+                Eliminar
+              </button>
+            </form>
           </div>
-        </form>
+        </div>
       </div>
     </div>
+    {% endfor %}
   </div>
-</div>
 
-<!-- Delete modal -->
-<div class="modal fade" id="deleteModal{{ d.idDepartment }}" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">
-          Eliminar Departamento
-        </h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
-      <div class="modal-body">
-        <p>¿Seguro que quiere eliminar el registro?</p>
-      </div>
-      <div class="modal-footer">
-        <button
-          type="button"
-          class="btn btn-secondary btn-lg"
-          data-bs-dismiss="modal"
-        >
-          Close
-        </button>
-        <form action="/web/departamento/eliminarDepartamento_web" method="POST">
-          <input
-            type="number"
-            value="{{d.idDepartment}}"
-            name="idDepartment"
-            hidden
-          />
-          <button type="submit" class="btn btn-danger btn-lg">Eliminar</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-{% endfor %}
-<script>
-  let departamentos = {};
-  async function cargarCatalogos() {
-    const [departamentosResponse] = await Promise.all([
-      fetch("/json/departamento/get_departamentos_aplica_horas_extra"),
-    ]);
+  <script>
+    let departamentos = {};
+    async function cargarCatalogos() {
+      const [departamentosResponse] = await Promise.all([
+        fetch("/json/departamento/get_departamentos_aplica_horas_extra"),
+      ]);
 
-    const departamentosData = await departamentosResponse.json();
+      const departamentosData = await departamentosResponse.json();
 
-    departamentosData.forEach((d) => {
-      departamentos[d.idDepartment] = {
-        name: d.name,
-        dept_color: d.dept_color,
-      };
+      departamentosData.forEach((d) => {
+        departamentos[d.idDepartment] = {
+          name: d.name,
+          dept_color: d.dept_color,
+        };
+      });
+    }
+
+    function colocarColoresEnBadges() {
+      document.querySelectorAll(".badge").forEach((d) => {
+        const idDepartment = d.dataset.idDepartment;
+
+        d.style.backgroundColor = departamentos[idDepartment]?.dept_color;
+      });
+    }
+
+    function cargarTableDepartamentos() {
+      const tableDepartamentos = new Tabulator("#tabla-departamentos", {
+        theme: "site-dark",
+        height: "calc(85vh - 86px)",
+        layout: "fitColumns",
+
+        ajaxURL: `/json/departamento/get_departamentos`,
+        ajaxConfig: "GET",
+
+        columns: [
+          {
+            title: "ID",
+            field: "idDepartment",
+            editor: false,
+            width: 60,
+            headerFilter: "number",
+
+            headerFilterFunc: function (filterValue, cellValue) {
+              return String(cellValue || "")
+                .toLowerCase()
+                .includes(String(filterValue.toLowerCase()));
+            },
+          },
+          {
+            title: "Nombre",
+            field: "name",
+            editor: false,
+            headerFilter: "input",
+
+            headerFilterFunc: function (filterValue, cellValue) {
+              return (cellValue || "")
+                .toLowerCase()
+                .includes(filterValue.toLowerCase());
+            },
+          },
+          {
+            title: "Aplica para horas extra",
+            field: "aplica_horas_extra",
+            hozAlign: "center",
+            editor: false,
+            width: 195,
+            headerFilter: "list",
+            headerFilterParams: {
+              values: {
+                "": "Todos",
+                1: "Sí",
+                0: "No",
+              },
+            },
+
+            formatter: function (cell) {
+              return cell.getValue() ? "Sí" : "No";
+            },
+          },
+          {
+            title: "Color",
+            field: "dept_color",
+            editor: false,
+            hozAlign: "center",
+            width: 200,
+            headerFilter: "input",
+
+            formatter: function (cell) {
+              const el = cell.getElement();
+              const data = cell.getRow().getData();
+
+              el.style.backgroundColor = data.dept_color;
+
+              return data.dept_color
+                ? `
+                <strong>
+                  ${data.dept_color}
+                </strong>
+              `
+                : "";
+            },
+
+            headerFilterFunc: function (filterValue, cellValue) {
+              return (cellValue || "")
+                .toLowerCase()
+                .includes(filterValue.toLowerCase());
+            },
+          },
+          {
+            title: "Acciones",
+            hozAlign: "center",
+            width: 225,
+
+            formatter: function (cell) {
+              const data = cell.getRow().getData();
+
+              return `
+              <div class="d-flex gap-3 justify-content-center">
+                <button
+                  type="button"
+                  class="btn btn-warning"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editModal${data.idDepartment}"
+                >
+                  <img src="/static/img/edit-icon.png" height="15px" width="15px" />
+                  <strong>Editar</strong>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-danger"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteModal${data.idDepartment}"
+                >
+                  <img
+                    src="/static/img/delete-icon.png"
+                    height="15px"
+                    width="15px"
+                  />
+                  <strong>Eliminar</strong>
+                </button>
+              </div>
+              `;
+            },
+          },
+        ],
+      });
+    }
+
+    (async function () {
+      await cargarCatalogos();
+      colocarColoresEnBadges();
+      cargarTableDepartamentos();
+    })();
+
+    Coloris({
+      theme: "pill",
+      themeMode: "dark",
+      swatches: [
+        "DarkSlateGray",
+        "#2a9d8f",
+        "#e9c46a",
+        "coral",
+        "rgb(231, 111, 81)",
+        "Crimson",
+        "#023e8a",
+        "#0077b6",
+        "hsl(194, 100%, 39%)",
+        "#00b4d8",
+        "#48cae4",
+      ],
     });
-  }
+  </script>
 
-  function colocarColoresEnBadges() {
-    document.querySelectorAll(".badge").forEach((d) => {
-      const idDepartment = d.dataset.idDepartment;
-
-      d.style.backgroundColor = departamentos[idDepartment]?.dept_color;
-    });
-  }
-
-  (async function () {
-    await cargarCatalogos();
-    colocarColoresEnBadges();
-  })();
-
-  Coloris({
-    theme: "pill",
-    themeMode: "dark",
-    swatches: [
-      "DarkSlateGray",
-      "#2a9d8f",
-      "#e9c46a",
-      "coral",
-      "rgb(231, 111, 81)",
-      "Crimson",
-      "#023e8a",
-      "#0077b6",
-      "hsl(194, 100%, 39%)",
-      "#00b4d8",
-      "#48cae4",
-    ],
-  });
-</script>
-
-{% endblock %}
+  {% endblock %}
+</div>
