@@ -53,6 +53,30 @@ class Empleado_Service():
 
         except Exception as ex:
             return {"error": f"No se pudo obtener empleados en el servicio: {str(ex)}"}
+
+    @staticmethod
+    def get_empleados_lista_service(db):
+        try:
+            data = EmpleadoRepository.get_empleados_lista(db)
+            empleados = []
+            for row in data:
+                empleado = {
+                    "idEmpleado": row["idEmpleado"],
+                    "badgeNumber": row["badgeNumber"],
+                    "nombre_completo": row["nombre_completo"],
+                    "position": row["position"],
+                    "departamento": row["departamento"],
+                    "centro": row["centro"],
+                    "linea": row["linea"],
+                    "proceso": row["proceso"],
+                    "activo": row["activo"],
+                    "horario": row["horario"],
+                }
+                empleados.append(empleado)
+            return empleados
+
+        except Exception as ex:
+            raise Exception(f"No se pudo obtener empleados en el servicio: {str(ex)}")
     
     @staticmethod
     def get_full_name_empleados_service(db):

@@ -73,6 +73,66 @@ class EmpleadoRepository:
         finally:
             if cursor:
                 cursor.close()
+
+    @staticmethod
+    def get_empleados_lista(db):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT 
+                te.idEmpleado,
+                te.badgeNumber,
+                CONCAT_WS(' ',
+                    te.firstName,
+                    te.secondName,
+                    te.lastName,
+                    te.lastName2
+                ) AS nombre_completo,
+                te.position,
+                td.name AS departamento,
+                tcdc.nombreCentro AS centro,
+                tl.nameLinea AS linea,
+                tp.proceso,
+                CASE
+                    WHEN te.activo = 1
+                    THEN 'Sí'
+                    ELSE 'No'
+                END AS activo,
+                CONCAT_WS('',
+                    th.hora_inicio,
+                    ' - ',
+                    th.hora_fin 
+                ) AS horario
+            FROM turnos_empleado te
+            LEFT JOIN
+                turnos_departamento td
+                ON td.idDepartment = te.idDepartment 
+            LEFT JOIN 
+                turnos_centro_de_costo tcdc
+                ON tcdc.idCentro = te.idCentro 
+            LEFT JOIN
+                turnos_linea tl 
+                ON tl.idLinea = te.idLinea 
+            LEFT JOIN 
+                turnos_proceso tp 
+                ON tp.idProceso = te.idProceso 
+            LEFT JOIN
+                turnos_horario th
+                ON th.idHorario = te.idHorario 
+            """
+            cursor.execute(query)
+
+            return cursor.fetchall()
+        
+        except Exception as ex:
+            raise Exception (f"No se pudo obtener empleados en el repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
     
     @staticmethod
     def get_full_name_empleados(db):
