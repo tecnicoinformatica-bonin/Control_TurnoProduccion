@@ -19,6 +19,24 @@ class Horario_Service():
 
         except Exception as ex:
             return {"error": f"No se pudo obtener horarios en servicio: {str(ex)}"}
+
+    @staticmethod
+    def get_horarios_json_service(db):
+        try:
+            data = HorarioRepository.getHorarios(db)
+            horarios = []
+            for row in data:
+                horario = {
+                    "idHorario": row["idHorario"],
+                    "descripcionHorario": row["descripcionHorario"],
+                    "hora_inicio": str(row["hora_inicio"]) if row["hora_inicio"] else None,
+                    "hora_fin": str(row["hora_fin"]) if row["hora_fin"] else None,
+                }
+                horarios.append(horario)
+            return horarios
+
+        except Exception as ex:
+            return {"error": f"No se pudo obtener horarios en servicio: {str(ex)}"}
     
     @staticmethod
     def getHorarioById_service(db, idHorario):
