@@ -44,7 +44,7 @@ endblock %} {% block content %}
         <div class="modal-content">
           <div class="modal-header">
             <h1 class="modal-title fs-5" id="createModalLabel">
-              Crear Departamento
+              Crear Empleado
             </h1>
             <button
               type="button"
@@ -180,7 +180,7 @@ endblock %} {% block content %}
     const tableEmpleados = new Tabulator("#tabla-empleados", {
       theme: "site-dark",
       height: "calc(85vh - 86px)",
-      layuot: "fitColumns",
+      layout: "fitColumns",
 
       ajaxURL: "/json/empleado/get_empleados_lista",
       ajaxConfig: "GET",
