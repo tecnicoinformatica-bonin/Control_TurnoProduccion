@@ -1,20 +1,19 @@
 {% extends "layout/base.html" %} {% block title %} Empleados - Turnos Bonin {%
 endblock %} {% block content %}
 
-<!-- form card cc payment -->
 <div class="card card-outline-secondary bg-dark text-light">
   <div class="card-body">
     <div class="d-flex justify-content-between">
       <h3>Empleados</h3>
-      <form class="d-flex" role="search" onsubmit="return false;">
-        <input
-          class="form-control me-2"
-          type="search"
-          placeholder="Escriba el nombre del empleado"
-          id="busqueda"
-        />
-        <button class="btn btn-outline-primary" type="submit">Buscar</button>
-      </form>
+      <button
+        type="button"
+        class="btn btn-success"
+        data-bs-toggle="modal"
+        data-bs-target="#createModal"
+      >
+        <i class="bi bi-plus-circle"></i>
+        <strong>Crear</strong>
+      </button>
     </div>
     <hr />
 
@@ -31,171 +30,266 @@ endblock %} {% block content %}
     </div>
     {% endfor %} {% endwith %}
 
-    <div class="table-responsive">
-      <table class="table table-dark table-striped">
-        <thead>
-          <tr>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(0, 'numero')">
-                ID
-                <span class="arrow" data-type="darr" data-column="0"
-                  ><strong>&darr;</strong></span
-                ><span class="arrow" data-type="uarr" data-column="0"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(1, 'numero')">
-                Badge
-                <span class="arrow" data-type="darr" data-column="1"
-                  >&darr;</span
-                ><span
-                  class="arrow arrow-active"
-                  data-type="uarr"
-                  data-column="1"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(2)">
-                Nombre
-                <span class="arrow" data-type="darr" data-column="2"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="2"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(3)">
-                Puesto
-                <span class="arrow" data-type="darr" data-column="3"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="3"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(4)">
-                Departamento
-                <span class="arrow" data-type="darr" data-column="4"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="4"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(5)">
-                Centro de costo
-                <span class="arrow" data-type="darr" data-column="5"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="5"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(6)">
-                Línea asignada
-                <span class="arrow" data-type="darr" data-column="6"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="6"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(7)">
-                Proceso asignado
-                <span class="arrow" data-type="darr" data-column="7"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="7"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(8)">
-                Activo
-                <span class="arrow" data-type="darr" data-column="8"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="8"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(9)">
-                Horario
-                <span class="arrow" data-type="darr" data-column="9"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="9"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p>Acciones</p>
-            </th>
-          </tr>
-        </thead>
-        <tbody class="tbody-list">
-          {% for e in empleados %}
-          <tr class="record tr-list">
-            <th scope="row">{{ e.idEmpleado }}</th>
-            <td>{{ e.badgeNumber }}</td>
-            <td class="record-name">
-              {{ e.firstName }} {{ "" if e.secondname == None else e.secondName
-              }} {{ e.lastName }} {{ "" if e.lastName2 == None else e.lastName2
-              }}
-            </td>
-            <td>{{ e.position }}</td>
-            <td>
-              {% for d in departamentos %} {% if d.idDepartment ==
-              e.idDepartment%} {{ d.name }} {% endif %} {% endfor %}
-            </td>
-            <td>
-              {% for cdc in centros_de_costo %} {% if cdc.idCentro ==
-              e.idCentro%} {{ cdc.nombreCentro }} {% endif %} {% endfor %}
-            </td>
-            <td>
-              {% for l in lineas %} {% if l.idLinea == e.idLinea %} {{
-              l.nameLinea }} {% endif %} {% endfor %}
-            </td>
-            <td>
-              {% for p in procesos %} {% if p.idProceso == e.idProceso %} {{
-              p.proceso }} {% endif %} {% endfor %}
-            </td>
-            <td>{% if e.activo == 1 %} Sí {% else %} No {% endif %}</td>
-            <td>
-              {% for h in horarios %} {% if h.idHorario == e.idHorario %} {{
-              h.hora_inicio }} - {{ h.hora_fin }} {% endif %} {% endfor %}
-            </td>
-            <td>
-              <div class="d-flex justify-content-between gap-2">
+    <div id="tabla-empleados"></div>
+
+    <!-- Create Modal -->
+    <div
+      class="modal fade"
+      id="createModal"
+      tabindex="-1"
+      aria-labelledby="createModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="createModalLabel">
+              Crear Departamento
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            {% include "empleado/formCrearEmpleado.html" %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll(".modal").forEach((modal) => {
+    modal.addEventListener("shown.bs.modal", () => {
+      const selectDepartment = modal.querySelector(".select-department");
+
+      cargarCentrosLineasProcesos.call(selectDepartment);
+    });
+  });
+
+  document
+    .querySelectorAll(".select-department")
+    .forEach((selectDepartment) => {
+      selectDepartment.addEventListener("change", cargarCentrosLineasProcesos);
+    });
+
+  async function cargarCentrosLineasProcesos() {
+    const idDepartment = this.value;
+
+    const idEmpleado = this.dataset.empleado;
+
+    const selectCentro = document.querySelector(`#idCentro${idEmpleado}`);
+    const selectLinea = document.querySelector(`#idLinea${idEmpleado}`);
+    const selectProceso = document.querySelector(`#idProceso${idEmpleado}`);
+
+    try {
+      const [respCentro, respLinea, respProceso] = await Promise.all([
+        fetch(
+          `/json/centro_de_costo/get_centros_de_costo_byDepartment_json/${idDepartment}`,
+        ),
+        fetch(`/json/linea/get_lineas_by_department/${idDepartment}`),
+        fetch(`/json/proceso/get_procesos_by_department/${idDepartment}`),
+      ]);
+
+      /* Centros */
+      const dataCentro = await respCentro.json();
+      let htmlCentro = `
+            <option selected disabled>
+              -- Seleccione una opción --
+            </option>
+          `;
+      dataCentro.forEach((centro) => {
+        if (selectCentro.value === String(centro.idCentro)) {
+          htmlCentro += `
+              <option selected value="${centro.idCentro}">
+                ${centro.nombreCentro}
+              </option>
+            `;
+        } else {
+          htmlCentro += `
+              <option value="${centro.idCentro}">
+                ${centro.nombreCentro}
+              </option>
+            `;
+        }
+      });
+      selectCentro.innerHTML = htmlCentro;
+
+      /* Líneas */
+      const dataLinea = await respLinea.json();
+      let htmlLinea = `
+            <option ${selectLinea.value ? "selected" : ""} disabled>
+              -- Seleccione una opción --
+            </option>
+          `;
+      dataLinea.forEach((linea) => {
+        if (selectLinea.value === String(linea.idLinea)) {
+          htmlLinea += `
+                <option selected value="${linea.idLinea}">
+                  ${linea.nameLinea}
+                </option>
+              `;
+        } else {
+          htmlLinea += `
+                <option value="${linea.idLinea}">
+                  ${linea.nameLinea}
+                </option>
+              `;
+        }
+      });
+      selectLinea.innerHTML = htmlLinea;
+
+      /* Procesos */
+      const dataProceso = await respProceso.json();
+      let htmlProceso = `
+            <option selected disabled>
+              -- Seleccione una opción --
+            </option>
+          `;
+      dataProceso.forEach((proceso) => {
+        if (selectProceso.value === String(proceso.idProceso)) {
+          htmlProceso += `
+              <option selected value="${proceso.idProceso}">
+                ${proceso.proceso}
+              </option>
+            `;
+        } else {
+          htmlProceso += `
+              <option value="${proceso.idProceso}">
+                ${proceso.proceso}
+              </option>
+            `;
+        }
+      });
+      selectProceso.innerHTML = htmlProceso;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  (async function () {
+    cargarTableEmpleados();
+  })();
+
+  /* TABULATOR */
+  function cargarTableEmpleados() {
+    const tableEmpleados = new Tabulator("#tabla-empleados", {
+      theme: "site-dark",
+      height: "calc(85vh - 86px)",
+      layuot: "fitColumns",
+
+      ajaxURL: "/json/empleado/get_empleados_lista",
+      ajaxConfig: "GET",
+
+      columns: [
+        {
+          title: "ID",
+          field: "idEmpleado",
+          hozAlign: "center",
+          editor: false,
+          width: 60,
+          headerFilter: "input",
+        },
+        {
+          title: "Badge",
+          field: "badgeNumber",
+          hozAlign: "center",
+          editor: false,
+          width: 85,
+          headerFilter: "input",
+        },
+        {
+          title: "Nombre",
+          field: "nombre_completo",
+          editor: false,
+          headerFilter: "input",
+          formatter: "textarea",
+        },
+        {
+          title: "Puesto",
+          field: "position",
+          editor: false,
+          width: 150,
+          headerFilter: "input",
+          formatter: "textarea",
+        },
+        {
+          title: "Departamento",
+          field: "departamento",
+          editor: false,
+          width: 130,
+          headerFilter: "input",
+          formatter: "textarea",
+        },
+        {
+          title: "Centro de costo asignado",
+          field: "centro",
+          editor: false,
+          width: 130,
+          headerFilter: "input",
+          formatter: "textarea",
+          formatter: "textarea",
+        },
+        {
+          title: "Línea asignada",
+          field: "linea",
+          editor: false,
+          width: 130,
+          headerFilter: "input",
+          formatter: "textarea",
+        },
+        {
+          title: "Proceso asignado",
+          field: "proceso",
+          editor: false,
+          width: 130,
+          headerFilter: "input",
+          formatter: "textarea",
+        },
+        {
+          title: "Activo",
+          field: "activo",
+          hozAlign: "center",
+          editor: false,
+          width: 85,
+          headerFilter: "input",
+        },
+        {
+          title: "Horario asignado",
+          field: "horario",
+          hozAlign: "center",
+          editor: false,
+          width: 150,
+          headerFilter: "input",
+        },
+        {
+          title: "Acciones",
+          hozAlign: "center",
+          width: 225,
+
+          formatter: function (cell) {
+            const data = cell.getRow().getData();
+
+            return `
+              <div class="d-flex gap-3 justify-content-center">
                 <button
                   type="button"
                   class="btn btn-warning"
                   data-bs-toggle="modal"
-                  data-bs-target="#editModal{{ e.idEmpleado }}"
+                  data-bs-target="#editModal${data.idEmpleado}"
                 >
-                  <img
-                    src="/static/img/edit-icon.png"
-                    height="15px"
-                    width="15px"
-                  />
+                  <img src="/static/img/edit-icon.png" height="15px" width="15px" />
                   <strong>Editar</strong>
                 </button>
-
                 <button
                   type="button"
                   class="btn btn-danger"
                   data-bs-toggle="modal"
-                  data-bs-target="#deleteModal{{ e.idEmpleado }}"
+                  data-bs-target="#deleteModal${data.idEmpleado}"
                 >
                   <img
                     src="/static/img/delete-icon.png"
@@ -205,15 +299,13 @@ endblock %} {% block content %}
                   <strong>Eliminar</strong>
                 </button>
               </div>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
+              `;
+          },
+        },
+      ],
+    });
+  }
+</script>
 {% for e in empleados %}
 <!-- EditModal -->
 <div
@@ -565,7 +657,7 @@ endblock %} {% block content %}
           class="btn btn-secondary btn-lg"
           data-bs-dismiss="modal"
         >
-          Close
+          Cerrar
         </button>
         <form action="/web/empleado/eliminarEmpleado_web" method="POST">
           <input
@@ -580,118 +672,4 @@ endblock %} {% block content %}
     </div>
   </div>
 </div>
-{% endfor %}
-
-<script>
-  document.querySelectorAll(".modal").forEach((modal) => {
-    modal.addEventListener("shown.bs.modal", () => {
-      const selectDepartment = modal.querySelector(".select-department");
-
-      cargarCentrosLineasProcesos.call(selectDepartment);
-    });
-  });
-
-  document
-    .querySelectorAll(".select-department")
-    .forEach((selectDepartment) => {
-      selectDepartment.addEventListener("change", cargarCentrosLineasProcesos);
-    });
-
-  async function cargarCentrosLineasProcesos() {
-    const idDepartment = this.value;
-
-    const idEmpleado = this.dataset.empleado;
-
-    const selectCentro = document.querySelector(`#idCentro${idEmpleado}`);
-    const selectLinea = document.querySelector(`#idLinea${idEmpleado}`);
-    const selectProceso = document.querySelector(`#idProceso${idEmpleado}`);
-
-    try {
-      const [respCentro, respLinea, respProceso] = await Promise.all([
-        fetch(
-          `/json/centro_de_costo/get_centros_de_costo_byDepartment_json/${idDepartment}`,
-        ),
-        fetch(`/json/linea/get_lineas_by_department/${idDepartment}`),
-        fetch(`/json/proceso/get_procesos_by_department/${idDepartment}`),
-      ]);
-
-      /* Centros */
-      const dataCentro = await respCentro.json();
-      let htmlCentro = `
-            <option selected disabled>
-              -- Seleccione una opción --
-            </option>
-          `;
-      dataCentro.forEach((centro) => {
-        if (selectCentro.value === String(centro.idCentro)) {
-          htmlCentro += `
-              <option selected value="${centro.idCentro}">
-                ${centro.nombreCentro}
-              </option>
-            `;
-        } else {
-          htmlCentro += `
-              <option value="${centro.idCentro}">
-                ${centro.nombreCentro}
-              </option>
-            `;
-        }
-      });
-      selectCentro.innerHTML = htmlCentro;
-
-      /* Líneas */
-      const dataLinea = await respLinea.json();
-      let htmlLinea = `
-            <option ${selectLinea.value ? "selected" : ""} disabled>
-              -- Seleccione una opción --
-            </option>
-          `;
-      dataLinea.forEach((linea) => {
-        console.log(linea.idLinea);
-
-        if (selectLinea.value === String(linea.idLinea)) {
-          htmlLinea += `
-                <option selected value="${linea.idLinea}">
-                  ${linea.nameLinea}
-                </option>
-              `;
-        } else {
-          htmlLinea += `
-                <option value="${linea.idLinea}">
-                  ${linea.nameLinea}
-                </option>
-              `;
-        }
-      });
-      selectLinea.innerHTML = htmlLinea;
-
-      /* Procesos */
-      const dataProceso = await respProceso.json();
-      let htmlProceso = `
-            <option selected disabled>
-              -- Seleccione una opción --
-            </option>
-          `;
-      dataProceso.forEach((proceso) => {
-        if (selectProceso.value === String(proceso.idProceso)) {
-          htmlProceso += `
-              <option selected value="${proceso.idProceso}">
-                ${proceso.proceso}
-              </option>
-            `;
-        } else {
-          htmlProceso += `
-              <option value="${proceso.idProceso}">
-                ${proceso.proceso}
-              </option>
-            `;
-        }
-      });
-      selectProceso.innerHTML = htmlProceso;
-    } catch (error) {
-      console.error(error);
-    }
-  }
-</script>
-
-{% endblock %}
+{% endfor %} {% endblock %}
