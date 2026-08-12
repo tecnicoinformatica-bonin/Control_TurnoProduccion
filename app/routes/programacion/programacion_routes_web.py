@@ -1,5 +1,8 @@
+from datetime import datetime
+
 from flask import Blueprint, render_template, abort, request, redirect, url_for
 from flask_login import login_required, current_user
+import pytz
 
 # Extensions
 from app.core.auth.permiso_requerido_decorator import permiso_requerido
@@ -67,6 +70,7 @@ def crearProgramacionPorDepartamentosUsuario_web():
             "fecha": request.form.get("fecha"),
             "elaborado_por": request.form.get("elaborado_por"),
             "departamentos": request.form.getlist("departamentos"),
+            "fecha_creacion": datetime.now(pytz.timezone("America/Guatemala")),
         }
 
         departamentos_usuario = [
