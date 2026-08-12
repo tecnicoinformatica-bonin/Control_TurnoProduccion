@@ -77,6 +77,34 @@ class ProcesoRepository:
                 cursor.close()
 
     @staticmethod
+    def get_procesos_details(db):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT 
+                tp.idProceso ,
+                tp.proceso AS nombre,
+                td.name AS departamento
+            FROM turnos_proceso tp
+            LEFT JOIN 
+                turnos_departamento td 
+                ON td.idDepartment = tp.idDepartment 
+            """
+            cursor.execute(query)
+
+            return cursor.fetchall()
+        
+        except Exception as ex:
+            raise Exception(f"No se pueden listar los procesos en repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    @staticmethod
     def getProcesosByDepartment(db, idDepartment):
         cursor = None
         

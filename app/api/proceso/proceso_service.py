@@ -17,6 +17,24 @@ class Proceso_Service():
 
         except Exception as ex:
             return {"error": f"No se pudo obtener proceso en el servicio: {str(ex)}"}
+
+    @staticmethod
+    def get_procesos_details_service(db):
+        try:
+            data = ProcesoRepository.get_procesos_details(db)
+            procesos = []
+            for row in data:
+                proceso = {
+                    "idProceso": row["idProceso"],
+                    "nombre": row["nombre"],
+                    "departamento": row["departamento"],
+                }
+                procesos.append(proceso)
+            
+            return procesos
+
+        except Exception as ex:
+            raise Exception(f"No se pudo obtener proceso en el servicio: {str(ex)}")
     
     @staticmethod
     def getProcesosByDepartment_service(db, idDepartment):
