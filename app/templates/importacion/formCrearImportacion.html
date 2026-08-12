@@ -1,0 +1,109 @@
+<div class="card card-outline-secondary bg-dark text-light">
+  <div class="card-body">
+    <h3 class="text-left">Crear importación de marcajes</h3>
+    <hr />
+
+    {% with messages = get_flashed_messages(with_categories=true) %} {% for
+    category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+      <strong>{{ message }}</strong>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% endfor %} {% endwith %}
+
+    <form id="formImportacion">
+      <div class="form-group">
+        <label for="archivo">Archivo Excel</label>
+        <input
+          type="file"
+          id="archivo"
+          name="archivo"
+          accept=".xlsx,.xls"
+          required
+        />
+      </div>
+
+      <hr />
+      <div class="form-group row">
+        <div class="col-md-6">
+          <button type="reset" class="btn btn-light btn-lg btn-block">
+            Borrar información
+          </button>
+        </div>
+        <div class="col-md-6">
+          <button type="submit" class="btn btn-success btn-lg btn-block">
+            Importar
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  document
+    .getElementById("formImportacion")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      // const archivo = document.getElementById("archivo").files[0];
+
+      const archivo = pond.getFile()?.file;
+
+      if (!archivo) {
+        Swal.fire({
+          icon: "error",
+          title: `Debe seleccionar un archivo.`,
+          showConfirmButton: true,
+        });
+        return;
+      }
+
+      const formData = new FormData();
+
+      formData.append("archivo", archivo);
+
+      const response = await fetch("/json/importacion/create_importacion", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        Swal.fire({
+          icon: "success",
+          title: `${data.mensaje}`,
+          showConfirmButton: true,
+        });
+
+        pond.removeFiles();
+      } else
+        Swal.fire({
+          icon: "error",
+          title: `${data.mensaje}`,
+          showConfirmButton: true,
+        });
+    });
+
+  const pond = FilePond.create(document.querySelector("#archivo"), {
+    allowMultiple: false,
+    maxFiles: 1,
+    MaxFileSize: "20MB",
+    acceptedFileTypes: [
+      "application/vnd.ms-excel",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ],
+    labelIdle: `
+      Arrastre un archivo Excel aquí o
+      <span class="filepond--label-action">
+        selecciónelo
+      </span>
+    `,
+  });
+</script>
