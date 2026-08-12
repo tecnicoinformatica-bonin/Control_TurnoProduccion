@@ -104,64 +104,67 @@ class Marcaje_Service():
         
     @staticmethod
     def importar_excel_service(db,archivo):
-        df = pd.read_excel(archivo)
-
-        df = df.where(
-            pd.notnull(df),
-            None
-        )
-
-        registros = 0
-
-        for _, row in df.iterrows():
-            fecha = pd.to_datetime(
-                row["fecha"],
-                dayfirst=True
-            ).date()
-
-            # for columna, valor in row.items():
-            #     if pd.isna(valor):
-            #         print(f"NaN encontrado -> {columna}")
-
-            row = row.where(pd.notnull(row), None)
-
-            # Timezone de Guatemala
-            tz = pytz.timezone("America/Guatemala")
-
-            # Hora actual REAL 
-            fecha_importacion = datetime.now(tz)
-
-            resultado = MarcajeRepository.createMarcaje(
-                db,
-                row["id_empleado"],
-                row["nombre_empleado"],
-                row["departamento"],
-                row["area"],
-                row["dia"],
-                fecha,
-                row["entrada_garita"],
-                row["entrada_area"],
-                row["salida_area"],
-                row["salida_garita"],
-                row["hora_simple"],
-                row["hora_doble"],
-                row["total_horas"],
-                row["horario_inicio"],
-                row["horario_fin"],
-                fecha_importacion
+        try:
+            df = pd.read_excel(archivo)
+            
+            df = df.where(
+                pd.notnull(df),
+                None
             )
-
-            registros += 1
-
-            if "error" in resultado:
-                print(f"ERROR: {resultado["error"]}")
-
-        db.connection.commit()
-        
-        return {
-            "success": True,
-            "registros": registros
-        }
+    
+            registros = 0
+    
+            for _, row in df.iterrows():
+                fecha = pd.to_datetime(
+                    row["fecha"],
+                    dayfirst=True
+                ).date()
+    
+                # for columna, valor in row.items():
+                #     if pd.isna(valor):
+                #         print(f"NaN encontrado -> {columna}")
+    
+                row = row.where(pd.notnull(row), None)
+    
+                # Timezone de Guatemala
+                tz = pytz.timezone("America/Guatemala")
+    
+                # Hora actual REAL 
+                fecha_importacion = datetime.now(tz)
+    
+                resultado = MarcajeRepository.createMarcaje(
+                    db,
+                    row["id_empleado"],
+                    row["nombre_empleado"],
+                    row["departamento"],
+                    row["area"],
+                    row["dia"],
+                    fecha,
+                    row["entrada_garita"],
+                    row["entrada_area"],
+                    row["salida_area"],
+                    row["salida_garita"],
+                    row["hora_simple"],
+                    row["hora_doble"],
+                    row["total_horas"],
+                    row["horario_inicio"],
+                    row["horario_fin"],
+                    fecha_importacion
+                )
+    
+                registros += 1
+    
+                if "error" in resultado:
+                    print(f"ERROR: {resultado["error"]}")
+    
+            db.connection.commit()
+            
+            return {
+                "success": True,
+                "registros": registros
+            }
+        except Exception as ex:
+            raise Exception(f"No se pudo realizar la importación: {str(ex)}")
 
     @staticmethod
     def get_summary_of_clocks_service(fecha):

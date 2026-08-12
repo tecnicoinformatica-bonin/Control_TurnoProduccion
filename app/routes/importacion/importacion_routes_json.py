@@ -21,35 +21,43 @@ def get_importaciones():
 @login_required
 @permiso_requerido("importacion.crear")
 def create_importacion():
-    archivo = request.files.get("archivo")
-
-    if not archivo:
+    try:
+        archivo = request.files.get("archivo")
+        
+        if not archivo:
+            return jsonify({
+                "success": False,
+                "message": "Debe seleccionar un archivo"
+            }), 400
+        
+        data = {
+            "nombre_archivo": archivo.filename,
+            "idUsuario": current_user.id
+        }
+        
+        idImportacion = Importacion_Service.createImportacion_service(db, data)
+    
+        resultado = Marcaje_Service.importar_excel_service(
+            db,
+            archivo
+        )
+    
+        Importacion_Service.cerrarImportacion_service(
+            db,
+            idImportacion,
+            resultado["registros"]
+        )
+    
+        return jsonify({
+            "success": True,
+            "importacion": idImportacion,
+            "registros": resultado["registros"],
+            "mensaje": f"Importación exitosa, ID: {idImportacion}, No. de registros: {resultado["registros"]}",
+        })
+    except:
         return jsonify({
             "success": False,
-            "message": "Debe seleccionar un archivo"
-        }), 400
+            "mensaje": f"Importación fallida",
+        })
     
-    data = {
-        "nombre_archivo": archivo.filename,
-        "idUsuario": current_user.id
-    }
-    
-    idImportacion = Importacion_Service.createImportacion_service(db, data)
-
-    resultado = Marcaje_Service.importar_excel_service(
-        db,
-        archivo
-    )
-
-    Importacion_Service.cerrarImportacion_service(
-        db,
-        idImportacion,
-        resultado["registros"]
-    )
-
-    return jsonify({
-    "success": True,
-    "importacion": idImportacion,
-    "registros": resultado["registros"]
-})
     
