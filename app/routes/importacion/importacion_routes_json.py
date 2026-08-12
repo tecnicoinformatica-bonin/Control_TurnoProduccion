@@ -1,5 +1,8 @@
+from datetime import datetime
+
 from flask import Blueprint, jsonify, request
 from flask_login import current_user, login_required
+import pytz
 from app.api.importacion.importacion_service import Importacion_Service
 from app.api.marcaje.marcaje_service import Marcaje_Service
 from app.core.auth.permiso_requerido_decorator import permiso_requerido
@@ -32,7 +35,8 @@ def create_importacion():
         
         data = {
             "nombre_archivo": archivo.filename,
-            "idUsuario": current_user.id
+            "idUsuario": current_user.id,
+            "fecha_inicio": datetime.now(pytz.timezone("America/Guatemala")),
         }
         
         idImportacion = Importacion_Service.createImportacion_service(db, data)
@@ -45,6 +49,7 @@ def create_importacion():
         Importacion_Service.cerrarImportacion_service(
             db,
             idImportacion,
+            datetime.now(pytz.timezone("America/Guatemala")),
             resultado["registros"]
         )
     

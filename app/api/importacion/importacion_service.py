@@ -1,9 +1,4 @@
-from datetime import datetime
-
-import pytz
-
 from app.api.importacion.importacion_repository import ImportacionRepository
-from app.extensions.slugify import Slugify
 
 class Importacion_Service():
     @staticmethod
@@ -12,9 +7,9 @@ class Importacion_Service():
             data = ImportacionRepository.getImportaciones(db)
             importaciones = []
             for row in data:
-                fecha_inicio = row["fecha_inicio"].strftime("%d/%m/%Y %H:%m") if row["fecha_inicio"] is not None else None
-                fecha_fin = row["fecha_fin"].strftime("%d/%m/%Y %H:%m") if row["fecha_fin"] is not None else None
-                fecha_creacion = row["fecha_creacion"].strftime("%d/%m/%Y %H:%m") if row["fecha_creacion"] is not None else None
+                fecha_inicio = row["fecha_inicio"].strftime("%d/%m/%Y %H:%M") if row["fecha_inicio"] is not None else None
+                fecha_fin = row["fecha_fin"].strftime("%d/%m/%Y %H:%M") if row["fecha_fin"] is not None else None
+                fecha_creacion = row["fecha_creacion"].strftime("%d/%m/%Y %H:%M") if row["fecha_creacion"] is not None else None
                 importacion = {
                     "idImportacion": row["idImportacion"],
                     "nombre_archivo": row["nombre_archivo"],
@@ -30,7 +25,7 @@ class Importacion_Service():
         except Exception as ex:
             return {
                 "success": False,
-                "error": f"No se pudo obtener líneas en servicio: {str(ex)}"
+                "error": f"No se pudo realizar importación en servicio: {str(ex)}"
             }
     
     @staticmethod
@@ -60,10 +55,12 @@ class Importacion_Service():
         try:
             nombre_archivo = data.get("nombre_archivo")
             idUsuario = data.get("idUsuario")
+            fecha_inicio = data.get("fecha_inicio")
             
             required_fields = {
                     "nombre_archivo": nombre_archivo, 
                     "idUsuario": idUsuario, 
+                    "fecha_inicio": fecha_inicio, 
                 }
             
             missing_fields = [key for key, value in required_fields.items() if value is None or value == ""]
@@ -71,26 +68,14 @@ class Importacion_Service():
             if missing_fields:
                 return {"error": f"Faltan campos obligatorios: {', '.join(missing_fields)}"}
             
-            # Timezone de Guatemala
-            tz = pytz.timezone("America/Guatemala")
-
-            # Hora actual REAL 
-            fecha_inicio = datetime.now(tz)
-            
             return ImportacionRepository.createImportacion(db, nombre_archivo, fecha_inicio, idUsuario)
         
         except Exception as ex:
             return {"error": f"No se pudo crear la importación. {str(ex)}"}
    
     @staticmethod
-    def cerrarImportacion_service(db, idImportacion, registros):
+    def cerrarImportacion_service(db, idImportacion, fecha_fin, registros):
         try:
-            # Timezone de Guatemala
-            tz = pytz.timezone("America/Guatemala")
-
-            # Hora actual REAL 
-            fecha_fin = datetime.now(tz)
-            
             return ImportacionRepository.cerrarImportacion(db, idImportacion, fecha_fin, registros)
         
         except Exception as ex:
