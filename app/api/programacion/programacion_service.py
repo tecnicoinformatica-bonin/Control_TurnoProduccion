@@ -43,6 +43,38 @@ class Programacion_Service():
 
         except Exception as ex:
             return {"error": f"No se pudieron obtener las programaciones en el servicio: {str(ex)}"}
+
+    @staticmethod
+    def get_programaciones_details_service(db):
+        try:
+            data = ProgramacionRepository.get_programaciones_details(db)
+            programaciones = []
+            for row in data:
+                fecha = row["fecha"].strftime("%Y-%m-%d")
+                fecha_creacion = row["fecha_creacion"].strftime("%d/%m/%Y %H:%M") if row["fecha_creacion"] is not None else None
+                fecha_cierre = row["fecha_cierre"].strftime("%d/%m/%Y %H:%M") if row["fecha_cierre"] is not None else None
+                fecha_reapertura = row["fecha_reapertura"].strftime("%d/%m/%Y %H:%M") if row["fecha_reapertura"] is not None else None
+
+                programacion = {
+                    "idProgramacion": row["idProgramacion"],
+                    "idDepartment": row["idDepartment"],
+                    "fecha": fecha,
+                    "departamento": row["departamento"],
+                    "elaborado_por": row["elaborado_por"],
+                    "fecha_creacion": fecha_creacion,
+                    "estado": row["estado"],
+                    "fecha_cierre": fecha_cierre,
+                    "cerrado_por": row["cerrado_por"],
+                    "fecha_reapertura": fecha_reapertura,
+                    "reabierto_por": row["reabierto_por"],
+                    "motivo_reapertura": row["motivo_reapertura"],
+                    "verificado_por": row["verificado_por"],
+                }
+                programaciones.append(programacion)
+            return programaciones
+
+        except Exception as ex:
+            raise Exception(f"No se pudieron obtener las programaciones en el servicio: {str(ex)}")
     
     @staticmethod
     def getCountsByLine_service(db, idProgramacion, idDepartment):
@@ -168,9 +200,9 @@ class Programacion_Service():
             programaciones = []
             for row in data:
                 fecha = row["fecha"].strftime("%Y-%m-%d")
-                fecha_creacion = row["fecha_creacion"].strftime("%d/%m/%Y %H:%m") if row["fecha_creacion"] is not None else None
-                fecha_cierre = row["fecha_cierre"].strftime("%d/%m/%Y %H:%m") if row["fecha_cierre"] is not None else None
-                fecha_reapertura = row["fecha_reapertura"].strftime("%d/%m/%Y %H:%m") if row["fecha_reapertura"] is not None else None
+                fecha_creacion = row["fecha_creacion"].strftime("%d/%m/%Y %H:%M") if row["fecha_creacion"] is not None else None
+                fecha_cierre = row["fecha_cierre"].strftime("%d/%m/%Y %H:%M") if row["fecha_cierre"] is not None else None
+                fecha_reapertura = row["fecha_reapertura"].strftime("%d/%m/%Y %H:%M") if row["fecha_reapertura"] is not None else None
                 programacion = {
                     "idProgramacion": row["idProgramacion"],
                     "fecha": fecha,
@@ -210,9 +242,9 @@ class Programacion_Service():
             programaciones = []
             for row in data:
                 fecha = row["fecha"].strftime("%Y-%m-%d")
-                fecha_creacion = row["fecha_creacion"].strftime("%d/%m/%Y %H:%m") if row["fecha_creacion"] is not None else None
-                fecha_cierre = row["fecha_cierre"].strftime("%d/%m/%Y %H:%m") if row["fecha_cierre"] is not None else None
-                fecha_reapertura = row["fecha_reapertura"].strftime("%d/%m/%Y %H:%m") if row["fecha_reapertura"] is not None else None
+                fecha_creacion = row["fecha_creacion"].strftime("%d/%m/%Y %H:%M") if row["fecha_creacion"] is not None else None
+                fecha_cierre = row["fecha_cierre"].strftime("%d/%m/%Y %H:%M") if row["fecha_cierre"] is not None else None
+                fecha_reapertura = row["fecha_reapertura"].strftime("%d/%m/%Y %H:%M") if row["fecha_reapertura"] is not None else None
                 programacion = {
                     "idProgramacion": row["idProgramacion"],
                     "fecha": fecha,
@@ -252,9 +284,9 @@ class Programacion_Service():
             programaciones = []
             for row in data:
                 fecha = row["fecha"].strftime("%Y-%m-%d")
-                fecha_creacion = row["fecha_creacion"].strftime("%d/%m/%Y %H:%m") if row["fecha_creacion"] is not None else None
-                fecha_cierre = row["fecha_cierre"].strftime("%d/%m/%Y %H:%m") if row["fecha_cierre"] is not None else None
-                fecha_reapertura = row["fecha_reapertura"].strftime("%d/%m/%Y %H:%m") if row["fecha_reapertura"] is not None else None
+                fecha_creacion = row["fecha_creacion"].strftime("%d/%m/%Y %H:%M") if row["fecha_creacion"] is not None else None
+                fecha_cierre = row["fecha_cierre"].strftime("%d/%m/%Y %H:M") if row["fecha_cierre"] is not None else None
+                fecha_reapertura = row["fecha_reapertura"].strftime("%d/%m/%Y %H:%M") if row["fecha_reapertura"] is not None else None
                 programacion = {
                     "idProgramacion": row["idProgramacion"],
                     "fecha": fecha,
@@ -282,9 +314,9 @@ class Programacion_Service():
             programaciones = []
             for row in data:
                 fecha = row["fecha"].strftime("%Y-%m-%d")
-                fecha_creacion = row["fecha_creacion"].strftime("%d/%m/%Y %H:%m") if row["fecha_creacion"] is not None else None
-                fecha_cierre = row["fecha_cierre"].strftime("%d/%m/%Y %H:%m") if row["fecha_cierre"] is not None else None
-                fecha_reapertura = row["fecha_reapertura"].strftime("%d/%m/%Y %H:%m") if row["fecha_reapertura"] is not None else None
+                fecha_creacion = row["fecha_creacion"].strftime("%d/%m/%Y %H:%M") if row["fecha_creacion"] is not None else None
+                fecha_cierre = row["fecha_cierre"].strftime("%d/%m/%Y %H:%M") if row["fecha_cierre"] is not None else None
+                fecha_reapertura = row["fecha_reapertura"].strftime("%d/%m/%Y %H:%M") if row["fecha_reapertura"] is not None else None
                 programacion = {
                     "idProgramacion": row["idProgramacion"],
                     "fecha": fecha,
@@ -324,9 +356,9 @@ class Programacion_Service():
             programaciones = []
             for row in data:
                 fecha = row["fecha"].strftime("%Y-%m-%d")
-                fecha_creacion = row["fecha_creacion"].strftime("%d/%m/%Y %H:%m") if row["fecha_creacion"] is not None else None
-                fecha_cierre = row["fecha_cierre"].strftime("%d/%m/%Y %H:%m") if row["fecha_cierre"] is not None else None
-                fecha_reapertura = row["fecha_reapertura"].strftime("%d/%m/%Y %H:%m") if row["fecha_reapertura"] is not None else None
+                fecha_creacion = row["fecha_creacion"].strftime("%d/%m/%Y %H:%M") if row["fecha_creacion"] is not None else None
+                fecha_cierre = row["fecha_cierre"].strftime("%d/%m/%Y %H:%M") if row["fecha_cierre"] is not None else None
+                fecha_reapertura = row["fecha_reapertura"].strftime("%d/%m/%Y %H:%M") if row["fecha_reapertura"] is not None else None
                 programacion = {
                     "idProgramacion": row["idProgramacion"],
                     "fecha": fecha,
@@ -437,6 +469,7 @@ class Programacion_Service():
             fecha = data.get("fecha")
             departamentos = data.get("departamentos")
             elaborado_por = data.get("elaborado_por")
+            fecha_creacion = data.get("fecha_creacion")
 
             estado = "BORRADOR"
             current_time = datetime.now().date()
@@ -467,7 +500,7 @@ class Programacion_Service():
                     fecha, 
                     idDepartment,
                     elaborado_por, 
-                    current_time, 
+                    fecha_creacion, 
                     estado
                 )
 

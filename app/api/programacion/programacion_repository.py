@@ -140,6 +140,56 @@ class ProgramacionRepository:
                 cursor.close()
 
     @staticmethod
+    def get_programaciones_details(db):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT 
+                tpg.idProgramacion,
+                tpg.idDepartment,
+                tpg.fecha,
+                td.name AS departamento,
+                tue.nombre AS elaborado_por,
+                tpg.fecha_creacion,
+                tpg.estado,
+                tpg.fecha_cierre,
+                tuc.nombre AS cerrado_por,
+                tpg.fecha_reapertura,
+                tur.nombre AS reabierto_por,
+                tpg.motivo_reapertura,
+                tuv.nombre AS verificado_por
+            FROM turnos_programacion tpg
+            LEFT JOIN
+                turnos_departamento td 
+                ON tpg.idDepartment = td.idDepartment
+            LEFT JOIN 
+                turnos_usuario tue 
+                ON tpg.elaborado_por = tue.idUsuario  
+            LEFT JOIN 
+                turnos_usuario tuc
+                ON tpg.cerrado_por = tuc.idUsuario
+            LEFT JOIN turnos_usuario tur
+                ON tpg.reabierto_por = tur.idUsuario
+            LEFT JOIN turnos_usuario tuv
+                ON tpg.verificado_por = tuv.idUsuario;
+            """
+            cursor.execute(query)
+
+            programaciones = cursor.fetchall()
+
+            return programaciones
+        
+        except Exception as ex:
+            raise Exception(f"No se pudo obtener las programaciones en el repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    @staticmethod
     def getProgramacionesActivas(db):
         cursor = None
         
