@@ -12,14 +12,17 @@ class Importacion_Service():
             data = ImportacionRepository.getImportaciones(db)
             importaciones = []
             for row in data:
+                fecha_inicio = row["fecha_inicio"].strftime("%d/%m/%Y %H:%m") if row["fecha_inicio"] is not None else None
+                fecha_fin = row["fecha_fin"].strftime("%d/%m/%Y %H:%m") if row["fecha_fin"] is not None else None
+                fecha_creacion = row["fecha_creacion"].strftime("%d/%m/%Y %H:%m") if row["fecha_creacion"] is not None else None
                 importacion = {
                     "idImportacion": row["idImportacion"],
                     "nombre_archivo": row["nombre_archivo"],
-                    "fecha_inicio": row["fecha_inicio"],
-                    "fecha_fin": row["fecha_fin"],
+                    "fecha_inicio": fecha_inicio,
+                    "fecha_fin": fecha_fin,
                     "registros": row["registros"],
-                    "idUsuario": row["idUsuario"],
-                    "fecha_creacion": row["fecha_creacion"]
+                    "nombre_usuario": row["nombre_usuario"],
+                    "fecha_creacion": fecha_creacion,
                 }
                 importaciones.append(importacion)
             return importaciones

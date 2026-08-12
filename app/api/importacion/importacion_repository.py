@@ -60,9 +60,19 @@ class ImportacionRepository:
             cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
 
             query = """
-            SELECT * 
-            FROM turnos_importacion_marcajes
-            ORDER BY nombre_archivo
+            SELECT 
+                tim.idImportacion,
+                tim.nombre_archivo,
+                tim.fecha_inicio, 
+                tim.fecha_fin,
+                tim.registros,
+                tu.nombre as nombre_usuario,
+                tim.fecha_creacion 
+            FROM turnos_importacion_marcajes tim
+            LEFT JOIN 
+                turnos_usuario tu 
+                ON tu.idUsuario = tim.idUsuario 
+            ORDER BY idImportacion
             """
             cursor.execute(query)
 
