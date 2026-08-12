@@ -6,15 +6,15 @@ endblock %} {% block content %}
   <div class="card-body">
     <div class="d-flex justify-content-between">
       <h3>Líneas</h3>
-      <form class="d-flex" role="search" onsubmit="return false;">
-        <input
-          class="form-control me-2"
-          type="search"
-          placeholder="Nombre de la línea"
-          id="busqueda"
-        />
-        <button class="btn btn-outline-primary" type="submit">Buscar</button>
-      </form>
+      <button
+        type="button"
+        class="btn btn-success"
+        data-bs-toggle="modal"
+        data-bs-target="#createModal"
+      >
+        <i class="bi bi-plus-circle"></i>
+        <strong>Crear</strong>
+      </button>
     </div>
     <hr />
 
@@ -31,100 +31,34 @@ endblock %} {% block content %}
     </div>
     {% endfor %} {% endwith %}
 
-    <table class="table table-dark table-striped">
-      <thead>
-        <tr>
-          <th scope="col">
-            <p class="title_column" onclick="ordenarTabla(0, 'numero')">
-              ID
-              <span class="arrow" data-type="darr" data-column="0"
-                ><strong>&darr;</strong></span
-              ><span class="arrow" data-type="uarr" data-column="0"
-                >&uarr;</span
-              >
-            </p>
-          </th>
-          <th scope="col">
-            <p class="title_column" onclick="ordenarTabla(1)">
-              Nombre de la línea
-              <span class="arrow" data-type="darr" data-column="1">&darr;</span
-              ><span class="arrow arrow-active" data-type="uarr" data-column="1"
-                >&uarr;</span
-              >
-            </p>
-          </th>
-          <th scope="col">
-            <p class="title_column" onclick="ordenarTabla(2)">
-              Departamento al que corresponde
-              <span class="arrow" data-type="darr" data-column="2">&darr;</span
-              ><span class="arrow" data-type="uarr" data-column="2"
-                >&uarr;</span
-              >
-            </p>
-          </th>
-          <th scope="col">
-            <p class="title_column" onclick="ordenarTabla(3, 'numero')">
-              Mínimo requerido
-              <span class="arrow" data-type="darr" data-column="3">&darr;</span
-              ><span class="arrow" data-type="uarr" data-column="3"
-                >&uarr;</span
-              >
-            </p>
-          </th>
-          <th scope="col">Acciones</th>
-        </tr>
-      </thead>
-      <tbody class="tbody-list">
-        {% for l in lineas %}
-        <tr class="record tr-list">
-          <th scope="row">{{ l.idLinea }}</th>
-          <td class="record-name">{{ l.nameLinea }}</td>
-          <td>
-            {% for d in departamentos %} {% if d.idDepartment ==
-            l.idDepartment%} {{ d.name }} {% endif %} {% endfor %}
-          </td>
-          <td>{{ l.minimo_requerido }}</td>
-          <td>
-            <div class="d-flex justify-content-between">
-              <button
-                type="button"
-                class="btn btn-warning"
-                data-bs-toggle="modal"
-                data-bs-target="#editModal{{ l.idLinea }}"
-              >
-                <img
-                  src="/static/img/edit-icon.png"
-                  height="15px"
-                  width="15px"
-                />
-                <strong>Editar</strong>
-              </button>
-
-              <button
-                type="button"
-                class="btn btn-danger"
-                data-bs-toggle="modal"
-                data-bs-target="#deleteModal{{ l.idLinea }}"
-              >
-                <img
-                  src="/static/img/delete-icon.png"
-                  height="15px"
-                  width="15px"
-                />
-                <strong>Eliminar</strong>
-              </button>
-            </div>
-          </td>
-        </tr>
-
-        {% endfor %}
-      </tbody>
-    </table>
+    <div id="tabla-general-lineas"></div>
+  </div>
+</div>
+<!-- Create Modal -->
+<div
+  class="modal fade"
+  id="createModal"
+  tabindex="-1"
+  aria-labelledby="createModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="createModalLabel">Crear Horario</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">{% include "linea/formCrearLinea.html" %}</div>
+    </div>
   </div>
 </div>
 
 {% for l in lineas %}
-
 <!-- EditModal -->
 <div
   class="modal fade"
@@ -275,4 +209,99 @@ endblock %} {% block content %}
     </div>
   </div>
 </div>
-{% endfor %} {% endblock %}
+{% endfor %}
+<script>
+  (async function () {
+    cargarTableGeneralLineas();
+  })();
+
+  function cargarTableGeneralLineas() {
+    const tableGeneralLineas = new Tabulator("#tabla-general-lineas", {
+      theme: "site-dark",
+      height: "calc(85vh - 86px)",
+      layout: "fitColumns",
+
+      ajaxURL: "/json/linea/get_lineas_details",
+      ajaxConfig: "GET",
+
+      columns: [
+        {
+          title: "ID",
+          field: "idLinea",
+
+          hozAlign: "center",
+          editor: false,
+          width: 60,
+          headerFilter: "input",
+        },
+        {
+          title: "Nombre",
+          field: "nombre",
+
+          widthGrow: 2,
+          editor: false,
+          formatter: "textarea",
+          headerFilter: "input",
+        },
+        {
+          title: "Departamento al que corresponde",
+          field: "departamento",
+          headerWordWrap: true,
+
+          hozAlign: "center",
+          editor: false,
+          // width: 100,
+          formatter: "textarea",
+          headerFilter: "input",
+        },
+        {
+          title: "Personal mínimo requerido",
+          field: "minimo_requerido",
+          headerWordWrap: true,
+
+          hozAlign: "center",
+          editor: false,
+          // width: 100,
+          headerFilter: "input",
+        },
+        {
+          title: "Acciones",
+          hozAlign: "center",
+          width: 225,
+
+          formatter: function (cell) {
+            const data = cell.getRow().getData();
+
+            return `
+              <div class="d-flex gap-3 justify-content-center">
+                <button
+                  type="button"
+                  class="btn btn-warning"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editModal${data.idLinea}"
+                >
+                  <img src="/static/img/edit-icon.png" height="15px" width="15px" />
+                  <strong>Editar</strong>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-danger"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteModal${data.idLinea}"
+                >
+                  <img
+                    src="/static/img/delete-icon.png"
+                    height="15px"
+                    width="15px"
+                  />
+                  <strong>Eliminar</strong>
+                </button>
+              </div>
+              `;
+          },
+        },
+      ],
+    });
+  }
+</script>
+{% endblock %}
