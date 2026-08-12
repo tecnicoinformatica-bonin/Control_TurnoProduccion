@@ -6,15 +6,6 @@
   <div class="card-body">
     <div class="d-flex justify-content-between">
       <h3>Programaciones</h3>
-      <form class="d-flex" role="search" onsubmit="return false;">
-        <input
-          class="form-control me-2"
-          type="search"
-          placeholder="Escriba el nombre del Programacion"
-          id="busqueda"
-        />
-        <button class="btn btn-outline-primary" type="submit">Buscar</button>
-      </form>
     </div>
     <hr />
 
@@ -31,278 +22,175 @@
     </div>
     {% endfor %} {% endwith %}
 
-    <div class="talbe-responsive">
-      <table class="table table-dark table-striped">
-        <thead>
-          <tr>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(0, 'numero')">
-                ID
-                <span class="arrow" data-type="darr" data-column="0"
-                  ><strong>&darr;</strong></span
-                ><span class="arrow" data-type="uarr" data-column="0"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(1)">
-                Fecha
-                <span class="arrow" data-type="darr" data-column="1"
-                  >&darr;</span
-                ><span
-                  class="arrow arrow-active"
-                  data-type="uarr"
-                  data-column="1"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(2)">
-                Departamento
-                <span class="arrow" data-type="darr" data-column="2"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="2"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(3)">
-                Elaborado por
-                <span class="arrow" data-type="darr" data-column="3"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="3"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(4)">
-                Estado
-                <span class="arrow" data-type="darr" data-column="4"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="4"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(5)">
-                Fecha de cierre
-                <span class="arrow" data-type="darr" data-column="5"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="5"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(6)">
-                Fecha de reapertura
-                <span class="arrow" data-type="darr" data-column="6"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="6"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(7)">
-                Reabierto por
-                <span class="arrow" data-type="darr" data-column="7"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="7"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(8)">
-                Motivo de reapertura
-                <span class="arrow" data-type="darr" data-column="8"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="8"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody class="tbody-list">
-          {% for pg in programaciones %}
-          <tr class="record tr-list">
-            <th scope="row">{{ pg.idProgramacion }}</th>
-            <td>{{ pg.fecha }}</td>
-            <td>
-              {% for d in departamentos %} {% if d.idDepartment ==
-              pg.idDepartment %} {{ d.name }} {% endif %} {% endfor %}
-            </td>
-            <td class="record-name">
-              {% for u in usuarios %} {% if u.idUsuario == pg.elaborado_por %}
-              {{ u.nombre }} {% endif %} {% endfor %}
-            </td>
-            <td>{{ pg.estado }}</td>
-            <td>{{ pg.fecha_cierre }}</td>
-            <td>{{ pg.fecha_reapertura }}</td>
-            <td>
-              {% for u in usuarios %} {% if u.idUsuario == pg.reabierto_por %}
-              {{ u.nombre }} {% endif %} {% endfor %}
-            </td>
-            <td>{{ pg.motivo_reapertura }}</td>
-            <td>
-              <button
-                type="button"
-                class="btn btn-warning"
-                data-bs-toggle="modal"
-                data-bs-target="#reOpenModal{{ pg.idProgramacion }}"
-              >
-                <img
-                  src="/static/img/reopen-icon.png"
-                  height="15px"
-                  width="15px"
-                />
-                <strong>Reabrir</strong>
-              </button>
-            </td>
-            <td>
-              <a
-                href="/template/programacion/editarProgramacion/{{ pg.idDepartment }}/{{ pg.fecha }}"
-                class="btn btn-primary"
-              >
-                <img
-                  src="/static/img/ruta-icon.png"
-                  height="15px"
-                  width="15px"
-                />
-                <strong>Ir a detalles</strong>
-              </a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <div id="tabla-programaciones"></div>
 
-      {% for pg in programaciones %}
-      <!-- Edit Modal -->
-      <div
-        class="modal fade"
-        id="reOpenModal{{ pg.idProgramacion }}"
-        tabindex="-1"
-        aria-labelledby="modalLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog modal-xl">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="modalLabel">
-                Reabrir programacion
-              </h1>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <form
-                class="form"
-                role="form"
-                action="/web/programacion/reOpenProgramacion_web"
-                method="POST"
-              >
-                <div hidden class="form-group">
-                  <label for="idProgramacion">ID de la programación</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="idProgramacion"
-                    name="idProgramacion"
-                    title="ID del programación"
-                    min="1"
-                    required
-                    value="{{ pg.idProgramacion }}"
-                  />
-                </div>
-
-                <div hidden class="form-group">
-                  <label for="idDepartment"
-                    >Departamento de la programación</label
-                  >
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="idDepartment"
-                    name="idDepartment"
-                    title="Departamento de la programación"
-                    required
-                    value="{{ pg.idDepartment }}"
-                  />
-                </div>
-
-                <div hidden class="form-group">
-                  <label for="fecha">Fecha de la programación</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="fecha"
-                    name="fecha"
-                    title="Fecha de la programación"
-                    required
-                    value="{{ pg.fecha }}"
-                  />
-                </div>
-
-                <div hidden class="form-group">
-                  <label for="reabierto_por">Reabierto por</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="reabierto_por"
-                    name="reabierto_por"
-                    title="Reabierto por"
-                    required
-                    value="{{ current_user.id }}"
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label for="motivo_reapertura">Motivo de reapertura</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="motivo_reapertura"
-                    name="motivo_reapertura"
-                    title="Primer apellido del Programacion"
-                    required
-                    value="{{ pg.motivo_reapertura }}"
-                  />
-                </div>
-                <hr />
-                <div class="d-flex justify-content-end">
-                  <button
-                    type="button"
-                    class="btn btn-secondary btn-lg ms-1"
-                    data-bs-dismiss="modal"
-                  >
-                    Cerrar
-                  </button>
-
-                  <button type="submit" class="btn btn-success btn-lg ms-1">
-                    Confirmar
-                  </button>
-                </div>
-              </form>
-            </div>
+    <!-- Create Modal -->
+    <div
+      class="modal fade"
+      id="createModal"
+      tabindex="-1"
+      aria-labelledby="createModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="createModalLabel"></h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            {% include "permiso/formCrearPermiso.html" %}
           </div>
         </div>
       </div>
-      {% endfor %}
     </div>
   </div>
 </div>
+
+<script>
+  (async function () {
+    cargarTableProgramaciones();
+  })();
+
+  function cargarTableProgramaciones() {
+    const tableProgramaciones = new Tabulator("#tabla-programaciones", {
+      theme: "site-dark",
+      height: "calc(85vh - 86px)",
+      layout: "fitData",
+
+      ajaxURL: "/json/programacion/get_programaciones_details",
+      ajaxConfig: "GET",
+
+      columns: [
+        {
+          title: "ID",
+          field: "idProgramacion",
+          hozAlign: "center",
+          editor: false,
+          headerFilter: "input",
+        },
+        {
+          title: "Fecha",
+          field: "fecha",
+          editor: false,
+          headerFilter: "input",
+        },
+        {
+          title: "Departamento",
+          field: "departamento",
+          editor: false,
+
+          // widthGrow: 3,
+          headerFilter: "input",
+        },
+        {
+          title: "Elaborado por",
+          field: "elaborado_por",
+          editor: false,
+
+          headerFilter: "input",
+        },
+        {
+          title: "Fecha de creación",
+          field: "fecha_creacion",
+          editor: false,
+
+          headerFilter: "input",
+        },
+        {
+          title: "Estado",
+          field: "estado",
+          editor: false,
+
+          headerFilter: "input",
+        },
+        {
+          title: "Fecha de cierre",
+          field: "fecha_cierre",
+          editor: false,
+
+          headerFilter: "input",
+        },
+        {
+          title: "Cerrado por",
+          field: "cerrado_por",
+          editor: false,
+
+          headerFilter: "input",
+        },
+        {
+          title: "Fecha reapertura",
+          field: "fecha_reapertura",
+          editor: false,
+
+          headerFilter: "input",
+        },
+        {
+          title: "Reabierto por",
+          field: "reabierto_por",
+          editor: false,
+
+          headerFilter: "input",
+        },
+        {
+          title: "Motivo de reapertura",
+          field: "motivo_reapertura",
+          editor: false,
+
+          headerFilter: "input",
+        },
+        {
+          title: "Verificado por",
+          field: "verificado_por",
+          editor: false,
+
+          headerFilter: "input",
+        },
+        {
+          title: "Acciones",
+          hozAlign: "center",
+
+          formatter: function (cell) {
+            const data = cell.getRow().getData();
+
+            return `
+              <div class="d-flex gap-3 justify-content-center">
+                <button
+                  type="button"
+                  class="btn btn-warning"
+                  data-bs-toggle="modal"
+                  data-bs-target="#reOpenModal${data.idProgramacion}"
+                >
+                  <img
+                    src="/static/img/reopen-icon.png"
+                    height="15px"
+                    width="15px"
+                  />
+                  <strong>Reabrir</strong>
+                </button>
+                <a
+                  href="/template/programacion/editarProgramacion/${data.idDepartment}/${data.fecha}"
+                  class="btn btn-primary"
+                >
+                  <img
+                    src="/static/img/ruta-icon.png"
+                    height="15px"
+                    width="15px"
+                  />
+                  <strong>Ir a detalles</strong>
+                </a>
+              </div>
+              `;
+          },
+        },
+      ],
+    });
+  }
+</script>
 
 {% endblock %}
