@@ -19,6 +19,24 @@ class Linea_Service():
 
         except Exception as ex:
             return {"error": f"No se pudo obtener líneas en servicio: {str(ex)}"}
+
+    @staticmethod
+    def get_lineas_details_service(db):
+        try:
+            data = LineaRepository.get_lineas_details(db)
+            lineas = []
+            for row in data:
+                linea = {
+                    "idLinea": row["idLinea"],
+                    "nombre": row["nombre"],
+                    "departamento": row["departamento"],
+                    "minimo_requerido": row["minimo_requerido"],
+                }
+                lineas.append(linea)
+            return lineas
+
+        except Exception as ex:
+            return {"error": f"No se pudo obtener líneas en servicio: {str(ex)}"}
     
     @staticmethod
     def getLineasByDepartment_service(db, idDepartment):

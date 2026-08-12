@@ -16,6 +16,16 @@ def get_lineas():
 
     return jsonify(data), 200
 
+@linea_json_bp.route("/get_lineas_details", methods=["GET"])
+@login_required
+@permiso_requerido("linea.ver")
+def get_lineas_details():
+    data = Linea_Service.get_lineas_details_service(db)
+    if not data:
+        return jsonify([]), 200
+
+    return jsonify(data), 200
+
 @linea_json_bp.route("/get_lineas_by_department/<int:idDepartment>", methods=["GET"])
 @login_required
 @permiso_requerido("programacion.ver", "linea.ver")

@@ -78,6 +78,35 @@ class LineaRepository:
         finally:
             if cursor:
                 cursor.close()
+
+    @staticmethod
+    def get_lineas_details(db):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT 
+                tl.idLinea,
+                tl.nameLinea as nombre,
+                td.name AS departamento,
+                tl.minimo_requerido 
+            FROM turnos_linea tl
+            LEFT JOIN 
+                turnos_departamento td 
+                ON td.idDepartment = tl.idDepartment 
+            """
+            cursor.execute(query)
+
+            return cursor.fetchall()
+        
+        except Exception as ex:
+            raise Exception(f"No se pudo obtener detalles de líneas en repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
     
     @staticmethod
     def getLineasByDepartment(db, idDepartment):
