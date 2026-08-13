@@ -72,37 +72,7 @@ class UsuarioRepository:
         finally:
             if cursor:
                 cursor.close()
-    
-    @staticmethod
-    def getUserPaths(db, idUsuario):
-        cursor = None
-
-        try:
-            cursor = db.connection.cursor()
-
-            query = """
-            SELECT r.path
-            FROM turnos_ruta r
-            JOIN turnos_rol_ruta rr ON r.idRuta = rr.idRuta
-            JOIN turnos_usuario_rol ur ON rr.idRol = ur.idRol
-            WHERE ur.idUsuario  = %s
-            """
-
-            cursor.execute(query, (idUsuario,))
-            rows = cursor.fetchall()
-
-            if rows is not None:
-                paths = [row[0] for row in rows]
-
-            return paths
-        
-        except Exception as ex:
-            return {"error": f"No se pueden obtener rutas del usuario en el repositorio: {str(ex)}"}
-                    
-        finally: 
-            if cursor:
-                cursor.close()
-
+   
     @staticmethod
     def getUserRolesById(db, idUsuario):
         cursor = None

@@ -10,15 +10,14 @@ class Usuario():
         self.scope_departamentos_global = scope_departamentos_global
         self.scope_permisos_global = scope_permisos_global
 
-class Usuario_Rutas(UserMixin):
-    def __init__(self, idUsuario, username, nombre, activo, roles, permisos, paths, departamentos, scope_departamentos_global, scope_permisos_global, cambiar_password):
+class Usuario_Logging(UserMixin):
+    def __init__(self, idUsuario, username, nombre, activo, roles, permisos, departamentos, scope_departamentos_global, scope_permisos_global, cambiar_password):
         self.id = idUsuario
         self.username = username
         self.nombre = nombre
         self.activo = activo
         self.roles = roles
         self.permisos = permisos
-        self.paths = paths
         self.departamentos = departamentos
         self.scope_departamentos_global = scope_departamentos_global
         self.scope_permisos_global = scope_permisos_global

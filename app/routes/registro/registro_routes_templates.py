@@ -3,7 +3,6 @@ from flask_login import login_required
 
 from app.api.registro.registro_service import Registro_Service
 from app.api.departamento.departamento_service import Departamento_Service
-from app.api.ruta.ruta_service import Ruta_Service
 from app.extensions.db import db
 
 registro_template_bp = Blueprint(

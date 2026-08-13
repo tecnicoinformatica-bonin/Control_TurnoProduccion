@@ -2,8 +2,6 @@ from datetime import datetime
 
 from flask import Blueprint, jsonify, request, session
 from flask_login import login_required, login_user
-from app.api.usuario.usuario_model import Usuario_Rutas
-from app.api.usuario.usuario_repository import UsuarioRepository
 from app.api.usuario.usuario_service import Usuario_Service
 from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db

@@ -28,8 +28,6 @@ from app.routes.registro.registro_routes_api import registro_api_bp
 from app.routes.registro_motivo_desasignacion.registro_motivo_desasignacion_routes_api import registro_motivo_desasignacion_api_bp
 from app.routes.rol.rol_routes_api import rol_api_bp
 from app.routes.rol_permiso.rol_permiso_routes_api import rol_permiso_api_bp
-from app.routes.rol_ruta.rol_ruta_routes_api import rol_ruta_api_bp
-from app.routes.ruta.ruta_routes_api import ruta_api_bp
 from app.routes.usuario.usuario_routes_api import usuario_api_bp
 from app.routes.usuario_departamento.usuario_departamento_routes_api import usuario_departamento_api_bp
 from app.routes.usuario_permiso.usuario_permiso_routes_api import usuario_permiso_api_bp
@@ -54,8 +52,6 @@ from app.routes.registro.registro_routes_templates import registro_template_bp
 from app.routes.registro_motivo_desasignacion.registro_motivo_desasignacion_routes_templates import registro_motivo_desasignacion_template_bp
 from app.routes.rol.rol_routes_templates import rol_template_bp
 from app.routes.rol_permiso.rol_permiso_routes_templates import rol_permiso_template_bp
-from app.routes.rol_ruta.rol_ruta_routes_templates import rol_ruta_template_bp
-from app.routes.ruta.ruta_routes_templates import ruta_template_bp
 from app.routes.usuario.usuario_routes_templates import usuario_template_bp
 from app.routes.usuario_departamento.usuario_departamento_routes_templates import usuario_departamento_template_bp
 from app.routes.usuario_permiso.usuario_permiso_routes_templates import usuario_permiso_template_bp
@@ -80,8 +76,6 @@ from app.routes.registro.registro_routes_web import registro_web_bp
 from app.routes.registro_motivo_desasignacion.registro_motivo_desasignacion_routes_web import registro_motivo_desasignacion_web_bp
 from app.routes.rol.rol_routes_web import rol_web_bp
 from app.routes.rol_permiso.rol_permiso_routes_web import rol_permiso_web_bp
-from app.routes.rol_ruta.rol_ruta_routes_web import rol_ruta_web_bp
-from app.routes.ruta.ruta_routes_web import ruta_web_bp
 from app.routes.usuario.usuario_routes_web import usuario_web_bp
 from app.routes.usuario_departamento.usuario_departamento_routes_web import usuario_departamento_web_bp
 from app.routes.usuario_permiso.usuario_permiso_routes_web import usuario_permiso_web_bp
@@ -197,8 +191,6 @@ def create_app():
     app.register_blueprint(registro_motivo_desasignacion_api_bp, url_prefix="/api/registro_motivo_desasignacion")
     app.register_blueprint(rol_api_bp, url_prefix="/api/rol")
     app.register_blueprint(rol_permiso_api_bp, url_prefix="/api/rol_permiso")
-    app.register_blueprint(rol_ruta_api_bp, url_prefix="/api/rol_ruta")
-    app.register_blueprint(ruta_api_bp, url_prefix="/api/ruta")
     app.register_blueprint(usuario_api_bp, url_prefix="/api/usuario")
     app.register_blueprint(usuario_departamento_api_bp, url_prefix="/api/usuario_departamento")
     app.register_blueprint(usuario_permiso_api_bp, url_prefix="/api/usuario_permiso")
@@ -223,8 +215,6 @@ def create_app():
     app.register_blueprint(registro_motivo_desasignacion_template_bp, url_prefix="/template/registro_motivo_desasignacion")
     app.register_blueprint(rol_template_bp, url_prefix="/template/rol")
     app.register_blueprint(rol_permiso_template_bp, url_prefix="/template/rol_permiso")
-    app.register_blueprint(rol_ruta_template_bp, url_prefix="/template/rol_ruta")
-    app.register_blueprint(ruta_template_bp, url_prefix="/template/ruta")
     app.register_blueprint(usuario_template_bp, url_prefix="/template/usuario")
     app.register_blueprint(usuario_departamento_template_bp, url_prefix="/template/usuario_departamento")
     app.register_blueprint(usuario_permiso_template_bp, url_prefix="/template/usuario_permiso")
@@ -249,8 +239,6 @@ def create_app():
     app.register_blueprint(registro_motivo_desasignacion_web_bp, url_prefix="/web/registro_motivo_desasignacion")
     app.register_blueprint(rol_web_bp, url_prefix="/web/rol")
     app.register_blueprint(rol_permiso_web_bp, url_prefix="/web/rol_permiso")
-    app.register_blueprint(rol_ruta_web_bp, url_prefix="/web/rol_ruta")
-    app.register_blueprint(ruta_web_bp, url_prefix="/web/ruta")
     app.register_blueprint(usuario_web_bp, url_prefix="/web/usuario")
     app.register_blueprint(usuario_departamento_web_bp, url_prefix="/web/usuario_departamento")
     app.register_blueprint(usuario_permiso_web_bp, url_prefix="/web/usuario_permiso")

@@ -10,7 +10,5 @@ from .proceso import *
 from .programacion import *
 from .registro import *
 from .rol import *
-from .rol_ruta import *
-from .ruta import *
 from .usuario import *
 from .usuario_rol import *

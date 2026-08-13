@@ -6,7 +6,7 @@ from flask_login import current_user, login_user
 
 from app.api.departamento.departamento_service import Departamento_Service
 from app.api.usuario.usuario_repository import UsuarioRepository
-from app.api.usuario.usuario_model import Usuario_Rutas
+from app.api.usuario.usuario_model import Usuario_Logging
 
 class Usuario_Service():
    @staticmethod
@@ -174,7 +174,6 @@ class Usuario_Service():
       
       idUsuarioEncontrado = usuario["idUsuario"]
          
-      paths_usuario = UsuarioRepository.getUserPaths(db, idUsuarioEncontrado)
       permisos = UsuarioRepository.getUserPermissionsById(db, idUsuarioEncontrado)
       roles_usuario = UsuarioRepository.getUserRolesById(db, idUsuarioEncontrado)
 
@@ -183,14 +182,13 @@ class Usuario_Service():
       else:
          departamentos = UsuarioRepository.getUserDepartmentsById(db, idUsuarioEncontrado)
 
-      usuarioALoguear = Usuario_Rutas(
+      usuarioALoguear = Usuario_Logging(
          usuario["idUsuario"],
          usuario["username"],
          usuario["nombre"],
          usuario["activo"],
          roles_usuario,
          permisos,
-         paths_usuario,
          departamentos,
          usuario["scope_departamentos_global"],
          usuario["scope_permisos_global"],
@@ -220,7 +218,6 @@ class Usuario_Service():
             "username": usuarioALoguear.username,
             "nombre": usuarioALoguear.nombre,
             "activo": usuarioALoguear.activo,
-            "rutas": usuarioALoguear.paths,
             "cambiar_password": usuarioALoguear.cambiar_password,
          }
    
@@ -237,7 +234,6 @@ class Usuario_Service():
 
       idUsuarioEncontrado = usuario["idUsuario"]
 
-      paths = UsuarioRepository.getUserPaths(db, idUsuarioEncontrado)
       permisos = UsuarioRepository.getUserPermissionsById(db, idUsuarioEncontrado)
       roles = UsuarioRepository.getUserRolesById(db, idUsuarioEncontrado)
       
@@ -246,14 +242,13 @@ class Usuario_Service():
       else:
          departamentos = UsuarioRepository.getUserDepartmentsById(db, idUsuarioEncontrado)
       
-      user = Usuario_Rutas(
+      user = Usuario_Logging(
          usuario["idUsuario"],
          usuario["username"],
          usuario["nombre"],
          usuario["activo"],
          roles,
          permisos,
-         paths,
          departamentos,
          usuario["scope_departamentos_global"],
          usuario["scope_permisos_global"],
