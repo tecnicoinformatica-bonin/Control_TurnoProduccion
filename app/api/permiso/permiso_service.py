@@ -17,7 +17,25 @@ class Permiso_Service():
             return permisos
 
         except Exception as ex:
-            return {"error": f"No se pudo obtener líneas en servicio: {str(ex)}"}
+            return {"error": f"No se pudo obtener permisos en servicio: {str(ex)}"}
+
+    @staticmethod
+    def get_permisos_asignados_por_rol_service(db, idRol):
+        try:
+            data = PermisoRepository.get_permisos_asignados_por_rol(db, idRol)
+            permisos = []
+            for row in data:
+                permiso = {
+                    "idPermiso": row["idPermiso"],
+                    "nombrePermiso": row["nombrePermiso"],
+                    "descripcion": row["descripcion"],
+                    "asignado": row["asignado"],
+                }
+                permisos.append(permiso)
+            return permisos
+
+        except Exception as ex:
+            return {"error": f"No se pudo obtener permisos asignados por usuario en servicio: {str(ex)}"}
     
     @staticmethod
     def getPermisoById_service(db, idPermiso):

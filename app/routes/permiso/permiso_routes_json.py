@@ -15,3 +15,13 @@ def get_permisos():
         return jsonify([]), 200
 
     return jsonify(data), 200
+
+@permiso_json_bp.route("/get_permisos_asignados_por_rol/<int:idRol>", methods=["GET"])
+@login_required
+@permiso_requerido("permiso.ver")
+def get_permisos_asignados_por_rol(idRol):
+    data = Permiso_Service.get_permisos_asignados_por_rol_service(db, idRol)
+    if not data:
+        return jsonify([]), 200
+
+    return jsonify(data), 200

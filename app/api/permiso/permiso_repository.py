@@ -1,3 +1,5 @@
+import MySQLdb
+
 from app.extensions.slugify import Slugify
 
 class PermisoRepository:
@@ -21,6 +23,40 @@ class PermisoRepository:
         
         except Exception as ex:
             return {"error": f"No se puede encontrar en repositorio: {str(ex)}"}
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    @staticmethod
+    def get_permisos_asignados_por_rol(db, idRol):
+        cursor = None
+
+        try:
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT
+                tp.idPermiso,
+                tp.nombrePermiso,
+                tp.descripcion,
+                CASE
+                    WHEN trp.idPermiso IS NOT NULL THEN 1
+                    ELSE 0
+                END AS asignado
+            FROM turnos_permiso tp
+            LEFT JOIN turnos_rol_permiso trp
+                ON tp.idPermiso = trp.idPermiso
+                AND trp.idRol = %s
+            ORDER BY tp.nombrePermiso;
+            """
+
+            cursor.execute(query, (idRol,))
+            
+            return cursor.fetchall()
+        
+        except Exception as ex:
+            raise Exception(f"No se puede encontrar permisos asignados por usuario en repositorio: {str(ex)}")
 
         finally:
             if cursor:
