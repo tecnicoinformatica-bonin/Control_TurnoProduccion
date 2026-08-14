@@ -1,3 +1,5 @@
+import MySQLdb
+
 from app.extensions.slugify import Slugify
 
 class Rol_Permiso_Repository:
@@ -6,7 +8,7 @@ class Rol_Permiso_Repository:
         cursor = None
         
         try: 
-            cursor = db.connection.cursor()
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
 
             query = """
             SELECT * 
@@ -14,12 +16,10 @@ class Rol_Permiso_Repository:
             """
             cursor.execute(query)
 
-            rol_permisos = cursor.fetchall()
-
-            return rol_permisos
+            return cursor.fetchall()
         
         except Exception as ex:
-            return {"error": f"No se pueden listar las rol_permisos en repositorio: {str(ex)}"}
+            raise Exception(f"No se pueden listar las rol_permisos en repositorio: {str(ex)}")
 
         finally:
             if cursor:
@@ -60,7 +60,7 @@ class Rol_Permiso_Repository:
             idPermiso = int(idPermiso)
 
             exists = any(
-                row[0] == idRol and row[1] == idPermiso
+                row["idRol"] == idRol and row["idPermiso"] == idPermiso
                 for row in data
             )
 
@@ -97,6 +97,38 @@ class Rol_Permiso_Repository:
                 cursor.close()
 
     @staticmethod
+    def create_rol_permiso_con_duplicados(db, idRol, idPermiso):
+        cursor = None
+
+        try:
+            cursor = db.connection.cursor()
+            
+            query = """
+                INSERT IGNORE INTO turnos_rol_permiso (idRol, idPermiso)
+                VALUES (%s, %s);
+                """
+            cursor.execute(query, (idRol, idPermiso,))
+            
+            db.connection.commit()
+
+            newRol_Permiso = {
+                "idRol": idRol, 
+                "idPermiso": idPermiso,          
+            }
+
+            return newRol_Permiso
+
+        
+        except Exception as ex:
+            db.connection.rollback()
+            
+            raise Exception(f"No se pudo crear rol_permiso en repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    @staticmethod
     def updateRol_Permiso(db, idRol, idPermiso):
         cursor = None
 
@@ -106,7 +138,7 @@ class Rol_Permiso_Repository:
             idPermiso = int(idPermiso)
 
             exists = any(
-                row[0] == idRol and row[1] == idPermiso
+                row["idRol"] == idRol and row["idPermiso"] == idPermiso
                 for row in data
             )
 

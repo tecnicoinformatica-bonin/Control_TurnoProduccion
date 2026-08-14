@@ -98,6 +98,8 @@ from app.routes.proceso.proceso_routes_json import proceso_json_bp
 from app.routes.programacion.programacion_routes_json import programacion_json_bp
 from app.routes.registro.registro_routes_json import registro_json_bp
 from app.routes.registro_motivo_desasignacion.registro_motivo_desasignacion_routes_json import registro_motivo_desasignacion_json_bp
+from app.routes.rol.rol_routes_json import rol_json_bp
+from app.routes.rol_permiso.rol_permiso_routes_json import rol_permiso_json_bp
 from app.routes.reports.reports_routes_json import reports_json_bp
 from app.routes.usuario.usuario_routes_json import usuario_json_bp
 
@@ -261,6 +263,8 @@ def create_app():
     app.register_blueprint(proceso_json_bp, url_prefix="/json/proceso")
     app.register_blueprint(registro_json_bp, url_prefix="/json/registro")
     app.register_blueprint(registro_motivo_desasignacion_json_bp, url_prefix="/json/registro_motivo_desasignacion")
+    app.register_blueprint(rol_json_bp, url_prefix="/json/rol")
+    app.register_blueprint(rol_permiso_json_bp, url_prefix="/json/rol_permiso")
     app.register_blueprint(reports_json_bp, url_prefix="/json/reports")
     app.register_blueprint(usuario_json_bp, url_prefix="/json/usuario")
 

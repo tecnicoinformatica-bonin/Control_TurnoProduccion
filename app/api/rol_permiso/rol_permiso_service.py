@@ -24,8 +24,8 @@ class Rol_Permiso_Service():
             rol_permisos = []
             for row in data:
                 rol_permiso = {
-                    "idRol": row[0], 
-                    "idPermiso": row[1], 
+                    "idRol": row["idRol"],
+                    "idPermiso": row["idPermiso"],
                 }
                 rol_permisos.append(rol_permiso)
             return rol_permisos
@@ -53,6 +53,25 @@ class Rol_Permiso_Service():
         
         except Exception as ex:
             return {"error": f"No se pudo crear el rol_permiso. {ex}"}
+
+
+    @staticmethod
+    def create_rol_permiso_con_duplicados_service(db, idRol, idPermiso):
+        try:            
+            required_fields = {
+                    "idRol": idRol, 
+                    "idPermiso": idPermiso, 
+                }
+            
+            missing_fields = [key for key, value in required_fields.items() if value is None or value == ""]
+
+            if missing_fields:
+                return {"error": f"Faltan campos obligatorios: {', '.join(missing_fields)}"}
+            
+            return Rol_Permiso_Repository.create_rol_permiso_con_duplicados(db, idRol, idPermiso)
+        
+        except Exception as ex:
+            raise Exception (f"No se pudo crear el rol_permiso. {str(ex)}")
         
     @staticmethod
     def updateRol_Permiso_service(db, data):
@@ -88,3 +107,21 @@ class Rol_Permiso_Service():
         
         except Exception as ex:
             return {"error": f"No se pudo eliminar la rol_permiso. {ex}"}
+
+    @staticmethod
+    def exists_rol_permiso(db, idRol, idPermiso):
+        try:
+            rol_permisos = Rol_Permiso_Repository.getRol_Permisos(db)
+
+            avaliable = any(
+                int(idRol) == int(rp["idRol"])
+                and int(idPermiso) == int(rp["idPermiso"])
+                for rp in rol_permisos
+            )
+
+            return {
+                "available": not avaliable
+            }
+
+        except Exception as ex:
+            raise Exception(f"No se pudo validar en el servicio: {str(ex)}")

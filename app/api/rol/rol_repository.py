@@ -1,3 +1,5 @@
+import MySQLdb
+
 from app.extensions.slugify import Slugify
 
 class RolRepository:
@@ -55,7 +57,7 @@ class RolRepository:
         cursor = None
         
         try: 
-            cursor = db.connection.cursor()
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
 
             query = """
             SELECT * 
@@ -68,7 +70,7 @@ class RolRepository:
             return roles
         
         except Exception as ex:
-            return {"error": f"No se pueden listar los roles en repositorio: {str(ex)}"}
+            raise Exception(f"No se pueden listar los roles en repositorio: {str(ex)}")
 
         finally:
             if cursor:
@@ -84,7 +86,7 @@ class RolRepository:
 
             """  Row[2] is the descripcion an row[1] es el rol """
             exists = any(
-                Slugify.slugify(row[1]) == slugNombre
+                Slugify.slugify(row["nombre"]) == slugNombre
                 for row in data
             )
 
@@ -129,9 +131,9 @@ class RolRepository:
             data = RolRepository.getRoles(db)
             slugNombre = Slugify.slugify(nombre)
 
-            """  Row[2] is the descripcion an row[1] es el nombre """
             exists = any(
-                Slugify.slugify(row[1]) == slugNombre and int(row[0]) != idRol
+                Slugify.slugify(row["nombre"]) == slugNombre 
+                and int(row["idRol"]) != int(idRol)
                 for row in data
             )
 

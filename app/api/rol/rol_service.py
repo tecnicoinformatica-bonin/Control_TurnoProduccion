@@ -8,9 +8,9 @@ class Rol_Service():
             roles = []
             for row in data:
                 rol = {
-                    "idRol": row[0], 
-                    "nombre": row[1], 
-                    "descripcion": row[2], 
+                    "idRol": row["idRol"],
+                    "nombre": row["nombre"],
+                    "descripcion": row["descripcion"],
                 }
                 roles.append(rol)
             return roles

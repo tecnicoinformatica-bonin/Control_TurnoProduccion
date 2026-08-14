@@ -140,7 +140,7 @@ class AutorizacionRepository:
             WHERE tr.fecha >= %s
             AND tr.fecha <= %s
             AND te.idDepartment = %s
-            AND te.idCentro NOT IN (1)
+            AND te.idCentro NOT IN (1, 19)
             ) x
             LEFT JOIN turnos_autorizacion_horas tah
                 ON tah.idEmpleado = x.idEmpleado
@@ -420,7 +420,7 @@ class AutorizacionRepository:
                 tah.fecha >= %s
                 AND tah.fecha <= %s
                 AND te.idDepartment = %s
-                AND te.idCentro NOT IN (1)
+                AND te.idCentro NOT IN (1, 19)
             GROUP BY tah.idEmpleado 
             ORDER BY tah.idEmpleado
             ) x
@@ -572,7 +572,7 @@ class AutorizacionRepository:
                     tah.fecha >= %s
                     AND tah.fecha <= %s
                     AND tcdc.idDepartment = %s
-                    AND tcdc.idCentro NOT IN (1)
+                    AND tcdc.idCentro NOT IN (1, 19)
                 GROUP BY tcdc.nombreCentro
             ) cc
                 ON cc.nombreCentro = c.nombreCentro
@@ -594,7 +594,7 @@ class AutorizacionRepository:
                     tah.fecha >= %s
                     AND tah.fecha <= %s
                     AND tcdc.idDepartment = %s
-                    AND tcdc.idCentro NOT IN (1)
+                    AND tcdc.idCentro NOT IN (1, 19)
                 GROUP BY
                     COALESCE(
                         tl.nameLinea,
@@ -604,7 +604,7 @@ class AutorizacionRepository:
                 ON li.nombreLinea = c.nombreCentro
             WHERE
                 c.idDepartment = %s
-                AND c.idCentro NOT IN (1)
+                AND c.idCentro NOT IN (1, 19)
             ORDER BY c.nombreCentro;
             """
             cursor.execute(query, (from_date, to_date, idDepartment, from_date, to_date, idDepartment, idDepartment,))
@@ -647,7 +647,7 @@ class AutorizacionRepository:
                 ON tah.idRegistro = tr.idRegistro 
             WHERE 
                 tcdc.idDepartment = %s
-                AND tcdc.idCentro NOT IN (1)
+                AND tcdc.idCentro NOT IN (1, 19)
             GROUP BY tah.idRegistro, tcdc.nombreCentro, tl.nameLinea
             ORDER BY tcdc.nombreCentro 
             """
@@ -722,7 +722,7 @@ class AutorizacionRepository:
             cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
 
             query = """
-           SELECT
+            SELECT
                 COALESCE(tl.nameLinea, tcdc.nombreCentro) AS nameLinea,
                 SUM(tah.horas_autorizadas) AS horas_autorizadas
             FROM turnos_autorizacion_horas tah
@@ -736,7 +736,7 @@ class AutorizacionRepository:
                 tah.fecha >= %s
                 AND tah.fecha <= %s
                 AND tcdc.idDepartment = %s
-                AND tr.idEmpleado NOT IN (120,662,921,1315,1429,1466,1477,2007)
+                AND tcdc.idCentro NOT IN (1, 19)
             GROUP BY
                 COALESCE(tl.nameLinea, tcdc.nombreCentro)
             ORDER BY
