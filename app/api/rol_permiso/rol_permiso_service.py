@@ -8,8 +8,8 @@ class Rol_Permiso_Service():
             rol_permisos = []
             for row in data:
                 rol_permiso = {
-                    "idRol": row[0], 
-                    "idPermiso": row[1], 
+                    "idRol": row["idRol"], 
+                    "idPermiso": row["idPermiso"], 
                 }
                 rol_permisos.append(rol_permiso)
             return rol_permisos
@@ -24,8 +24,8 @@ class Rol_Permiso_Service():
             rol_permisos = []
             for row in data:
                 rol_permiso = {
-                    "idRol": row["idRol"],
-                    "idPermiso": row["idPermiso"],
+                    "idRol": row[0],
+                    "idPermiso": row[1],
                 }
                 rol_permisos.append(rol_permiso)
             return rol_permisos

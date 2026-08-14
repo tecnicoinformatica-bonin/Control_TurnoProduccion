@@ -6,15 +6,15 @@ endblock %} {% block content %}
   <div class="card-body">
     <div class="d-flex justify-content-between">
       <h3>Roles</h3>
-      <form class="d-flex" role="search" onsubmit="return false;">
-        <input
-          class="form-control me-2"
-          type="search"
-          placeholder="Nombre del rol"
-          id="busqueda"
-        />
-        <button class="btn btn-outline-primary" type="submit">Buscar</button>
-      </form>
+      <button
+        type="button"
+        class="btn btn-success"
+        data-bs-toggle="modal"
+        data-bs-target="#createModal"
+      >
+        <i class="bi bi-plus-circle"></i>
+        <strong>Crear</strong>
+      </button>
     </div>
     <hr />
 
@@ -31,536 +31,142 @@ endblock %} {% block content %}
     </div>
     {% endfor %} {% endwith %}
 
-    <table class="table table-dark table-striped">
-      <thead>
-        <tr>
-          <th scope="col">
-            <p class="title_column" onclick="ordenarTabla(0, 'numero')">
-              ID
-              <span class="arrow" data-type="darr" data-column="0"
-                ><strong>&darr;</strong></span
-              ><span class="arrow" data-type="uarr" data-column="0"
-                >&uarr;</span
-              >
-            </p>
-          </th>
-          <th scope="col">
-            <p class="title_column" onclick="ordenarTabla(1)">
-              Nombre del rol
-              <span class="arrow" data-type="darr" data-column="1">&darr;</span
-              ><span class="arrow arrow-active" data-type="uarr" data-column="1"
-                >&uarr;</span
-              >
-            </p>
-          </th>
-          <th scope="col">
-            <p class="title_column" onclick="ordenarTabla(2)">
-              Descripción
-              <span class="arrow" data-type="darr" data-column="2">&darr;</span
-              ><span class="arrow" data-type="uarr" data-column="2"
-                >&uarr;</span
-              >
-            </p>
-          </th>
-          <th scope="col">
-            <p class="title_column" onclick="ordenarTabla(3)">
-              Permisos
-              <span class="arrow" data-type="darr" data-column="3">&darr;</span
-              ><span class="arrow" data-type="uarr" data-column="3"
-                >&uarr;</span
-              >
-            </p>
-          </th>
-          <th scope="col">
-            <p>Acciones</p>
-          </th>
-        </tr>
-      </thead>
-      <tbody class="tbody-list">
-        {% for r in roles %}
-        <tr class="record tr-list">
-          <th scope="row">{{ r.idRol }}</th>
-          <td class="record-name">{{ r.nombre }}</td>
-          <td>{{ r.descripcion }}</td>
-          <td>
-            {% for rp in rol_permisos %}{% for p in permisos %} {% if rp.idRol
-            == r.idRol and rp.idPermiso == p.idPermiso %}
-            <p>{{ p.nombrePermiso }}</p>
-            {% endif %} {% endfor %} {% endfor %}
-          </td>
-          {% if r.idRol != 1%}
-          <td>
-            <div class="d-flex justify-content-between gap-2">
-              <button
-                type="button"
-                class="btn btn-warning"
-                data-bs-toggle="modal"
-                data-bs-target="#editModal{{ r.idRol }}"
-              >
-                <img
-                  src="/static/img/edit-icon.png"
-                  height="15px"
-                  width="15px"
-                />
-                <strong>Editar</strong>
-              </button>
-
-              <button
-                type="button"
-                class="btn btn-success"
-                data-bs-toggle="modal"
-                data-bs-target="#editRutasModal{{ r.idRol }}"
-              >
-                <img
-                  src="/static/img/ruta-icon.png"
-                  height="15px"
-                  width="15px"
-                />
-                <strong>Editar rutas</strong>
-              </button>
-
-              <button
-                type="button"
-                title="Editar permisos"
-                class="btn btn-light"
-                data-bs-toggle="modal"
-                data-bs-target="#editPermisosModal{{ r.idRol }}"
-              >
-                <img
-                  src="/static/img/permission-icon.png"
-                  height="15px"
-                  width="15px"
-                />
-                <strong>Editar permisos</strong>
-              </button>
-
-              <button
-                type="button"
-                class="btn btn-danger"
-                data-bs-toggle="modal"
-                data-bs-target="#deleteModal{{ r.idRol }}"
-              >
-                <img
-                  src="/static/img/delete-icon.png"
-                  height="15px"
-                  width="15px"
-                />
-                <strong>Eliminar</strong>
-              </button>
-            </div>
-          </td>
-          {% else %}
-          <td></td>
-          {% endif %}
-        </tr>
-
-        {% endfor %}
-      </tbody>
-    </table>
-
-    {% for r in roles %}
-    <!-- EditRutas Modal -->
-    <div class="modal fade" id="editRutasModal{{ r.idRol }}" tabindex="-1">
-      <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">
-              Rutas del rol <strong>{{ r.nombre }}</strong>
-            </h1>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <h2>Agregar ruta</h2>
-            <div>
-              <form
-                class="form"
-                role="form"
-                action="/web/rol_ruta/crearRol_Ruta_web"
-                method="POST"
-              >
-                <div class="form-group">
-                  <label hidden for="idRol">ID del Rol</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="idRol"
-                    name="idRol"
-                    title="ID del Rol"
-                    min="1"
-                    hidden
-                    value="{{ r.idRol }}"
-                  />
-                </div>
-                <div class="form-group">
-                  <label for="idRuta">Ruta</label>
-                  <select
-                    type="text"
-                    class="form-control"
-                    id="idRuta"
-                    name="idRuta"
-                    title="Ruta que desea asignar"
-                    required
-                  >
-                    <option disabled selected value="{{ None }}">
-                      -- Seleccione una opción --
-                    </option>
-                    {% for rt in rutas %}
-                    <option value="{{ rt.idRuta }}">{{ rt.path }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <div class="d-flex justify-content-end">
-                  <button
-                    type="submit"
-                    class="btn btn-success btn-lg btn-block m-1"
-                  >
-                    Confirmar
-                  </button>
-                </div>
-              </form>
-
-              <table class="table table-light table-hover">
-                <thead>
-                  <hr />
-                  <tr>
-                    <th scope="col">
-                      <p>ID Ruta</p>
-                    </th>
-                    <th scope="col">
-                      <p>Path</p>
-                    </th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for rr in rol_rutas %} {% for rta in rutas %} {% if r.idRol
-                  == rr.idRol and rta.idRuta == rr.idRuta %}
-                  <tr>
-                    <th scope="row">{{ rta.idRuta }}</th>
-                    <td>{{ rta.path }}</td>
-                    <td>
-                      <button
-                        type="button"
-                        class="btn btn-danger btn-lg m-1 rol__btn-delete"
-                        onclick="mostrarBotonesEliminarRol(this)"
-                      >
-                        &times;
-                      </button>
-
-                      <div class="rol__form__btn">
-                        <button
-                          onclick="submitDeleteRuta('{{ r.idRol }}', '{{ rta.idRuta }}')"
-                          class="btn btn-danger btn-lg ms-3"
-                        >
-                          Confirmar
-                        </button>
-                        <button
-                          type="button"
-                          class="btn btn-secondary btn-lg ms-3"
-                          onclick="cancelarEliminar(this)"
-                        >
-                          Cancelar
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  {% endif %} {% endfor %} {% endfor %}
-                </tbody>
-              </table>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="btn btn-secondary btn-lg"
-                  data-bs-dismiss="modal"
-                >
-                  Cerrar
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- EditPermisos Modal -->
-    <div class="modal fade" id="editPermisosModal{{ r.idRol }}" tabindex="-1">
-      <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">
-              Permisos del rol <strong>{{ r.nombre }}</strong>
-            </h1>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <h2>Agregar permiso</h2>
-            <div>
-              <form
-                class="form"
-                role="form"
-                action="/web/rol_permiso/crearRol_Permiso_web"
-                method="POST"
-              >
-                <div class="form-group">
-                  <label hidden for="idPermiso">ID del Rol</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="idRol"
-                    name="idRol"
-                    title="ID del Rol"
-                    min="1"
-                    hidden
-                    value="{{ r.idRol }}"
-                  />
-                </div>
-                <div class="form-group">
-                  <label for="idPermiso">Permiso</label>
-                  <select
-                    type="text"
-                    class="form-control"
-                    id="idPermiso"
-                    name="idPermiso"
-                    title="Permiso que desea asignar"
-                    required
-                  >
-                    <option disabled selected value="{{ None }}">
-                      -- Seleccione una opción --
-                    </option>
-                    {% for p in permisos %}
-                    <option value="{{ p.idPermiso }}">
-                      {{ p.nombrePermiso }}
-                    </option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <div class="d-flex justify-content-end">
-                  <button
-                    type="submit"
-                    class="btn btn-success btn-lg btn-block m-1"
-                  >
-                    Confirmar
-                  </button>
-                </div>
-              </form>
-
-              <table class="table table-light table-hover">
-                <thead>
-                  <hr />
-                  <tr>
-                    <th scope="col">
-                      <p>ID Permiso</p>
-                    </th>
-                    <th scope="col">
-                      <div
-                        class="d-flex flex-column align-items-center justify-content-center gap-2"
-                      >
-                        <p>Nombre del permiso</p>
-                        <p>modulo.departamento.clave</p>
-                      </div>
-                    </th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for rp in rol_permisos %} {% for p in permisos %} {% if
-                  r.idRol == rp.idRol and p.idPermiso == rp.idPermiso %}
-                  <tr>
-                    <th scope="row">{{ p.idPermiso }}</th>
-                    <td>{{ p.nombrePermiso }}</td>
-                    <td>
-                      <button
-                        type="button"
-                        class="btn btn-danger btn-lg m-1 permiso__btn-delete"
-                        onclick="mostrarBotonesEliminarPermiso(this)"
-                      >
-                        &times;
-                      </button>
-
-                      <div class="permiso__form__btn">
-                        <button
-                          onclick="submitDeletePermisoRol('{{ r.idRol }}', '{{ p.idPermiso }}')"
-                          class="btn btn-danger btn-lg ms-3"
-                        >
-                          Confirmar
-                        </button>
-                        <button
-                          type="button"
-                          class="btn btn-secondary btn-lg ms-3"
-                          onclick="cancelarEliminarPermiso(this)"
-                        >
-                          Cancelar
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  {% endif %} {% endfor %} {% endfor %}
-                </tbody>
-              </table>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="btn btn-secondary btn-lg"
-                  data-bs-dismiss="modal"
-                >
-                  Cerrar
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Edit Modal -->
-    <div
-      class="modal fade"
-      id="editModal{{ r.idRol }}"
-      tabindex="-1"
-      aria-labelledby="modalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="modalLabel">Editar rol</h1>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <form
-              class="form"
-              role="form"
-              action="/web/rol/editarRol_web"
-              method="POST"
-            >
-              <div class="form-group">
-                <label hidden for="idRol">ID del rol</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  id="idRol"
-                  name="idRol"
-                  title="ID del rol"
-                  min="1"
-                  required
-                  value="{{ r.idRol }}"
-                  readonly
-                  hidden
-                />
-              </div>
-
-              <div class="form-group">
-                <label for="nombre">Nombre del rol</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="nombre"
-                  name="nombre"
-                  title="Nombre del rol"
-                  min="1"
-                  required
-                  value="{{ r.nombre }}"
-                />
-              </div>
-
-              <div class="form-group">
-                <label for="descripcion">Descripción del rol</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="descripcion"
-                  name="descripcion"
-                  title="Descripción del rol"
-                  required
-                  value="{{ r.descripcion }}"
-                />
-              </div>
-
-              <hr />
-              <div class="d-flex justify-content-end">
-                <button
-                  type="button"
-                  class="btn btn-secondary btn-lg m-1"
-                  data-bs-dismiss="modal"
-                >
-                  Cerrar
-                </button>
-                <button
-                  type="submit"
-                  class="btn btn-success btn-lg btn-block m-1"
-                >
-                  Confirmar
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Delete Modal -->
-    <div class="modal fade" id="deleteModal{{ r.idRol }}" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">
-              Eliminar rol
-            </h1>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <p>¿Seguro que quiere eliminar el registro {{ r.idRol }}?</p>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary btn-lg"
-              data-bs-dismiss="modal"
-            >
-              Cerrar
-            </button>
-            <form action="/web/rol/eliminarRol_web" method="POST">
-              <input type="number" value="{{r.idRol}}" name="idRol" hidden />
-              <button type="submit" class="btn btn-danger btn-lg">
-                Eliminar
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-    {% endfor %}
+    <div id="tabla-roles"></div>
   </div>
 </div>
 
-<form
-  id="deleteRutaForm"
-  action="/web/rol_ruta/eliminarRol_Ruta_web"
-  method="POST"
+<!-- Create Modal -->
+<div
+  class="modal fade"
+  id="createModal"
+  tabindex="-1"
+  aria-labelledby="createModalLabel"
+  aria-hidden="true"
 >
-  <input type="hidden" name="idRol" id="delete_idRol" />
-  <input type="hidden" name="idRuta" id="delete_idRuta" />
-</form>
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="createModalLabel"></h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">{% include "rol/formCrearRol.html" %}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal Reutilizable -->
+<div class="modal fade" id="editModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="/web/rol/editarRol_web" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title">Editar rol</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" id="modal-idRol" name="idRol" />
+
+          <div class="mb-3">
+            <label>Nombre</label>
+            <input
+              type="text"
+              class="form-control"
+              id="modal-nombre"
+              name="nombre"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label>Descripción</label>
+            <input
+              type="text"
+              class="form-control"
+              id="modal-descripcion"
+              name="descripcion"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal Reutilizable -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="/web/rol/eliminarRol_web" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title">Eliminar rol</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" id="delete-idRol" name="idRol" />
+
+          <p id="delete-mensaje"></p>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">Eliminar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- EditPermissions Modal Reutilizable -->
+<div class="modal fade" id="editPermissionModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          Permisos del rol: <span id="modal-nombre-rol"></span>
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+
+      <div id="tabla-permisos-por-rol" class="m-3"></div>
+
+      <div class="modal-footer">
+        <button
+          id="btn-confirmar-permisos"
+          type="submit"
+          class="btn btn-success"
+        >
+          Confirmar cambios
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <form
   id="deletePermisoForm"
@@ -570,5 +176,297 @@ endblock %} {% block content %}
   <input type="hidden" name="idRol" id="delete_idRolP" />
   <input type="hidden" name="idPermiso" id="delete_idPermiso" />
 </form>
+
+<script>
+  (async function () {
+    cargarTableRoles();
+  })();
+
+  function cargarTableRoles() {
+    const tableRoles = new Tabulator("#tabla-roles", {
+      theme: "site-dark",
+      height: "calc(85vh - 86px)",
+      layout: "fitColumns",
+
+      ajaxURL: "/json/rol/get_roles_details",
+      ajaxConfig: "GET",
+
+      columns: [
+        {
+          title: "Editar",
+          hozAlign: "center",
+          editor: false,
+          width: 82,
+
+          formatter: function (cell) {
+            const data = cell.getRow().getData();
+
+            return `
+              <button
+                type="button"
+                title="Editar rol"
+                class="btn btn-success"
+                data-bs-toggle="modal"
+                data-bs-target="#editModal"
+                data-id="${data.idRol}"
+                data-nombre="${data.nombre}"
+                data-descripcion="${data.descripcion}"
+              >
+                <i class="bi bi-pencil-square"></i>
+              </button>
+            `;
+          },
+        },
+        {
+          title: "ID",
+          field: "idRol",
+          hozAlign: "center",
+          editor: false,
+          width: 60,
+          headerFilter: "input",
+        },
+        {
+          title: "Nombre del rol",
+          field: "nombre",
+          editor: false,
+
+          formatter: "textarea",
+          headerFilter: "input",
+        },
+        {
+          title: "Descripción",
+          field: "descripcion",
+          editor: false,
+
+          formatter: "textarea",
+          widthGrow: 3,
+          headerFilter: "input",
+        },
+        {
+          title: "Permisos",
+          hozAlign: "center",
+          width: 102,
+
+          formatter: function (cell) {
+            const data = cell.getRow().getData();
+
+            return `
+              <button
+                type="button"
+                title="Editar permisos del rol"
+                class="btn btn-light"
+                data-bs-toggle="modal"
+                data-bs-target="#editPermissionModal"
+                data-id="${data.idRol}"
+                data-nombre-rol="${data.nombre}"
+              >
+                <i class="bi bi-person-lock"></i>
+                <strong>Ver</strong>
+              </button>
+            `;
+          },
+        },
+        {
+          title: "Eliminar",
+          hozAlign: "center",
+          width: 97,
+
+          formatter: function (cell) {
+            const data = cell.getRow().getData();
+
+            return `
+              <button
+                type="button"
+                title="Eliminar rol"
+                class="btn btn-danger"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteModal"
+                data-id="${data.idRol}"
+                data-nombre="${data.nombre}"
+              >
+                <i class="bi bi-trash3"></i>
+              </button>
+              `;
+          },
+        },
+      ],
+    });
+  }
+
+  const editModal = document.getElementById("editModal");
+
+  editModal.addEventListener("show.bs.modal", function (event) {
+    const button = event.relatedTarget;
+
+    document.getElementById("modal-idRol").value = button.dataset.id;
+
+    document.getElementById("modal-nombre").value = button.dataset.nombre;
+
+    document.getElementById("modal-descripcion").value =
+      button.dataset.descripcion;
+  });
+
+  const deleteModal = document.getElementById("deleteModal");
+
+  deleteModal.addEventListener("show.bs.modal", function (event) {
+    const button = event.relatedTarget;
+
+    document.getElementById("delete-idRol").value = button.dataset.id;
+
+    document.getElementById("delete-mensaje").textContent =
+      `¿Seguro que desea eliminar el rol: ${button.dataset.nombre}?`;
+  });
+
+  const editPermissionModal = document.getElementById("editPermissionModal");
+  let tablePermisosPorRol = null;
+  let idRolCambios;
+
+  editPermissionModal.addEventListener("show.bs.modal", async function (event) {
+    if (tablePermisosPorRol) {
+      tablePermisosPorRol = null;
+      idRolCambios = null;
+    }
+    document.body.focus();
+    const button = event.relatedTarget;
+
+    document.getElementById("modal-nombre-rol").textContent =
+      button.dataset.nombreRol;
+
+    idRolCambios = button.dataset.id;
+    cargarTablePermisosPorRol(button.dataset.id);
+  });
+
+  function cargarTablePermisosPorRol(idRol) {
+    if (!tablePermisosPorRol) {
+      tablePermisosPorRol = new Tabulator("#tabla-permisos-por-rol", {
+        theme: "site-dark",
+        maxHeight: "800px",
+        layout: "fitColumns",
+
+        ajaxURL: `/json/permiso/get_permisos_asignados_por_rol/${idRol}`,
+        ajaxConfig: "GET",
+
+        pagination: true,
+        paginationMode: "local",
+        paginationSize: 25,
+        paginationSizeSelector: [15, 25, 50, 100],
+
+        locale: true,
+
+        langs: {
+          "es-es": {
+            pagination: {
+              page_size: "Registros",
+              first: "Primero",
+              first_title: "Primera página",
+              last: "Último",
+              last_title: "Última página",
+              prev: "Anterior",
+              prev_title: "Página anterior",
+              next: "Siguiente",
+              next_title: "Página siguiente",
+              all: "Todos",
+            },
+          },
+        },
+
+        locale: "es-es",
+
+        columns: [
+          {
+            title: "ID",
+            field: "idPermiso",
+            hozAlign: "center",
+            editor: false,
+            width: 60,
+            headerFilter: "input",
+          },
+          {
+            title: "Nombre del permiso",
+            field: "nombrePermiso",
+            editor: false,
+
+            formatter: "textarea",
+            headerFilter: "input",
+          },
+          {
+            title: "Descripción",
+            field: "descripcion",
+            editor: false,
+
+            formatter: "textarea",
+            widthGrow: 3,
+            headerFilter: "input",
+          },
+          {
+            title: "Asignado",
+            field: "asignado",
+            width: 100,
+
+            editor: true,
+            headerFilter: "input",
+
+            formatter: "tickCross",
+          },
+        ],
+      });
+    }
+    tablePermisosPorRol.setData(
+      `/json/permiso/get_permisos_asignados_por_rol/${idRol}`,
+    );
+  }
+
+  const btnConfirmarCambios = document.querySelector("#btn-confirmar-permisos");
+  btnConfirmarCambios.addEventListener("click", async function () {
+    const rolPermisosData = tablePermisosPorRol.getData();
+
+    for (let key in rolPermisosData) {
+      rolPermisosData[key].idRol = idRolCambios;
+    }
+
+    console.log(rolPermisosData);
+
+    if (!(rolPermisosData.length > 0)) return;
+
+    const responseRolPermisos = await fetch(
+      "/json/rol_permiso/create_rol_permiso_con_duplicados",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(rolPermisosData),
+      },
+    );
+
+    const respRolPermisos = await responseRolPermisos.json();
+
+    if (respRolPermisos.success) {
+      createSweetAlertSuccess(
+        `Permisos creados, No. de permisos agregados: ${respRolPermisos.rol_permisos_creados}`,
+      );
+    } else {
+      createSweetAlertError(
+        `No se pudieron crear los permisos: ${respRolPermisos.error}`,
+      );
+    }
+  });
+
+  function createSweetAlertSuccess(msg) {
+    Swal.fire({
+      icon: "success",
+      title: msg,
+      showConfirmButton: true,
+    });
+  }
+
+  function createSweetAlertError(msg) {
+    Swal.fire({
+      icon: "error",
+      title: msg,
+      showConfirmButton: true,
+    });
+  }
+</script>
 
 {% endblock %}
