@@ -6,15 +6,15 @@ endblock %} {% block content %}
   <div class="card-body">
     <div class="d-flex justify-content-between">
       <h3>Usuarios</h3>
-      <form class="d-flex" role="search" onsubmit="return false;">
-        <input
-          class="form-control me-2"
-          type="search"
-          placeholder="Nombre del usuario"
-          id="busqueda"
-        />
-        <button class="btn btn-outline-primary" type="submit">Buscar</button>
-      </form>
+      <button
+        type="button"
+        class="btn btn-success"
+        data-bs-toggle="modal"
+        data-bs-target="#createModal"
+      >
+        <i class="bi bi-plus-circle"></i>
+        <strong>Crear</strong>
+      </button>
     </div>
     <hr />
 
@@ -31,872 +31,9 @@ endblock %} {% block content %}
     </div>
     {% endfor %} {% endwith %}
 
-    <div class="table-responsive">
-      <table class="table table-dark table-striped table-hover">
-        <thead>
-          <tr>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(0, 'numero')">
-                ID
-                <span class="arrow" data-type="darr" data-column="0"
-                  ><strong>&darr;</strong></span
-                ><span class="arrow" data-type="uarr" data-column="0"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(1)">
-                Username
-                <span class="arrow" data-type="darr" data-column="1"
-                  >&darr;</span
-                ><span
-                  class="arrow arrow-active"
-                  data-type="uarr"
-                  data-column="1"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(2)">
-                Nombre completo
-                <span class="arrow" data-type="darr" data-column="2"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="2"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(4)">
-                Activo
-                <span class="arrow" data-type="darr" data-column="4"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="4"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(5)">
-                Permiso total
-                <span class="arrow" data-type="darr" data-column="5"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="5"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(6)">
-                Alcance total
-                <span class="arrow" data-type="darr" data-column="6"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="6"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(7)">
-                Roles
-                <span class="arrow" data-type="darr" data-column="7"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="7"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(8)">
-                Permisos
-                <span class="arrow" data-type="darr" data-column="8"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="8"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col">
-              <p class="title_column" onclick="ordenarTabla(9)">
-                Departamentos
-                <span class="arrow" data-type="darr" data-column="9"
-                  >&darr;</span
-                ><span class="arrow" data-type="uarr" data-column="9"
-                  >&uarr;</span
-                >
-              </p>
-            </th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody class="tbody-list">
-          {% for u in usuarios %}
-          <tr class="record tr-list">
-            <th scope="row">{{ u.idUsuario }}</th>
-            <td class="record-name">{{ u.username }}</td>
-            <td>{{ u.nombre }}</td>
-            <td>{% if u.activo == 1 %} Sí {% else %} No {% endif %}</td>
-            <td>
-              {% if u.scope_permisos_global == 1 %} Sí {% else %} No {% endif %}
-            </td>
-            <td>
-              {% if u.scope_departamentos_global == 1 %} Sí {% else %} No {%
-              endif %}
-            </td>
-            <td>
-              {% for ur in usuario_roles %} {% for r in roles %} {% if
-              u.idUsuario == ur.idUsuario and r.idRol == ur.idRol %}
-              <p>{{ r.nombre }}</p>
-              {% endif %} {% endfor %} {% endfor %}
-            </td>
-            <td>
-              {% for up in usuario_permisos %} {% for p in permisos %} {% if
-              u.idUsuario == up.idUsuario and p.idPermiso == up.idPermiso %}
-              <p>{{ p.nombrePermiso }}</p>
-              {% endif %} {% endfor %} {% endfor %}
-            </td>
-            <td>
-              {% for ud in usuario_departamentos %} {% for d in departamentos %}
-              {% if u.idUsuario == ud.idUsuario and d.idDepartment ==
-              ud.idDepartment %}
-              <p>{{ d.name }}</p>
-              {% endif %} {% endfor %} {% endfor %}
-            </td>
-            <td>
-              {% if u.idUsuario == 0 or u.idUsuario == 1 %}
-              <div></div>
-              {% else %}
-              <div class="d-flex justify-content-between align-items-stretch">
-                <button
-                  type="button"
-                  title="Editar datos"
-                  class="btn btn-warning"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editModal{{ u.idUsuario }}"
-                >
-                  <img
-                    src="/static/img/edit-icon.png"
-                    height="15px"
-                    width="15px"
-                  />
-                  <strong></strong>
-                </button>
+    <div id="tabla-usuarios"></div>
 
-                <button
-                  type="button"
-                  title="Editar roles"
-                  class="btn btn-success"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editRolesModal{{ u.idUsuario }}"
-                >
-                  <img
-                    src="/static/img/rol-icon.png"
-                    height="15px"
-                    width="15px"
-                  />
-                  <strong></strong>
-                </button>
-
-                <button
-                  type="button"
-                  title="Editar permisos"
-                  class="btn btn-light"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editPermisosModal{{ u.idUsuario }}"
-                >
-                  <img
-                    src="/static/img/permission-icon.png"
-                    height="15px"
-                    width="15px"
-                  />
-                  <strong></strong>
-                </button>
-
-                <button
-                  type="button"
-                  title="Editar departamentos"
-                  class="btn btn-dark"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editDepartamentosModal{{ u.idUsuario }}"
-                >
-                  <img
-                    src="/static/img/department-icon.png"
-                    height="15px"
-                    width="15px"
-                  />
-                  <strong></strong>
-                </button>
-
-                <button
-                  type="button"
-                  title="Eliminar"
-                  class="btn btn-danger"
-                  data-bs-toggle="modal"
-                  data-bs-target="#deleteModal{{ u.idUsuario }}"
-                >
-                  <img
-                    src="/static/img/delete-icon.png"
-                    height="15px"
-                    width="15px"
-                  />
-                  <strong></strong>
-                </button>
-
-                <button
-                  type="button"
-                  title="Cambiar contraseña"
-                  class="btn btn-primary"
-                  data-bs-toggle="modal"
-                  data-bs-target="#passModal{{ u.idUsuario }}"
-                >
-                  <img
-                    src="/static/img/chg_password-icon.png"
-                    height="15px"
-                    width="15px"
-                  />
-                  <strong></strong>
-                </button>
-              </div>
-
-              {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      {% for u in usuarios %}
-      <!-- Edit Modal -->
-      <div
-        class="modal fade"
-        id="editModal{{ u.idUsuario }}"
-        tabindex="-1"
-        aria-labelledby="modalLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog modal-xl">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="modalLabel">Editar usuario</h1>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <form
-                class="form"
-                role="form"
-                action="/web/usuario/editarUsuario_web"
-                method="POST"
-              >
-                <div class="form-group">
-                  <label hidden for="idUsuario">ID del usuario</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="idUsuario"
-                    name="idUsuario"
-                    title="ID del usuario"
-                    min="1"
-                    hidden
-                    value="{{ u.idUsuario }}"
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label hidden for="username">Username del usuario</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="username"
-                    name="username"
-                    title="Username del usuario"
-                    required
-                    value="{{ u.username }}"
-                    hidden
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label for="nombre">Nombre completo del usuario</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="nombre"
-                    name="nombre"
-                    title="Nombre completo del usuario"
-                    required
-                    value="{{ u.nombre }}"
-                  />
-                </div>
-
-                <div class="form-group mt-3">
-                  <input type="hidden" name="activo_hidden" value="0" />
-                  <div class="form-check form-switch">
-                    {% if u.activo == 1 %}
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      name="activo"
-                      id="activo"
-                      value="1"
-                      checked
-                    />
-                    {% else %}
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      name="activo"
-                      id="activo"
-                      value="1"
-                    />
-                    {% endif %}
-                    <label class="form-check-label" for="activo">Activo</label>
-                  </div>
-                </div>
-
-                <hr />
-
-                <p><strong>Características especiales del usuario</strong></p>
-                <div class="form-group mt-3 ms-3">
-                  <input
-                    type="hidden"
-                    name="scope_departamentos_global_hidden"
-                    value="0"
-                  />
-                  <div class="form-check form-switch">
-                    {% if u.scope_departamentos_global == 1 %}
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      name="scope_departamentos_global"
-                      id="scope_departamentos_global"
-                      value="1"
-                      checked
-                    />
-                    {% else %}
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      name="scope_departamentos_global"
-                      id="scope_departamentos_global"
-                      value="1"
-                    />
-                    {% endif %}
-                    <label
-                      class="form-check-label"
-                      for="scope_departamentos_global"
-                      >Usuario de RRHH</label
-                    >
-                  </div>
-                </div>
-
-                <div class="form-group mt-3 ms-3">
-                  <input
-                    type="hidden"
-                    name="scope_permisos_global_hidden"
-                    value="0"
-                  />
-                  <div class="form-check form-switch">
-                    {% if u.scope_permisos_global == 1 %}
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      name="scope_permisos_global"
-                      id="scope_permisos_global"
-                      value="1"
-                      checked
-                    />
-                    {% else %}
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      name="scope_permisos_global"
-                      id="scope_permisos_global"
-                      value="1"
-                    />
-                    {% endif %}
-                    <label class="form-check-label" for="scope_permisos_global"
-                      >Usuario administrador</label
-                    >
-                  </div>
-                </div>
-
-                <hr />
-                <div class="d-flex justify-content-end">
-                  <button
-                    type="button"
-                    class="btn btn-secondary btn-lg m-1"
-                    data-bs-dismiss="modal"
-                  >
-                    Cerrar
-                  </button>
-                  <button
-                    type="submit"
-                    class="btn btn-success btn-lg btn-block m-1"
-                  >
-                    Confirmar
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Edit Roles -->
-      <div
-        class="modal fade"
-        id="editRolesModal{{ u.idUsuario }}"
-        tabindex="-1"
-      >
-        <div class="modal-dialog modal-xl">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="exampleModalLabel">
-                Roles del usuario {{ u.nombre }}
-              </h1>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <h2>Agregar rol</h2>
-              <div>
-                <form
-                  class="form"
-                  role="form"
-                  action="/web/usuario_rol/crearUsuario_Rol_web"
-                  method="POST"
-                >
-                  <div class="form-group">
-                    <label hidden for="idUsuario">ID del usuario</label>
-                    <input
-                      type="number"
-                      class="form-control"
-                      id="idUsuario"
-                      name="idUsuario"
-                      title="ID del usuario"
-                      min="1"
-                      hidden
-                      value="{{ u.idUsuario }}"
-                    />
-                  </div>
-                  <div class="form-group">
-                    <label for="idRol">Rol</label>
-                    <select
-                      type="text"
-                      class="form-control"
-                      id="idRol"
-                      name="idRol"
-                      title="Rol que desea asignar"
-                      required
-                    >
-                      <option disabled selected value="{{ None }}">
-                        -- Seleccione una opción --
-                      </option>
-                      {% for r in roles %}
-                      <option value="{{ r.idRol }}">{{ r.nombre }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                  <div class="d-flex justify-content-end">
-                    <button
-                      type="submit"
-                      class="btn btn-success btn-lg btn-block m-1"
-                    >
-                      Confirmar
-                    </button>
-                  </div>
-                </form>
-
-                <table class="table table-light table-hover">
-                  <thead>
-                    <hr />
-                    <tr>
-                      <th scope="col">
-                        <p>ID Rol</p>
-                      </th>
-                      <th scope="col">
-                        <p>Nombre de Rol</p>
-                      </th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for ur in usuario_roles %} {% for r in roles %} {% if
-                    u.idUsuario == ur.idUsuario and r.idRol == ur.idRol %}
-                    <tr>
-                      <th scope="row">{{ r.idRol }}</th>
-                      <td>{{ r.nombre }}</td>
-                      <td>
-                        <button
-                          type="button"
-                          class="btn btn-danger btn-lg m-1 rol__btn-delete"
-                          onclick="mostrarBotonesEliminarRol(this)"
-                        >
-                          &times;
-                        </button>
-
-                        <div class="rol__form__btn">
-                          <button
-                            onclick="submitDeleteRol('{{ u.idUsuario }}', '{{ ur.idRol }}')"
-                            class="btn btn-danger btn-lg ms-3"
-                          >
-                            Confirmar
-                          </button>
-                          <button
-                            type="button"
-                            class="btn btn-secondary btn-lg ms-3"
-                            onclick="cancelarEliminarRol(this)"
-                          >
-                            Cancelar
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    {% endif %} {% endfor %} {% endfor %}
-                  </tbody>
-                </table>
-                <div class="modal-footer">
-                  <button
-                    type="button"
-                    class="btn btn-secondary btn-lg"
-                    data-bs-dismiss="modal"
-                  >
-                    Cerrar
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Edit Permisos -->
-      <div
-        class="modal fade"
-        id="editPermisosModal{{ u.idUsuario }}"
-        tabindex="-1"
-      >
-        <div class="modal-dialog modal-xl">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="exampleModalLabel">
-                Permisos del usuario {{ u.nombre }}
-              </h1>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <h2>Agregar permiso</h2>
-              <div>
-                <form
-                  class="form"
-                  role="form"
-                  action="/web/usuario_permiso/crearUsuario_Permiso_web"
-                  method="POST"
-                >
-                  <div class="form-group">
-                    <label hidden for="idUsuario">ID del usuario</label>
-                    <input
-                      type="number"
-                      class="form-control"
-                      id="idUsuario"
-                      name="idUsuario"
-                      title="ID del usuario"
-                      min="1"
-                      hidden
-                      value="{{ u.idUsuario }}"
-                    />
-                  </div>
-                  <div class="form-group">
-                    <label for="idPermiso">Permiso</label>
-                    <select
-                      type="text"
-                      class="form-control"
-                      id="idPermiso"
-                      name="idPermiso"
-                      title="Permiso que desea asignar"
-                      required
-                    >
-                      <option disabled selected value="{{ None }}">
-                        -- Seleccione una opción --
-                      </option>
-                      {% for p in permisos %}
-                      <option value="{{ p.idPermiso }}">
-                        {{ p.nombrePermiso }}
-                      </option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                  <div class="d-flex justify-content-end">
-                    <button
-                      type="submit"
-                      class="btn btn-success btn-lg btn-block m-1"
-                    >
-                      Confirmar
-                    </button>
-                  </div>
-                </form>
-
-                <table class="table table-light table-hover">
-                  <thead>
-                    <hr />
-                    <tr>
-                      <th scope="col">
-                        <p>ID Permiso</p>
-                      </th>
-                      <th scope="col">
-                        <p>Nombre de Permiso</p>
-                      </th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for up in usuario_permisos %} {% for p in permisos %} {%
-                    if u.idUsuario == up.idUsuario and p.idPermiso ==
-                    up.idPermiso %}
-                    <tr>
-                      <th scope="row">{{ p.idPermiso }}</th>
-                      <td>{{ p.nombrePermiso }}</td>
-                      <td>
-                        <button
-                          type="button"
-                          class="btn btn-danger btn-lg m-1 permiso__btn-delete"
-                          onclick="mostrarBotonesEliminarPermiso(this)"
-                        >
-                          &times;
-                        </button>
-
-                        <div class="permiso__form__btn">
-                          <button
-                            onclick="submitDeletePermiso('{{ u.idUsuario }}', '{{ up.idPermiso }}')"
-                            class="btn btn-danger btn-lg ms-3"
-                          >
-                            Confirmar
-                          </button>
-                          <button
-                            type="button"
-                            class="btn btn-secondary btn-lg ms-3"
-                            onclick="cancelarEliminarPermiso(this)"
-                          >
-                            Cancelar
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    {% endif %} {% endfor %} {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="btn btn-secondary btn-lg"
-                  data-bs-dismiss="modal"
-                >
-                  Cerrar
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Edit Departamentos -->
-    <div
-      class="modal fade"
-      id="editDepartamentosModal{{ u.idUsuario }}"
-      tabindex="-1"
-    >
-      <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">
-              Departamentos del usuario {{ u.nombre }}
-            </h1>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <h2>Agregar departamento</h2>
-            <div>
-              <form
-                class="form"
-                role="form"
-                action="/web/usuario_departamento/crearUsuario_Departamento_web"
-                method="POST"
-              >
-                <div class="form-group">
-                  <label hidden for="idUsuario">ID del usuario</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="idUsuario"
-                    name="idUsuario"
-                    title="ID del usuario"
-                    min="1"
-                    hidden
-                    value="{{ u.idUsuario }}"
-                  />
-                </div>
-                <div class="form-group">
-                  <label for="idDepartment">Departamento</label>
-                  <select
-                    type="text"
-                    class="form-control"
-                    id="idDepartment"
-                    name="idDepartment"
-                    title="Permiso que desea asignar"
-                    required
-                  >
-                    <option disabled selected value="{{ None }}">
-                      -- Seleccione una opción --
-                    </option>
-                    {% for d in departamentos %}
-                    <option value="{{ d.idDepartment }}">{{ d.name }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <div class="d-flex justify-content-end">
-                  <button
-                    type="submit"
-                    class="btn btn-success btn-lg btn-block m-1"
-                  >
-                    Confirmar
-                  </button>
-                </div>
-              </form>
-
-              <table class="table table-light table-hover">
-                <thead>
-                  <hr />
-                  <tr>
-                    <th scope="col">
-                      <p>ID Departamento</p>
-                    </th>
-                    <th scope="col">
-                      <p>Nombre del Departamento</p>
-                    </th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for ud in usuario_departamentos %} {% for d in
-                  departamentos %} {% if u.idUsuario == ud.idUsuario and
-                  d.idDepartment == ud.idDepartment %}
-                  <tr>
-                    <th scope="row">{{ d.idDepartment }}</th>
-                    <td>{{ d.name }}</td>
-                    <td>
-                      <button
-                        type="button"
-                        class="btn btn-danger btn-lg m-1 departamento__btn-delete"
-                        onclick="mostrarBotonesEliminarDepartamento(this)"
-                      >
-                        &times;
-                      </button>
-
-                      <div class="departamento__form__btn">
-                        <button
-                          onclick="submitDeleteDepartamento('{{ u.idUsuario }}', '{{ ud.idDepartment }}')"
-                          class="btn btn-danger btn-lg ms-3"
-                        >
-                          Confirmar
-                        </button>
-                        <button
-                          type="button"
-                          class="btn btn-secondary btn-lg ms-3"
-                          onclick="cancelarEliminarDepartamento(this)"
-                        >
-                          Cancelar
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  {% endif %} {% endfor %} {% endfor %}
-                </tbody>
-              </table>
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-secondary btn-lg"
-                data-bs-dismiss="modal"
-              >
-                Cerrar
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Eliminar Modal -->
-    <div class="modal fade" id="deleteModal{{ u.idUsuario }}" tabindex="-1">
-      <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">
-              Eliminar usuario
-            </h1>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <p>¿Seguro que quiere eliminar el registro {{ u.idUsuario }}?</p>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary btn-lg"
-              data-bs-dismiss="modal"
-            >
-              Cerrar
-            </button>
-            <form action="/web/usuario/eliminarUsuario_web" method="POST">
-              <input
-                type="number"
-                value="{{u.idUsuario}}"
-                name="idUsuario"
-                hidden
-              />
-              <button type="submit" class="btn btn-danger btn-lg">
-                Eliminar
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    {% for u in usuarios %}
     <div class="modal fade" id="passModal{{ u.idUsuario }}" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -985,7 +122,7 @@ endblock %} {% block content %}
   method="POST"
 >
   <input type="hidden" name="idUsuario" id="delete_idUsuario" />
-  <input type="hidden" name="idRol" id="delete_idRol" />
+  <input type="hidden" name="idUsuario" id="delete_idUsuario" />
 </form>
 <form
   id="deletePermisoForm"
@@ -1003,5 +140,1068 @@ endblock %} {% block content %}
   <input type="hidden" name="idUsuario" id="delete_idUsuarioD" />
   <input type="hidden" name="idDepartment" id="delete_idDepartment" />
 </form>
+
+<!-- Create Modal -->
+<div
+  class="modal fade"
+  id="createModal"
+  tabindex="-1"
+  aria-labelledby="createModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="createModalLabel"></h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        {% include "usuario/formCrearUsuario.html" %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal Reutilizable -->
+<div
+  class="modal fade"
+  id="editModal"
+  tabindex="-1"
+  aria-labelledby="editModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="/web/usuario/editarUsuario_web" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editModalLabel">Editar usuario</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" id="modal-idUsuario" name="idUsuario" />
+
+          <div class="mb-3">
+            <label>Username</label>
+            <input
+              type="text"
+              class="form-control"
+              id="modal-username"
+              name="username"
+              readonly
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label>Nombre</label>
+            <input
+              type="text"
+              class="form-control"
+              id="modal-nombre"
+              name="nombre"
+              required
+            />
+          </div>
+
+          <div class="mb-3 form-check form-switch">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="modal-activo"
+              role="switch"
+              name="activo"
+            />
+            <label class="form-check-label" for="modal-activo">Activo</label>
+          </div>
+
+          <hr />
+
+          <p><strong>Características especiales del usuario</strong></p>
+
+          <div class="mb-3 form-check form-switch">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="modal-scope_departamentos_global"
+              role="switch"
+              name="scope_departamentos_global"
+            />
+            <label
+              class="form-check-label"
+              for="modal-scope_departamentos_global"
+              >Usuario de RRHH</label
+            >
+          </div>
+
+          <div class="mb-3 form-check form-switch">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="modal-scope_permisos_global"
+              role="switch"
+              name="scope_permisos_global"
+            />
+            <label class="form-check-label" for="modal-scope_permisos_global"
+              >Usuario administrador</label
+            >
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- EditRoles Modal Reutilizable -->
+<div class="modal fade" id="editRolesModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          Roles del usuario:
+          <strong><span id="modal-nombre-usuario"></span></strong>
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+
+      <div id="tabla-roles-por-usuario" class="m-3"></div>
+
+      <div class="modal-footer">
+        <button id="btn-confirmar-roles" type="submit" class="btn btn-success">
+          Confirmar cambios
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EditDepartments Modal Reutilizable -->
+<div class="modal fade" id="editDepartmentsModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          Departamentos que puede ver el usuario:
+          <strong><span id="modalDepts-nombre-usuario"></span></strong>
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+
+      <div id="tabla-departamentos-por-usuario" class="m-3"></div>
+
+      <div class="modal-footer">
+        <button
+          id="btn-confirmar-departamentos"
+          type="submit"
+          class="btn btn-success"
+        >
+          Confirmar cambios
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EditPermissions Modal Reutilizable -->
+<div class="modal fade" id="editPermissionModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          Permisos del usuario:
+          <strong><span id="modalPermisos-nombre-usuario"></span></strong>
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+
+      <div id="tabla-permisos-por-usuario" class="m-3"></div>
+
+      <div class="modal-footer">
+        <button
+          id="btn-confirmar-permisos"
+          type="submit"
+          class="btn btn-success"
+        >
+          Confirmar cambios
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Change Password Modal -->
+<div
+  class="modal fade"
+  id="passModal"
+  tabindex="-1"
+  aria-labelledby="passModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form
+        class="form"
+        role="form"
+        action="/web/usuario/cambiarPasswordUsuario_web"
+        method="POST"
+      >
+        <div class="modal-header">
+          <h5 class="modal-title" id="passModalLabel">
+            Cambio de contraseña: <strong class="pass-mensaje"></strong>
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="form-group">
+            <label hidden for="idUsuario">ID del usuario</label>
+            <input
+              type="hidden"
+              class="form-control"
+              id="modalPass-idUsuario"
+              name="idUsuario"
+              hidden
+            />
+          </div>
+          <div class="form-group">
+            <label for="password">Nueva contraseña</label>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              name="password"
+              title="Nueva contraseña"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="confirmedPassword">Confirmar nueva contraseña</label>
+            <input
+              type="password"
+              class="form-control"
+              id="confirmedPassword"
+              name="confirmedPassword"
+              title="Nueva contraseña"
+              required
+            />
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success btn-lg ms-1">
+              Confirmar
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal Reutilizable -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="/web/usuario/eliminarUsuario_web" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title">Eliminar Usuario</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" id="delete-idUsuario" name="idUsuario" />
+
+          <p id="delete-mensaje"></p>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">Eliminar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function createSweetAlertSuccess(msg) {
+    Swal.fire({
+      icon: "success",
+      title: msg,
+      showConfirmButton: true,
+    });
+  }
+
+  function createSweetAlertError(msg) {
+    Swal.fire({
+      icon: "error",
+      title: msg,
+      showConfirmButton: true,
+    });
+  }
+
+  (async function () {
+    cargarTableUsuarios();
+  })();
+
+  function cargarTableUsuarios() {
+    const tableUsuarios = new Tabulator("#tabla-usuarios", {
+      theme: "site-dark",
+      height: "calc(85vh - 86px)",
+      layout: "fitColumns",
+
+      ajaxURL: "/json/usuario/get_usuarios_details",
+      ajaxConfig: "GET",
+
+      columns: [
+        {
+          title: "Editar",
+          hozAlign: "center",
+          editor: false,
+          width: 102,
+
+          formatter: function (cell) {
+            const data = cell.getRow().getData();
+
+            return `
+              <button
+                type="button"
+                title="Editar usuario"
+                class="btn btn-success"
+                data-bs-toggle="modal"
+                data-bs-target="#editModal"
+                data-id="${data.idUsuario}"
+                data-username="${data.username}"
+                data-nombre="${data.nombre}"
+                data-activo="${data.activo}"
+                data-scope-departamentos-global="${data.scope_departamentos_global}"
+                data-scope-permisos-global="${data.scope_permisos_global}"
+              >
+                <i class="bi bi-pencil-square"></i>
+              </button>
+              <button
+                type="button"
+                title="Reestablecer contraseña"
+                class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#passModal"
+                data-id="${data.idUsuario}"
+                data-nombre-rol="${data.nombre}"
+              >
+                <i class="bi bi-unlock2"></i>
+              </button>
+            `;
+          },
+        },
+        {
+          title: "ID",
+          field: "idUsuario",
+          hozAlign: "center",
+          editor: false,
+          width: 60,
+          headerFilter: "input",
+        },
+        {
+          title: "Nombre del usuario",
+          field: "username",
+          editor: false,
+
+          formatter: "textarea",
+          headerFilter: "input",
+        },
+        {
+          title: "Nombre completo",
+          field: "nombre",
+          editor: false,
+
+          formatter: "textarea",
+          headerFilter: "input",
+        },
+        {
+          title: "Activo",
+          field: "activo",
+          hozAlign: "center",
+          editor: false,
+
+          headerFilter: "list",
+          headerFilterParams: {
+            values: {
+              "": "Todos",
+              Sí: "Sí",
+              No: "No",
+            },
+          },
+        },
+        {
+          title: "Alcance total",
+          field: "scope_departamentos_global",
+          hozAlign: "center",
+          editor: false,
+
+          headerFilter: "list",
+          headerFilterParams: {
+            values: {
+              "": "Todos",
+              Sí: "Sí",
+              No: "No",
+            },
+          },
+        },
+        {
+          title: "Permiso total",
+          field: "scope_permisos_global",
+          hozAlign: "center",
+          editor: false,
+
+          headerFilter: "list",
+          headerFilterParams: {
+            values: {
+              "": "Todos",
+              Sí: "Sí",
+              No: "No",
+            },
+          },
+        },
+        {
+          title: "Pendiente reestablecer contraseña",
+          field: "cambiar_password",
+          hozAlign: "center",
+          editor: false,
+
+          headerFilter: "list",
+          headerFilterParams: {
+            values: {
+              "": "Todos",
+              Sí: "Sí",
+              No: "No",
+            },
+          },
+        },
+        {
+          title: "Roles",
+          hozAlign: "center",
+          width: 102,
+
+          formatter: function (cell) {
+            const data = cell.getRow().getData();
+
+            return `
+              <button
+                type="button"
+                title="Editar permisos del usuario"
+                class="btn btn-warning"
+                data-bs-toggle="modal"
+                data-bs-target="#editRolesModal"
+                data-id="${data.idUsuario}"
+                data-nombre-usuario="${data.nombre}"
+              >
+                <i class="bi bi-person-badge"></i>
+                <strong>Ver</strong>
+              </button>
+            `;
+          },
+        },
+        {
+          title: "Departamentos",
+          hozAlign: "center",
+          width: 150,
+
+          formatter: function (cell) {
+            const data = cell.getRow().getData();
+
+            return `
+              <button
+                type="button"
+                title="Editar departamentos del usuario"
+                class="btn btn-dark"
+                data-bs-toggle="modal"
+                data-bs-target="#editDepartmentsModal"
+                data-id="${data.idUsuario}"
+                data-nombre-usuario="${data.nombre}"
+              >
+                <i class="bi bi-building"></i>
+                <strong>Ver</strong>
+              </button>
+            `;
+          },
+        },
+        {
+          title: "Permisos",
+          hozAlign: "center",
+          width: 102,
+
+          formatter: function (cell) {
+            const data = cell.getRow().getData();
+
+            return `
+              <button
+                type="button"
+                title="Editar permisos del usuario"
+                class="btn btn-light"
+                data-bs-toggle="modal"
+                data-bs-target="#editPermissionModal"
+                data-id="${data.idUsuario}"
+                data-nombre-usuario="${data.nombre}"
+              >
+                <i class="bi bi-person-lock"></i>
+                <strong>Ver</strong>
+              </button>
+            `;
+          },
+        },
+        {
+          title: "Eliminar",
+          hozAlign: "center",
+          width: 97,
+
+          formatter: function (cell) {
+            const data = cell.getRow().getData();
+
+            return `
+              <button
+                type="button"
+                title="Eliminar rol"
+                class="btn btn-danger"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteModal"
+                data-id="${data.idUsuario}"
+                data-nombre="${data.nombre}"
+              >
+                <i class="bi bi-trash3"></i>
+              </button>
+              `;
+          },
+        },
+      ],
+    });
+  }
+
+  /* EDIT MODAL */
+  const editModal = document.getElementById("editModal");
+
+  editModal.addEventListener("show.bs.modal", function (event) {
+    const button = event.relatedTarget;
+
+    document.body.focus();
+
+    document.getElementById("modal-idUsuario").value = button.dataset.id;
+
+    document.getElementById("modal-username").value = button.dataset.username;
+
+    document.getElementById("modal-nombre").value = button.dataset.nombre;
+
+    const checkboxActivo = document.getElementById("modal-activo");
+    if (button.dataset.activo === "Sí") {
+      checkboxActivo.value = 1;
+      checkboxActivo.checked = true;
+    } else {
+      checkboxActivo.value = 0;
+      checkboxActivo.checked = false;
+    }
+
+    const checkboxScopeDept = document.getElementById(
+      "modal-scope_departamentos_global",
+    );
+    if (button.dataset.scopeDepartamentosGlobal === "Sí") {
+      checkboxScopeDept.value = 1;
+      checkboxScopeDept.checked = true;
+    } else {
+      checkboxScopeDept.value = 0;
+      checkboxScopeDept.checked = false;
+    }
+
+    const checkboxScopePermisos = document.getElementById(
+      "modal-scope_permisos_global",
+    );
+    if (button.dataset.scopePermisosGlobal === "Sí") {
+      checkboxScopePermisos.value = 1;
+      checkboxScopePermisos.checked = true;
+    } else {
+      checkboxScopePermisos.value = 0;
+      checkboxScopePermisos.checked = false;
+    }
+  });
+
+  /* EDIT ROLES MODAL  */
+  const editRolesModal = document.getElementById("editRolesModal");
+  let tableRolesPorUsuario = null;
+  let idUsuarioCambios;
+
+  editRolesModal.addEventListener("show.bs.modal", async function (event) {
+    if (tableRolesPorUsuario) {
+      tableRolesPorUsuario = null;
+      idUsuarioCambios = null;
+    }
+    document.body.focus();
+    const button = event.relatedTarget;
+
+    document.getElementById("modal-nombre-usuario").textContent =
+      button.dataset.nombreUsuario;
+
+    idUsuarioCambios = button.dataset.id;
+    cargarTableRolesPorUsuario(button.dataset.id);
+  });
+
+  function cargarTableRolesPorUsuario(idUsuario) {
+    if (!tableRolesPorUsuario) {
+      tableRolesPorUsuario = new Tabulator("#tabla-roles-por-usuario", {
+        theme: "site-dark",
+        maxHeight: "800px",
+        layout: "fitColumns",
+
+        ajaxURL: `/json/rol/get_roles_por_usuario/${idUsuario}`,
+        ajaxConfig: "GET",
+
+        pagination: true,
+        paginationMode: "local",
+        paginationSize: 25,
+        paginationSizeSelector: [15, 25, 50, 100],
+
+        locale: true,
+
+        langs: {
+          "es-es": {
+            pagination: {
+              page_size: "Registros",
+              first: "Primero",
+              first_title: "Primera página",
+              last: "Último",
+              last_title: "Última página",
+              prev: "Anterior",
+              prev_title: "Página anterior",
+              next: "Siguiente",
+              next_title: "Página siguiente",
+              all: "Todos",
+            },
+          },
+        },
+
+        locale: "es-es",
+
+        columns: [
+          {
+            title: "ID",
+            field: "idRol",
+            hozAlign: "center",
+            editor: false,
+            width: 60,
+            headerFilter: "input",
+          },
+          {
+            title: "Nombre del rol",
+            field: "nombre",
+            editor: false,
+
+            formatter: "textarea",
+            headerFilter: "input",
+          },
+          {
+            title: "Descripción",
+            field: "descripcion",
+            editor: false,
+
+            formatter: "textarea",
+            widthGrow: 3,
+            headerFilter: "input",
+          },
+          {
+            title: "Asignado",
+            field: "asignado",
+            width: 100,
+
+            editor: true,
+            headerFilter: "list",
+            headerFilterParams: {
+              values: {
+                "": "Todos",
+                true: "Sí",
+                false: "No",
+              },
+            },
+
+            formatter: "tickCross",
+          },
+        ],
+      });
+    }
+    tableRolesPorUsuario.setData(
+      `/json/rol/get_roles_por_usuario/${idUsuario}`,
+    );
+  }
+
+  const btnConfirmarRoles = document.querySelector("#btn-confirmar-roles");
+  btnConfirmarRoles.addEventListener("click", async function () {
+    const usuarioRolesData = tableRolesPorUsuario.getData();
+
+    for (let key in usuarioRolesData) {
+      usuarioRolesData[key].idUsuario = idUsuarioCambios;
+    }
+
+    if (!(usuarioRolesData.length > 0)) return;
+
+    const responseUsuarioRoles = await fetch(
+      "/json/usuario_rol/create_usuario_rol_con_duplicados",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(usuarioRolesData),
+      },
+    );
+
+    const respUsuarioRoles = await responseUsuarioRoles.json();
+
+    if (respUsuarioRoles.success) {
+      createSweetAlertSuccess(
+        `Roles agregados, No. de roles en total: ${respUsuarioRoles.usuario_roles_creados}`,
+      );
+    } else {
+      createSweetAlertError(
+        `No se pudieron agregar los roles: ${respUsuarioRoles.error}`,
+      );
+    }
+  });
+
+  /* DEPARTMENTS MODAL */
+  const editDepartmentsModal = document.getElementById("editDepartmentsModal");
+  let tableUsuarioDepartments = null;
+
+  editDepartmentsModal.addEventListener(
+    "show.bs.modal",
+    async function (event) {
+      if (tableUsuarioDepartments) {
+        tableUsuarioDepartments = null;
+        idUsuarioCambios = null;
+      }
+      document.body.focus();
+      const button = event.relatedTarget;
+
+      document.getElementById("modalDepts-nombre-usuario").textContent =
+        button.dataset.nombreUsuario;
+
+      idUsuarioCambios = button.dataset.id;
+      cargarTableUsuarioDepartments(button.dataset.id);
+    },
+  );
+
+  function cargarTableUsuarioDepartments(idUsuario) {
+    if (!tableUsuarioDepartments) {
+      tableUsuarioDepartments = new Tabulator(
+        "#tabla-departamentos-por-usuario",
+        {
+          theme: "site-dark",
+          maxHeight: "800px",
+          layout: "fitColumns",
+
+          ajaxURL: `/json/departamento/get_departamentos_por_usuario/${idUsuario}`,
+          ajaxConfig: "GET",
+
+          pagination: true,
+          paginationMode: "local",
+          paginationSize: 25,
+          paginationSizeSelector: [15, 25, 50, 100],
+
+          locale: true,
+
+          langs: {
+            "es-es": {
+              pagination: {
+                page_size: "Registros",
+                first: "Primero",
+                first_title: "Primera página",
+                last: "Último",
+                last_title: "Última página",
+                prev: "Anterior",
+                prev_title: "Página anterior",
+                next: "Siguiente",
+                next_title: "Página siguiente",
+                all: "Todos",
+              },
+            },
+          },
+
+          locale: "es-es",
+
+          columns: [
+            {
+              title: "ID",
+              field: "idDepartment",
+              hozAlign: "center",
+              editor: false,
+              width: 60,
+              headerFilter: "input",
+            },
+            {
+              title: "Nombre del departamento",
+              field: "name",
+              editor: false,
+
+              formatter: "textarea",
+              headerFilter: "input",
+            },
+            {
+              title: "Asignado",
+              field: "asignado",
+              width: 105,
+
+              editor: true,
+              headerFilter: "list",
+              headerFilterParams: {
+                values: {
+                  "": "Todos",
+                  true: "Sí",
+                  false: "No",
+                },
+              },
+
+              formatter: "tickCross",
+            },
+          ],
+        },
+      );
+    }
+    tableUsuarioDepartments.setData(
+      `/json/departamento/get_departamentos_por_usuario/${idUsuario}`,
+    );
+  }
+
+  const btnConfirmarDepartamentos = document.querySelector(
+    "#btn-confirmar-departamentos",
+  );
+  btnConfirmarDepartamentos.addEventListener("click", async function () {
+    const usuarioDepartamentosData = tableUsuarioDepartments.getData();
+
+    for (let key in usuarioDepartamentosData) {
+      usuarioDepartamentosData[key].idUsuario = idUsuarioCambios;
+    }
+
+    if (!(usuarioDepartamentosData.length > 0)) return;
+
+    const responseUsuarioDepartamentos = await fetch(
+      "/json/usuario_departamento/create_usuario_departamento_con_duplicados",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(usuarioDepartamentosData),
+      },
+    );
+
+    const respUsuarioDepartamentos = await responseUsuarioDepartamentos.json();
+
+    if (respUsuarioDepartamentos.success) {
+      createSweetAlertSuccess(
+        `Departamentos agregados, No. de departamentos en total: ${respUsuarioDepartamentos.usuario_departamentos_creados}`,
+      );
+    } else {
+      createSweetAlertError(
+        `No se pudieron agregar los departamentos: ${respUsuarioDepartamentos.error}`,
+      );
+    }
+  });
+
+  /* PERMISOS MODAL  */
+  const editPermissionModal = document.getElementById("editPermissionModal");
+  let tablePermisosPorUsuario = null;
+
+  editPermissionModal.addEventListener("show.bs.modal", async function (event) {
+    if (tablePermisosPorUsuario) {
+      tablePermisosPorUsuario = null;
+      idUsuarioCambios = null;
+    }
+    document.body.focus();
+    const button = event.relatedTarget;
+
+    document.getElementById("modalPermisos-nombre-usuario").textContent =
+      button.dataset.nombreUsuario;
+
+    idUsuarioCambios = button.dataset.id;
+    cargarTablePermisosPorUsuario(button.dataset.id);
+  });
+
+  function cargarTablePermisosPorUsuario(idUsuario) {
+    if (!tablePermisosPorUsuario) {
+      tablePermisosPorUsuario = new Tabulator("#tabla-permisos-por-usuario", {
+        theme: "site-dark",
+        maxHeight: "800px",
+        layout: "fitColumns",
+
+        ajaxURL: `/json/permiso/get_permisos_asignados_por_usuario/${idUsuario}`,
+        ajaxConfig: "GET",
+
+        pagination: true,
+        paginationMode: "local",
+        paginationSize: 25,
+        paginationSizeSelector: [15, 25, 50, 100],
+
+        locale: true,
+
+        langs: {
+          "es-es": {
+            pagination: {
+              page_size: "Registros",
+              first: "Primero",
+              first_title: "Primera página",
+              last: "Último",
+              last_title: "Última página",
+              prev: "Anterior",
+              prev_title: "Página anterior",
+              next: "Siguiente",
+              next_title: "Página siguiente",
+              all: "Todos",
+            },
+          },
+        },
+
+        locale: "es-es",
+
+        columns: [
+          {
+            title: "ID",
+            field: "idPermiso",
+            hozAlign: "center",
+            editor: false,
+            width: 60,
+            headerFilter: "input",
+          },
+          {
+            title: "Nombre del permiso",
+            field: "nombrePermiso",
+            editor: false,
+
+            formatter: "textarea",
+            headerFilter: "input",
+          },
+          {
+            title: "Descripción",
+            field: "descripcion",
+            editor: false,
+
+            formatter: "textarea",
+            widthGrow: 3,
+            headerFilter: "input",
+          },
+          {
+            title: "Asignado",
+            field: "asignado",
+            width: 100,
+
+            editor: true,
+            headerFilter: "list",
+            headerFilterParams: {
+              values: {
+                "": "Todos",
+                true: "Sí",
+                false: "No",
+              },
+            },
+
+            formatter: "tickCross",
+          },
+        ],
+      });
+    }
+    tablePermisosPorUsuario.setData(
+      `/json/permiso/get_permisos_asignados_por_usuario/${idUsuario}`,
+    );
+  }
+
+  const btnConfirmarPermisos = document.querySelector(
+    "#btn-confirmar-permisos",
+  );
+  btnConfirmarPermisos.addEventListener("click", async function () {
+    const usuarioPermisosData = tablePermisosPorUsuario.getData();
+
+    if (!(usuarioPermisosData.length > 0)) return;
+
+    for (let key in usuarioPermisosData) {
+      usuarioPermisosData[key].idUsuario = idUsuarioCambios;
+    }
+
+    const responseUsuarioPermisos = await fetch(
+      "/json/usuario_permiso/create_usuario_permiso_con_duplicados",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(usuarioPermisosData),
+      },
+    );
+
+    const respUsuarioPermisos = await responseUsuarioPermisos.json();
+
+    if (respUsuarioPermisos.success) {
+      createSweetAlertSuccess(
+        `Permisos creados, No. de permisos agregados: ${respUsuarioPermisos.usuario_permisos_creados}`,
+      );
+    } else {
+      createSweetAlertError(
+        `No se pudieron crear los permisos: ${respUsuarioPermisos.error}`,
+      );
+    }
+  });
+
+  /* CHANGE PASSWORD MODAL */
+  const passModal = document.getElementById("passModal");
+
+  passModal.addEventListener("show.bs.modal", function (event) {
+    const button = event.relatedTarget;
+
+    document.getElementById("modalPass-idUsuario").value = button.dataset.id;
+
+    document.getElementById("pass-mensaje").textContent = button.dataset.nombre;
+  });
+
+  /* DELETE MODAL */
+  const deleteModal = document.getElementById("deleteModal");
+
+  deleteModal.addEventListener("show.bs.modal", function (event) {
+    const button = event.relatedTarget;
+
+    document.getElementById("delete-idUsuario").value = button.dataset.id;
+
+    document.getElementById("delete-mensaje").textContent =
+      `¿Seguro que desea eliminar el rol: ${button.dataset.nombre}?`;
+  });
+</script>
 
 {% endblock %}
