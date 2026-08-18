@@ -16,4 +16,14 @@ def get_roles():
 
     return jsonify(data), 200
 
+@rol_json_bp.route("/get_roles_por_usuario/<int:idUsuario>", methods=["GET"])
+@login_required
+@permiso_requerido("rol.ver")
+def get_roles_por_usuario(idUsuario):
+    data = Rol_Service.get_roles_por_usuario_service(db, idUsuario)
+    if not data:
+        return jsonify([]), 200
+
+    return jsonify(data), 200
+
 

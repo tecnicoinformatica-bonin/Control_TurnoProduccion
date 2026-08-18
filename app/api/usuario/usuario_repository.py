@@ -23,6 +23,33 @@ class UsuarioRepository:
         finally:
             if cursor:
                 cursor.close()
+
+    @staticmethod
+    def get_usuarios_details(db):
+        cursor = None
+
+        try:
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+            query = """
+                SELECT  
+                    tu.idUsuario,
+                    tu.username,
+                    tu.nombre,
+                    tu.activo,
+                    tu.scope_departamentos_global,
+                    tu.scope_permisos_global,
+                    tu.cambiar_password 
+                FROM turnos_usuario tu
+                """
+            cursor.execute(query)
+            return cursor.fetchall()
+        
+        except Exception as ex:
+            raise Exception(f"No se pudo obtener usuarios en el repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
             
     @staticmethod
     def getUsuarioByUsername(db, username):

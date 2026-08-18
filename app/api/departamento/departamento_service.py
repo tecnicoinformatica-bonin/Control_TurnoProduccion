@@ -36,6 +36,23 @@ class Departamento_Service():
 
         except Exception as ex:
             return {"error": f"No se pudo obtener el departamento en el servicio: {str(ex)}"}
+
+    @staticmethod
+    def get_departamentos_por_usuario_service(db, idUsuario):
+        try:
+            data = DepartamentoRepository.get_departamentos_por_usuario(db, idUsuario)
+            departments = []
+            for row in data:
+                department = {
+                    "idDepartment": row["idDepartment"],
+                    "name": row["name"],
+                    "asignado" : True if row["asignado"] == 1 else False,
+                }
+                departments.append(department)
+            return departments
+
+        except Exception as ex:
+            raise Exception(f"No se pudo obtener el departamento en el servicio: {str(ex)}")
          
     @staticmethod
     def getDepartamentos_aplica_horas_extra_service(db):

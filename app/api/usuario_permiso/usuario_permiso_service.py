@@ -8,8 +8,8 @@ class Usuario_Permiso_Service():
             usuario_permisos = []
             for row in data:
                 usuario_permiso = {
-                    "idUsuario": row[0], 
-                    "idPermiso": row[1], 
+                    "idUsuario": row["idUsuario"],
+                    "idPermiso": row["idPermiso"],
                 }
                 usuario_permisos.append(usuario_permiso)
             return usuario_permisos
@@ -37,6 +37,24 @@ class Usuario_Permiso_Service():
         
         except Exception as ex:
             return {"error": f"No se pudo crear el usuario_permiso. {ex}"}
+
+    @staticmethod
+    def create_usuario_permiso_con_duplicados_service(db, idUsuario, idPermiso):
+        try:            
+            required_fields = {
+                    "idUsuario": idUsuario, 
+                    "idPermiso": idPermiso, 
+                }
+            
+            missing_fields = [key for key, value in required_fields.items() if value is None or value == ""]
+
+            if missing_fields:
+                return {"error": f"Faltan campos obligatorios: {', '.join(missing_fields)}"}
+            
+            return Usuario_Permiso_Repository.create_usuario_permiso_con_duplicados(db, idUsuario, idPermiso)
+        
+        except Exception as ex:
+            raise Exception(f"No se pudo crear el usuario_permiso. {str(ex)}")
         
     @staticmethod
     def updateUsuario_Permiso_service(db, data):
@@ -71,4 +89,22 @@ class Usuario_Permiso_Service():
             return Usuario_Permiso_Repository.deleteUsuario_Permiso(db, idUsuario, idPermiso)
         
         except Exception as ex:
-            return {"error": f"No se pudo eliminar la usuario_permiso. {ex}"}
+            return {"error": f"No se pudo eliminar la usuario_permiso. {str(ex)}"}
+
+
+    @staticmethod
+    def exists_usuario_permiso(db, idUsuario, idPermiso):
+        try:
+            usuario_permisos = Usuario_Permiso_Repository.getUsuario_Permisos(db)
+
+            available = any(
+                int(idUsuario) == int(up["idUsuario"])
+                and int(idPermiso) == int(up["idPermiso"])
+                for up in usuario_permisos
+            )
+
+            return {
+                "available": not available
+            }
+        except Exception as ex:
+            raise Exception(f"No se pudo validar en servicio: {str(ex)}")

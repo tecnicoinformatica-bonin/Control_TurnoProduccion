@@ -1,10 +1,13 @@
+import MySQLdb
+
+
 class Usuario_Departamento_Repository:
     @staticmethod
     def getUsuario_Departamentos(db):
         cursor = None
         
         try: 
-            cursor = db.connection.cursor()
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
 
             query = """
             SELECT * 
@@ -33,7 +36,7 @@ class Usuario_Departamento_Repository:
             idDepartment = int(idDepartment)
 
             exists = any(
-                int(row[0]) == idUsuario and int(row[1]) == idDepartment
+                int(row["idUsuario"]) == idUsuario and int(row["idDepartment"]) == idDepartment
                 for row in data
             )
 
@@ -70,6 +73,35 @@ class Usuario_Departamento_Repository:
                 cursor.close()
 
     @staticmethod
+    def create_usuario_departamento_con_duplicados(db, idUsuario, idDepartment):
+        cursor = None
+        
+        try:
+            cursor = db.connection.cursor()
+            
+            query = """
+                INSERT IGNORE INTO turnos_usuario_departamento (idUsuario, idDepartment)
+                VALUES (%s, %s);
+                """
+            cursor.execute(query, (idUsuario, idDepartment,))
+            
+            db.connection.commit()
+
+            return {
+                "idUsuario": idUsuario,          
+                "idDepartment": idDepartment, 
+            }
+        
+        except Exception as ex:
+            db.connection.rollback()
+            
+            raise Exception(f"No se pudo crear usuario_departamento en repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    @staticmethod
     def updateUsuario_Departamento(db, idUsuario, idDepartment):
         cursor = None
 
@@ -79,7 +111,7 @@ class Usuario_Departamento_Repository:
             idDepartment = int(idDepartment)
 
             exists = any(
-                int(row[0]) == idUsuario and int(row[1]) == idDepartment
+                int(row["idUsuario"]) == idUsuario and int(row["idDepartment"]) == idDepartment
                 for row in data
             )
 

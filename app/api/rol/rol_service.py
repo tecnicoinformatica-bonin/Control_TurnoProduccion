@@ -17,6 +17,24 @@ class Rol_Service():
 
         except Exception as ex:
             raise Exception(ex)
+
+    @staticmethod
+    def get_roles_por_usuario_service(db, idUsuario):
+        try:
+            data = RolRepository.get_roles_por_usuario(db, idUsuario)
+            roles = []
+            for row in data:
+                rol = {
+                    "idRol": row["idRol"],
+                    "nombre": row["nombre"],
+                    "descripcion": row["descripcion"],
+                    "asignado": True if row["asignado"] == 1 else False,
+                }
+                roles.append(rol)
+            return roles
+
+        except Exception as ex:
+            raise Exception(f"Error en servicio: {str(ex)}")
             
     @staticmethod
     def createRol_service(db, data):

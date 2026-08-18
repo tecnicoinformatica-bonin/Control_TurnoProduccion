@@ -25,3 +25,13 @@ def get_permisos_asignados_por_rol(idRol):
         return jsonify([]), 200
 
     return jsonify(data), 200
+
+@permiso_json_bp.route("/get_permisos_asignados_por_usuario/<int:idUsuario>", methods=["GET"])
+@login_required
+@permiso_requerido("permiso.ver")
+def get_permisos_asignados_por_usuario(idUsuario):
+    data = Permiso_Service.get_permisos_asignados_por_usuario_service(db, idUsuario)
+    if not data:
+        return jsonify([]), 200
+
+    return jsonify(data), 200

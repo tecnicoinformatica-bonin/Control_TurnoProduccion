@@ -77,6 +77,39 @@ class RolRepository:
                 cursor.close()
 
     @staticmethod
+    def get_roles_por_usuario(db, idUsuario):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT
+                tr.idRol,
+                tr.nombre ,
+                tr.descripcion,
+                CASE
+                    WHEN tur.idRol IS NOT NULL THEN 1
+                    ELSE 0
+                END AS asignado
+            FROM turnos_rol tr
+            LEFT JOIN turnos_usuario_rol tur
+                ON tr.idRol = tur.idRol 
+                AND tur.idUsuario = %s
+            ORDER BY tr.nombre;
+            """
+            cursor.execute(query, (idUsuario,))
+
+            return cursor.fetchall()
+        
+        except Exception as ex:
+            raise Exception(f"No se pueden listar los roles en repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    @staticmethod
     def createRol(db, nombre, descripcion):
         cursor = None
 

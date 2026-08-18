@@ -62,6 +62,40 @@ class PermisoRepository:
             if cursor:
                 cursor.close()
 
+    @staticmethod
+    def get_permisos_asignados_por_usuario(db, idUsuario):
+        cursor = None
+
+        try:
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT
+                tp.idPermiso,
+                tp.nombrePermiso,
+                tp.descripcion,
+                CASE
+                    WHEN tup.idUsuario IS NOT NULL THEN 1
+                    ELSE 0
+                END AS asignado
+            FROM turnos_permiso tp 
+            LEFT JOIN turnos_usuario_permiso tup
+                ON tup.idPermiso = tp.idPermiso  
+                AND tup.idUsuario = %s
+            ORDER BY tp.nombrePermiso;
+            """
+
+            cursor.execute(query, (idUsuario,))
+            
+            return cursor.fetchall()
+        
+        except Exception as ex:
+            raise Exception(f"No se puede encontrar permisos asignados por usuario en repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
+
     def getPermisoByName(db, nombrePermiso):
         cursor = None
 

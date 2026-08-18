@@ -17,6 +17,17 @@ def get_departamentos():
     
     return jsonify(data), 200
 
+@departamento_json_bp.route('/get_departamentos_por_usuario/<int:idUsuario>', methods=["GET"]) 
+@login_required
+@permiso_requerido("departamento.ver") 
+def get_departamentos_por_usuario(idUsuario):
+    data = Departamento_Service.get_departamentos_por_usuario_service(db, idUsuario)
+    
+    if not data:
+        return jsonify([]), 200
+    
+    return jsonify(data), 200
+
 @departamento_json_bp.route('/get_departamentos_aplica_horas_extra', methods=["GET"]) 
 @login_required
 @permiso_requerido("departamento.ver", "programacion.ver") 

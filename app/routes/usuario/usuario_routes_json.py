@@ -18,6 +18,16 @@ def get_usuarios():
 
     return jsonify(data), 200
 
+@usuario_json_bp.route("/get_usuarios_details", methods=["GET"])
+@login_required
+@permiso_requerido("usuario.ver")
+def get_usuarios_details():
+    data = Usuario_Service.get_usuarios_details_service(db)
+    if not data:
+        return jsonify([]), 200
+
+    return jsonify(data), 200
+
 @usuario_json_bp.route("/reauth", methods=["POST"])
 def reauth():
 

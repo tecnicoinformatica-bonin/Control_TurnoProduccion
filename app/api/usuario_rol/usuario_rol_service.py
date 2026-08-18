@@ -8,8 +8,8 @@ class Usuario_Rol_Service():
             usuario_roles = []
             for row in data:
                 usuario_rol = {
-                    "idUsuario": row[0], 
-                    "idRol": row[1], 
+                    "idUsuario": row["idUsuario"],
+                    "idRol": row["idRol"],
                 }
                 usuario_roles.append(usuario_rol)
             return usuario_roles
@@ -37,6 +37,24 @@ class Usuario_Rol_Service():
         
         except Exception as ex:
             return {"error": f"No se pudo crear el usuario_rol. {ex}"}
+
+    @staticmethod
+    def create_usuario_rol_con_duplicados_service(db, idUsuario, idRol):
+        try:
+            required_fields = {
+                "idUsuario": idUsuario, 
+                "idRol": idRol, 
+            }
+            
+            missing_fields = [key for key, value in required_fields.items() if value is None or value == ""]
+
+            if missing_fields:
+                return {"error": f"Faltan campos obligatorios: {', '.join(missing_fields)}"}
+            
+            return Usuario_Rol_Repository.create_usuario_rol_con_duplicados(db, idUsuario, idRol)
+        
+        except Exception as ex:
+            raise Exception (f"No se pudo crear el usuario_rol. {str(ex)}")
         
     @staticmethod
     def updateUsuario_Rol_service(db, data):
@@ -72,3 +90,21 @@ class Usuario_Rol_Service():
         
         except Exception as ex:
             return {"error": f"No se pudo eliminar la usuario_rol. {ex}"}
+
+    @staticmethod
+    def exists_usuario_rol(db, idUsuario, idRol):
+        try:
+            usuario_roles = Usuario_Rol_Repository.getUsuario_Roles(db)
+
+            available = any(
+                int(idUsuario) == ur["idUsuario"]
+                and int(idRol) == ur["idRol"]
+                for ur in usuario_roles
+            )
+
+            return {
+                "available": not available
+            }
+
+        except Exception as ex:
+            raise Exception(f"No se pudo realizar en servicio: {str(ex)}")

@@ -102,6 +102,9 @@ from app.routes.rol.rol_routes_json import rol_json_bp
 from app.routes.rol_permiso.rol_permiso_routes_json import rol_permiso_json_bp
 from app.routes.reports.reports_routes_json import reports_json_bp
 from app.routes.usuario.usuario_routes_json import usuario_json_bp
+from app.routes.usuario_departamento.usuario_departamento_routes_json import usuario_departamento_json_bp
+from app.routes.usuario_permiso.usuario_permiso_routes_json import usuario_permiso_json_bp
+from app.routes.usuario_rol.usuario_rol_routes_json import usuario_rol_json_bp
 
 # Login Manager
 login_manager = LoginManager()
@@ -267,6 +270,9 @@ def create_app():
     app.register_blueprint(rol_permiso_json_bp, url_prefix="/json/rol_permiso")
     app.register_blueprint(reports_json_bp, url_prefix="/json/reports")
     app.register_blueprint(usuario_json_bp, url_prefix="/json/usuario")
+    app.register_blueprint(usuario_departamento_json_bp, url_prefix="/json/usuario_departamento")
+    app.register_blueprint(usuario_permiso_json_bp, url_prefix="/json/usuario_permiso")
+    app.register_blueprint(usuario_rol_json_bp, url_prefix="/json/usuario_rol")
 
 
     @app.route("/")

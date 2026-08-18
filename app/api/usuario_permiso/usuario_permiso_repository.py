@@ -1,4 +1,5 @@
-from app.extensions.slugify import Slugify
+import MySQLdb
+
 
 class Usuario_Permiso_Repository:
     @staticmethod
@@ -6,7 +7,7 @@ class Usuario_Permiso_Repository:
         cursor = None
         
         try: 
-            cursor = db.connection.cursor()
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
 
             query = """
             SELECT * 
@@ -35,7 +36,7 @@ class Usuario_Permiso_Repository:
             idPermiso = int(idPermiso)
 
             exists = any(
-                int(row[0]) == idUsuario and int(row[1]) == idPermiso
+                int(row["idUsuario"]) == idUsuario and int(row["idPermiso"]) == idPermiso
                 for row in data
             )
 
@@ -72,6 +73,35 @@ class Usuario_Permiso_Repository:
                 cursor.close()
 
     @staticmethod
+    def create_usuario_permiso_con_duplicados(db, idUsuario, idPermiso):
+        cursor = None
+        
+        try:
+            cursor = db.connection.cursor()
+            
+            query = """
+                INSERT IGNORE INTO turnos_usuario_permiso (idUsuario, idPermiso)
+                VALUES (%s, %s);
+                """
+            cursor.execute(query, (idUsuario, idPermiso,))
+            
+            db.connection.commit()
+
+            return {
+                "idUsuario": idUsuario,          
+                "idPermiso": idPermiso, 
+            }
+        
+        except Exception as ex:
+            db.connection.rollback()
+            
+            raise Exception(f"No se pudo crear usuario_departamento en repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    @staticmethod
     def updateUsuario_Permiso(db, idUsuario, idPermiso):
         cursor = None
 
@@ -81,7 +111,7 @@ class Usuario_Permiso_Repository:
             idPermiso = int(idPermiso)
 
             exists = any(
-                int(row[0]) == idUsuario and int(row[1]) == idPermiso
+                int(row["idUsuario"]) == idUsuario and int(row["idPermiso"]) == idPermiso
                 for row in data
             )
 

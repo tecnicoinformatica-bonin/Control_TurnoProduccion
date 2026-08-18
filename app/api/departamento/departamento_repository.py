@@ -1,3 +1,5 @@
+import MySQLdb
+
 from app.extensions.slugify import Slugify
 
 
@@ -72,6 +74,39 @@ class DepartamentoRepository:
         
         except Exception as ex:
             return {"error": f"No se pudo obtener el departamento en el repositorio: {str(ex)}"}
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    @staticmethod
+    def get_departamentos_por_usuario(db, idUsuario):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT
+                td.idDepartment,
+                td.name,
+                CASE
+                    WHEN tud.idUsuario IS NOT NULL THEN 1
+                    ELSE 0
+                END AS asignado
+            FROM turnos_departamento td 
+            LEFT JOIN turnos_usuario_departamento tud
+                ON td.idDepartment  = tud.idDepartment 
+                AND tud.idUsuario = %s
+            WHERE td.aplica_horas_extra = 1
+            ORDER BY td.name;
+            """
+            cursor.execute(query, (idUsuario,))
+
+            return cursor.fetchall()
+        
+        except Exception as ex:
+            raise Exception(f"No se pudo obtener el departamento en el repositorio: {str(ex)}")
 
         finally:
             if cursor:

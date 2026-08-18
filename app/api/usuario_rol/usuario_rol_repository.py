@@ -1,3 +1,5 @@
+import MySQLdb
+
 from app.extensions.slugify import Slugify
 
 class Usuario_Rol_Repository:
@@ -6,7 +8,7 @@ class Usuario_Rol_Repository:
         cursor = None
         
         try: 
-            cursor = db.connection.cursor()
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
 
             query = """
             SELECT * 
@@ -35,7 +37,7 @@ class Usuario_Rol_Repository:
             idRol = int(idRol)
 
             exists = any(
-                row[0] == idUsuario and row[1] == idRol
+                row["idUsuario"] == idUsuario and row["idRol"] == idRol
                 for row in data
             )
 
@@ -72,6 +74,37 @@ class Usuario_Rol_Repository:
                 cursor.close()
 
     @staticmethod
+    def create_usuario_rol_con_duplicados(db, idUsuario, idRol):
+        cursor = None
+        
+        try:
+            cursor = db.connection.cursor()
+            
+            query = """
+                INSERT IGNORE INTO turnos_usuario_rol (idUsuario, idRol)
+                VALUES (%s, %s);
+                """
+            cursor.execute(query, (idUsuario, idRol,))
+            
+            db.connection.commit()
+
+            newUsuario_Rol = {
+                "idUsuario": idUsuario,          
+                "idRol": idRol, 
+            }
+
+            return newUsuario_Rol
+        
+        except Exception as ex:
+            db.connection.rollback()
+            
+            raise Exception(f"No se pudo crear rol_permiso en repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    @staticmethod
     def updateUsuario_Rol(db, idUsuario, idRol):
         cursor = None
 
@@ -81,7 +114,7 @@ class Usuario_Rol_Repository:
             idRol = int(idRol)
 
             exists = any(
-                row[0] == idUsuario and row[1] == idRol
+                row["idUsuario"] == idUsuario and row["idRol"] == idRol
                 for row in data
             )
 
