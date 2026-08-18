@@ -58,7 +58,6 @@ function ordenarTabla(colIndex, tipo = "texto") {
 const activeArrow = function (colIndex, type) {
   arrows.forEach((arrow) => {
     arrow.classList.remove("arrow-active");
-    /* console.log(arrow); */
 
     if (+arrow.dataset.column === +colIndex && arrow.dataset.type === type) {
       arrow.classList.add("arrow-active");
@@ -67,8 +66,6 @@ const activeArrow = function (colIndex, type) {
 };
 
 function submitDeleteRuta(idRol, idRuta) {
-  // console.log("Hola submitDelete");
-
   document.getElementById("delete_idRol").value = idRol;
   document.getElementById("delete_idRuta").value = idRuta;
   document.getElementById("deleteRutaForm").submit();
@@ -98,8 +95,6 @@ async function confirmarFormCerrarProgramacion() {
   }
 
   if (!confirm("¿Desea cerrar la edición del reporte?")) return;
-
-  console.log(idProgramacion);
 
   btn.disabled = true;
   btn.textContent = "Cerrando...";
@@ -147,8 +142,6 @@ const mostrarBotonesEliminarRol = function (btn) {
   const btnsRoles = contenedor.querySelector(".rol__form__btn");
   const btnX = contenedor.querySelector(".rol__btn-delete");
 
-  // console.log(btnsRoles);
-
   btnX.style.display = "none";
   btnsRoles.style.display = "flex";
 };
@@ -158,15 +151,11 @@ const cancelarEliminarRol = function (btn) {
   const btnsRoles = contenedor.querySelector(".rol__form__btn");
   const btnX = contenedor.querySelector(".rol__btn-delete");
 
-  // console.log(btnsRoles);
-
   btnX.style.display = "";
   btnsRoles.style.display = "none";
 };
 
 function submitDeleteRol(idUsuario, idRol) {
-  // console.log("Hola submitDelete");
-
   document.getElementById("delete_idUsuario").value = idUsuario;
   document.getElementById("delete_idRol").value = idRol;
   document.getElementById("deleteRolForm").submit();
@@ -177,8 +166,6 @@ const mostrarBotonesEliminarPermiso = function (btn) {
   const btnsPermisos = contenedor.querySelector(".permiso__form__btn");
   const btnX = contenedor.querySelector(".permiso__btn-delete");
 
-  // console.log(btnsPermisos);
-
   btnX.style.display = "none";
   btnsPermisos.style.display = "flex";
 };
@@ -188,23 +175,17 @@ const cancelarEliminarPermiso = function (btn) {
   const btnsPermisos = contenedor.querySelector(".permiso__form__btn");
   const btnX = contenedor.querySelector(".permiso__btn-delete");
 
-  // console.log(btnsPermisos);
-
   btnX.style.display = "";
   btnsPermisos.style.display = "none";
 };
 
 function submitDeletePermiso(idUsuario, idPermiso) {
-  // console.log("Hola submitDelete");
-
   document.getElementById("delete_idUsuarioP").value = idUsuario;
   document.getElementById("delete_idPermiso").value = idPermiso;
   document.getElementById("deletePermisoForm").submit();
 }
 
 function submitDeletePermisoRol(idRol, idPermiso) {
-  // console.log("Hola submitDelete");
-
   document.getElementById("delete_idRolP").value = idRol;
   document.getElementById("delete_idPermiso").value = idPermiso;
   document.getElementById("deletePermisoForm").submit();
@@ -233,8 +214,6 @@ const cancelarEliminarDepartamento = function (btn) {
 };
 
 function submitDeleteDepartamento(idUsuario, idDepartment) {
-  // console.log("Hola submitDelete");
-
   document.getElementById("delete_idUsuarioD").value = idUsuario;
   document.getElementById("delete_idDepartment").value = idDepartment;
   document.getElementById("deleteDepartamentoForm").submit();

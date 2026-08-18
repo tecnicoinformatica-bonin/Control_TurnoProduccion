@@ -424,8 +424,6 @@ endblock %} {% block content %}
       rolPermisosData[key].idRol = idRolCambios;
     }
 
-    console.log(rolPermisosData);
-
     if (!(rolPermisosData.length > 0)) return;
 
     const responseRolPermisos = await fetch(

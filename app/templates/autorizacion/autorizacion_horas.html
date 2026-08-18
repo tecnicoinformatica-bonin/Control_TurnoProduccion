@@ -660,9 +660,6 @@ messages %}
 
           autorizacion = createAutorizacionData(data, 0, 0);
 
-          // console.log(autorizacion);
-          // console.log(JSON.stringify(autorizacion));
-
           guardarAutorizacionData(row, autorizacion);
 
           row.update({
@@ -690,9 +687,6 @@ messages %}
           let data = row.getData();
 
           autorizacion = createAutorizacionData(data, 1, 0);
-
-          // console.log(autorizacion);
-          // console.log(JSON.stringify(autorizacion));
 
           guardarAutorizacionData(row, autorizacion);
 
@@ -826,9 +820,6 @@ messages %}
 
           autorizacion = createAutorizacionData(data, 1, 1);
 
-          // console.log(autorizacion);
-          // console.log(JSON.stringify(autorizacion));
-
           guardarAutorizacionData(row, autorizacion);
         },
       },
@@ -866,9 +857,6 @@ messages %}
 
           autorizacion = createAutorizacionData(data, 1, 0);
 
-          // console.log(autorizacion);
-          // console.log(JSON.stringify(autorizacion));
-
           guardarAutorizacionData(row, autorizacion);
         },
       },
@@ -892,9 +880,6 @@ messages %}
           let data = row.getData();
 
           autorizacion = createAutorizacionData(data, 0, 0);
-
-          // console.log(autorizacion);
-          // console.log(JSON.stringify(autorizacion));
 
           guardarAutorizacionData(row, autorizacion);
         },
@@ -1019,8 +1004,6 @@ messages %}
         });
         throw new Error(resp.error);
       } else {
-        // console.log(resp);
-
         row.update({
           ...resp,
 
@@ -1030,8 +1013,6 @@ messages %}
             autorizacion.autorizado === 1 ? "authorized" : "unauthorized",
         });
       }
-
-      // console.log(row.getData());
     } catch (error) {
       console.error(error);
 

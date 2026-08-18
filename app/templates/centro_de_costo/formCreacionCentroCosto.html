@@ -472,8 +472,6 @@
 
     const respCentros = await responseCentros.json();
     const respLineas = await responseLineas.json();
-    console.log(respCentros);
-    console.log(respLineas);
 
     if (respCentros.success) msgCentros = "Centros creados.";
     else msgCentros = "No se crearon los centros";
