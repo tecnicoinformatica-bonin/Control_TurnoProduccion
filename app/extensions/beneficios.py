@@ -42,7 +42,7 @@ def calcular_beneficios(fecha, hora_inicio, hora_fin):
     # CENA SIN COSTO
     # =====================================================
 
-    entrada_diurna = 5 <= hora_entrada <= 8
+    entrada_diurna = 5 <= hora_entrada <= 13
 
     salida_nocturna = (
         hora_salida >= 20
@@ -56,7 +56,7 @@ def calcular_beneficios(fecha, hora_inicio, hora_fin):
     # CENA CON COSTO
     # =====================================================
 
-    if 10 <= hora_entrada <= 23.5:
+    if 15 <= hora_entrada <= 23.5:
         cena_con_costo = True
 
     # =====================================================
