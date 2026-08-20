@@ -490,7 +490,8 @@ message in messages %}
     </div>
   </div>
 </div>
-
+{% block scripts %} {% include "layout/includes/tabulator.html" %} {% endblock
+%}
 <script>
   function confirmarAsignacionesForm_submit() {
     document.getElementById("confirmarAsignacionesForm").submit();
@@ -684,7 +685,9 @@ message in messages %}
 
     table = new Tabulator("#tabla-registros", {
       theme: "site-dark",
-      maxHeight: "650px",
+      height: puedeVerDepartamento("*")
+        ? "calc(95vh - 386px)"
+        : "calc(85vh - 181px)",
       layout: "fitData",
 
       ajaxURL: `/json/registro/get_registros/${idProgramacion}`,
@@ -1656,7 +1659,7 @@ message in messages %}
 
   const tableConfirmacion = new Tabulator("#tabla-confirmacion", {
     theme: "site-dark",
-    height: "fitData",
+    height: "400px",
     layout: "fitColumns",
 
     ajaxURL: `/json/programacion/get_counts_by_line/${idProgramacion}/${idDepartmentProgramacion}`,

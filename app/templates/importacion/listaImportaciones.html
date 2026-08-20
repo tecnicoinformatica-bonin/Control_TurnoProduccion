@@ -58,7 +58,8 @@ Turnos Bonin {% endblock %} {% block content %}
     </div>
   </div>
 </div>
-
+{% block scripts %} {% include "layout/includes/tabulator.html" %} {% endblock
+%}
 <script>
   (async function () {
     cargarTableImportaciones();

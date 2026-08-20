@@ -1,7 +1,6 @@
 {% extends "layout/base.html" %} {% block title %} Departamentos - Turnos Bonin
 {% endblock %} {% block content %}
 
-<!-- form card cc payment -->
 <div class="card card-outline-secondary bg-dark text-light">
   <div class="card-body">
     <div class="d-flex justify-content-between">
@@ -43,9 +42,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="createModalLabel">
-              Crear Departamento
-            </h1>
+            <h1 class="modal-title fs-5" id="createModalLabel"></h1>
             <button
               type="button"
               class="btn-close"
@@ -225,7 +222,8 @@
     </div>
     {% endfor %}
   </div>
-
+  {% block scripts %} {% include "layout/includes/tabulator.html" %} {% include
+  "layout/includes/coloris.html" %} {% endblock %}
   <script>
     let departamentos = {};
     async function cargarCatalogos() {

@@ -1,7 +1,6 @@
 {% extends "layout/base.html" %} {% block title %} Configuraciones - Turnos
 Bonin {% endblock %} {% block content %}
 
-<!-- form card cc payment -->
 <div class="card card-outline-secondary bg-dark text-light">
   <div class="card-body">
     <div class="d-flex justify-content-between">
@@ -30,6 +29,8 @@ Bonin {% endblock %} {% block content %}
     <div id="tabla-configuraciones"></div>
   </div>
 </div>
+{% block scripts %} {% include "layout/includes/tabulator.html" %} {% endblock
+%}
 <script>
   const tableConfiguraciones = new Tabulator("#tabla-configuraciones", {
     theme: "site-dark",

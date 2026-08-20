@@ -1,7 +1,5 @@
 {% extends "layout/base.html" %} {% block title %} Calendario de feriados y
 asuetos - Turnos Bonin {% endblock %} {% block content %}
-
-<!-- form card cc payment -->
 <div class="card card-outline-secondary bg-dark text-light">
   <div class="card-body">
     <div class="d-flex justify-content-between">
@@ -39,6 +37,10 @@ asuetos - Turnos Bonin {% endblock %} {% block content %}
     <div id="tabla-feriados"></div>
   </div>
 </div>
+
+{% block scripts %} {% include "layout/includes/tabulator.html" %} {% endblock
+%}
+
 <script>
   const tableFeriados = new Tabulator("#tabla-feriados", {
     theme: "site-dark",

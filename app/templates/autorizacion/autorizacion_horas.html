@@ -12,7 +12,7 @@ messages %}
   ></button>
 </div>
 {% endfor %} {% endwith %}
-<div class="card card-outline-secondary bg-dark text-light mt-3">
+<div class="card card-outline-secondary bg-dark text-light">
   <div class="card-body">
     <div class="grid-autorizacion-parent">
       <div
@@ -348,7 +348,8 @@ messages %}
     </div>
   </div>
 </div>
-
+{% block scripts %} {% include "layout/includes/tabulator.html" %} {% endblock
+%}
 <script>
   const fechaActual = new Date();
   const fecha = `${fechaActual.getFullYear()}-${String(fechaActual.getMonth() + 1).padStart(2, "0")}-${String(fechaActual.getDay()).padStart(2, "0")}`;
@@ -467,7 +468,7 @@ messages %}
 
   const tableAutorizaciones = new Tabulator("#tabla-autorizaciones", {
     theme: "site-dark",
-    maxHeight: "640px",
+    height: "calc(95vh - 282px)",
     layout: "fitData",
     resizableColumnGuide: true,
     initialFilter: [{ field: "diferencia", type: ">", value: 0 }],

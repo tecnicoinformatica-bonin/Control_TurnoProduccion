@@ -43,9 +43,7 @@ endblock %} {% block content %}
       <div class="modal-dialog modal-xl">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="createModalLabel">
-              Crear Empleado
-            </h1>
+            <h1 class="modal-title fs-5" id="createModalLabel"></h1>
             <button
               type="button"
               class="btn-close"
@@ -61,7 +59,8 @@ endblock %} {% block content %}
     </div>
   </div>
 </div>
-
+{% block scripts %} {% include "layout/includes/tabulator.html" %} {% endblock
+%}
 <script>
   document.querySelectorAll(".modal").forEach((modal) => {
     modal.addEventListener("shown.bs.modal", () => {

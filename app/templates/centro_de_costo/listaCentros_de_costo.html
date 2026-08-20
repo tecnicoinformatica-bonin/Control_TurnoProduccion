@@ -1,7 +1,6 @@
 {% extends "layout/base.html" %} {% block title %} Centros de costo - Turnos
 Bonin {% endblock %} {% block content %}
 
-<!-- form card cc payment -->
 <div class="card card-outline-secondary bg-dark text-light">
   <div class="card-body">
     <div class="d-flex justify-content-between">
@@ -211,6 +210,8 @@ Bonin {% endblock %} {% block content %}
   </div>
 </div>
 
+{% block scripts %} {% include "layout/includes/tabulator.html" %} {% endblock
+%}
 <script>
   let departamentosTable = {};
   let departamentosFilters = {};

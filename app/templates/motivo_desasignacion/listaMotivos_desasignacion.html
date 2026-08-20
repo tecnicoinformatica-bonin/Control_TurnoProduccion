@@ -173,7 +173,8 @@ Turnos Bonin {% endblock %} {% block content %}
     </div>
   </div>
 </div>
-{% endfor %}
+{% endfor %} {% block scripts %} {% include "layout/includes/tabulator.html" %}
+{% endblock %}
 <script>
   (async function () {
     cargarTableMotivos();

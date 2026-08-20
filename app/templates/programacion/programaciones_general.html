@@ -16,18 +16,16 @@ messages %}
 <div class="card card-outline-secondary bg-dark text-light mt-3">
   <div class="card-body">
     <div class="d-flex justify-content-between">
-      <div class="d-flex justify-content-between">
-        <h3>Programaciones</h3>
-        <button
-          type="button"
-          class="btn btn-warning ms-3"
-          data-bs-toggle="modal"
-          data-bs-target="#crearProgramacionesAutomaticas"
-        >
-          <img src="/static/img/edit-icon.png" height="15px" width="15px" />
-          <strong>Crear programación</strong>
-        </button>
-      </div>
+      <h3>Programaciones</h3>
+      <button
+        type="button"
+        class="btn btn-warning ms-3"
+        data-bs-toggle="modal"
+        data-bs-target="#crearProgramacionesAutomaticas"
+      >
+        <img src="/static/img/edit-icon.png" height="15px" width="15px" />
+        <strong>Crear programación</strong>
+      </button>
     </div>
     {% if current_user.puede_ver_departamento("*") %}
     <div id="leyenda-departamentos" class="mt-2"></div>
@@ -209,7 +207,8 @@ messages %}
     </div>
   </div>
 </div>
-
+{% block scripts %} {% include "layout/includes/tabulator.html" %} {% endblock
+%}
 <script>
   const idDepartment = "{{ idDepartment }}";
 

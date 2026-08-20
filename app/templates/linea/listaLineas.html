@@ -45,7 +45,7 @@ endblock %} {% block content %}
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="createModalLabel">Crear Horario</h1>
+        <h1 class="modal-title fs-5" id="createModalLabel"></h1>
         <button
           type="button"
           class="btn-close"
@@ -209,7 +209,8 @@ endblock %} {% block content %}
     </div>
   </div>
 </div>
-{% endfor %}
+{% endfor %} {% block scripts %} {% include "layout/includes/tabulator.html" %}
+{% endblock %}
 <script>
   (async function () {
     cargarTableGeneralLineas();

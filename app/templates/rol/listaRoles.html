@@ -1,7 +1,6 @@
 {% extends "layout/base.html" %} {% block title %} Roles - Turnos Bonin {%
 endblock %} {% block content %}
 
-<!-- form card cc payment -->
 <div class="card card-outline-secondary bg-dark text-light">
   <div class="card-body">
     <div class="d-flex justify-content-between">
@@ -176,7 +175,8 @@ endblock %} {% block content %}
   <input type="hidden" name="idRol" id="delete_idRolP" />
   <input type="hidden" name="idPermiso" id="delete_idPermiso" />
 </form>
-
+{% block scripts %} {% include "layout/includes/tabulator.html" %} {% endblock
+%}
 <script>
   (async function () {
     cargarTableRoles();

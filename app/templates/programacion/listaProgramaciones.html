@@ -1,7 +1,6 @@
 {% extends "layout/base.html" %} {% block title %} Programaciones - Turnos Bonin
 {% endblock %} {% block content %}
 
-<!-- form card cc payment -->
 <div class="card card-outline-secondary bg-dark text-light">
   <div class="card-body">
     <div class="d-flex justify-content-between">
@@ -51,7 +50,8 @@
     </div>
   </div>
 </div>
-
+{% block scripts %} {% include "layout/includes/tabulator.html" %} {% endblock
+%}
 <script>
   (async function () {
     cargarTableProgramaciones();
