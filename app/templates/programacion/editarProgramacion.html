@@ -686,8 +686,8 @@ message in messages %}
     table = new Tabulator("#tabla-registros", {
       theme: "site-dark",
       height: puedeVerDepartamento("*")
-        ? "calc(95vh - 386px)"
-        : "calc(85vh - 181px)",
+        ? "calc(100vh - 386px)"
+        : "calc(80vh - 181px)",
       layout: "fitData",
 
       ajaxURL: `/json/registro/get_registros/${idProgramacion}`,
