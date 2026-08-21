@@ -900,10 +900,9 @@ messages %}
       observacion: data.observacion
         ? `Autorizado: ${fromWhichTotalComment}`
         : `Autorizado: ${fromWhichTotalComment}`,
-      fecha_autorizacion: new Date()
-        .toISOString()
-        .slice(0, 19)
-        .replace("T", " "),
+      fecha_autorizacion: new Date().toLocaleString("sv-SE", {
+        timeZone: "America/Guatemala",
+      }),
       usuario_autorizacion: "{{ current_user.id }}",
       idRegistro: data.idRegistro,
     };
