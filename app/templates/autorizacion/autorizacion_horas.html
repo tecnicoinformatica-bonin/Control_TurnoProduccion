@@ -421,12 +421,17 @@ messages %}
     columns: [
       {
         title: "No.",
+        headerHozAlign: "center",
         formatter: "rownum",
         frozen: true,
+        width: 70,
+
+        hozAlign: "center",
       },
       {
         title: "Estado",
         field: "_saveStatus",
+        headerHozAlign: "center",
         hozAlign: "center",
         frozen: true,
 
@@ -589,6 +594,7 @@ messages %}
           `;
         },
         cellClick: async function (e, cell) {
+          if (!tienePermiso("autorizacion.autorizarHorasExtra")) return;
           let row = cell.getRow();
           let data = row.getData();
 
@@ -617,6 +623,7 @@ messages %}
           `;
         },
         cellClick: async function (e, cell) {
+          if (!tienePermiso("autorizacion.autorizarHorasExtra")) return;
           let row = cell.getRow();
           let data = row.getData();
 
@@ -786,6 +793,7 @@ messages %}
         },
 
         cellClick: async function (e, cell) {
+          if (!tienePermiso("autorizacion.autorizarHorasExtra")) return;
           let row = cell.getRow();
           let data = row.getData();
 
@@ -810,6 +818,7 @@ messages %}
         },
 
         cellClick: async function (e, cell) {
+          if (!tienePermiso("autorizacion.autorizarHorasExtra")) return;
           let row = cell.getRow();
           let data = row.getData();
 
