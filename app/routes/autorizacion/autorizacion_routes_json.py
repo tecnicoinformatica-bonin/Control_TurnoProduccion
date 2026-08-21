@@ -28,7 +28,7 @@ def get_detalles_autorizaciones(from_date, to_date, idDepartment):
 
 @autorizacion_json_bp.route("/guardar_autorizacion_service", methods=["POST", "PUT"])
 @login_required
-@permiso_requerido('autorizacion.crear')
+@permiso_requerido('autorizacion.autorizarHorasExtra')
 def guardar_autorizacion_service():
     data = request.get_json()
     if not data:
