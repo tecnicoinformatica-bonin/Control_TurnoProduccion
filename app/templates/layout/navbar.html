@@ -1,5 +1,17 @@
 <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
   <div class="container-fluid">
+    {% if current_user.is_authenticated and
+    current_user.tiene_permiso("panel.administrador") %}
+    <button
+      class="btn btn-dark btn-lg"
+      data-bs-toggle="offcanvas"
+      href="#offcanvasPanel"
+      role="button"
+      aria-controls="offcanvasPanel"
+    >
+      <i class="bi bi-sliders"></i>
+    </button>
+    {% endif %}
     <a class="navbar-brand" href="/template/home/home">
       <img src="/static/img/logo.png" alt="logo" width="60" height="60" />
       <h1 class="logo" style="text-transform: uppercase; margin-left: 10px">
@@ -91,3 +103,105 @@
     </div>
   </div>
 </nav>
+<div
+  class="offcanvas offcanvas-start"
+  tabindex="-1"
+  id="offcanvasPanel"
+  aria-labelledby="offcanvasPanelLabel"
+>
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvasPanelLabel">Panel</h5>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="offcanvas"
+      aria-label="Close"
+    ></button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="d-flex flex-column">
+      <a
+        class="btn btn-light border border-secondary-subtle mb-1 text-start"
+        href="/template/feriado/listaFeriados"
+        >Calendario de feriados</a
+      >
+
+      <a
+        class="btn btn-light border border-secondary-subtle mb-1 text-start"
+        href="/template/centro_de_costo/listaCentros_de_costo"
+        >Centro de costo</a
+      >
+      <a
+        class="btn btn-light border border-secondary-subtle mb-1 text-start"
+        href="/template/configuracion/listaConfiguraciones"
+        >Configuración</a
+      >
+
+      <a
+        class="btn btn-light border border-secondary-subtle mb-1 text-start"
+        href="/template/departamento/listaDepartamentos"
+        >Departamento</a
+      >
+
+      <a
+        class="btn btn-light border border-secondary-subtle mb-1 text-start"
+        href="/template/empleado/listaEmpleados"
+        >Empleado</a
+      >
+
+      <a
+        class="btn btn-light border border-secondary-subtle mb-1 text-start"
+        href="/template/horario/listaHorarios"
+        >Horario</a
+      >
+
+      <a
+        class="btn btn-light border border-secondary-subtle mb-1 text-start"
+        href="/template/importacion/listaImportaciones"
+        >Importación</a
+      >
+
+      <a
+        class="btn btn-light border border-secondary-subtle mb-1 text-start"
+        href="/template/linea/listaLineas"
+        >Línea</a
+      >
+
+      <a
+        class="btn btn-light border border-secondary-subtle mb-1 text-start"
+        href="/template/motivo_desasignacion/listaMotivos_desasignacion"
+        >Motivo de desasignación</a
+      >
+
+      <a
+        class="btn btn-light border border-secondary-subtle mb-1 text-start"
+        href="/template/permiso/listaPermisos"
+        >Permiso</a
+      >
+
+      <a
+        class="btn btn-light border border-secondary-subtle mb-1 text-start"
+        href="/template/proceso/listaProcesos"
+        >Proceso</a
+      >
+
+      <a
+        class="btn btn-light border border-secondary-subtle mb-1 text-start"
+        href="/template/programacion/listaProgramaciones"
+        >Programación</a
+      >
+
+      <a
+        class="btn btn-light border border-secondary-subtle mb-1 text-start"
+        href="/template/rol/listaRoles"
+        >Rol</a
+      >
+
+      <a
+        class="btn btn-light border border-secondary-subtle mb-1 text-start"
+        href="/template/usuario/listaUsuarios"
+        >Usuario</a
+      >
+    </div>
+  </div>
+</div>
