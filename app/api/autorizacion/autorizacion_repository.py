@@ -29,6 +29,56 @@ class AutorizacionRepository:
                 cursor.close()
 
     @staticmethod
+    def get_autorizaciones_por_empleado(db, idEmpleado, from_date, to_date):
+        cursor = None
+
+        try:
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT 
+                tah.fecha,
+                tah.idEmpleado,
+                CONCAT_WS(' ',
+                    te.firstName,
+                    te.secondName,
+                    te.lastName,
+                    te.lastName2 
+                ) AS nombre_completo,
+                CONCAT_WS(' - ',
+                    COALESCE(tmi.entrada_area, tmi.entrada_garita),
+                    COALESCE(tmi.salida_area, tmi.salida_garita)
+                ) AS horario,	
+                tmi.hora_simple,
+                tmi.hora_doble,
+                tmi.total_horas,
+                tah.horas_autorizadas
+            FROM turnos_autorizacion_horas tah 
+            LEFT JOIN 
+                turnos_marcaje_importado tmi 
+                ON tah.idEmpleado = tmi.idEmpleado 
+                AND tah.fecha = tmi.fecha 
+            LEFT JOIN 
+                turnos_empleado te 
+                ON tah.idEmpleado = te.idEmpleado 
+            WHERE 
+                tah.idEmpleado = %s
+                AND tah.fecha >= %s
+                AND tah.fecha <= %s
+            """
+
+            cursor.execute(query, (idEmpleado, from_date, to_date,))
+
+            return cursor.fetchall()
+        
+        except Exception as ex:
+            raise Exception(f"No se pudo obtener el registro en el repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    @staticmethod
     def getAutorizacionByEmpleado(db, idEmpleado):
         cursor = None
 

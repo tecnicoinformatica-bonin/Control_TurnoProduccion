@@ -26,6 +26,16 @@ def get_detalles_autorizaciones(from_date, to_date, idDepartment):
 
     return jsonify(data), 200
 
+@autorizacion_json_bp.route("/get_autorizaciones_por_empleado/<int:idEmpleado>/<string:from_date>/<string:to_date>", methods=["GET"])
+@login_required
+@permiso_requerido('autorizacion.ver')
+def get_autorizaciones_por_empleado(idEmpleado, from_date, to_date):
+    data = Autorizacion_Service.get_autorizaciones_por_empleado_service(db, idEmpleado, from_date, to_date)
+    if not data:
+        return jsonify([]), 200
+
+    return jsonify(data), 200
+
 @autorizacion_json_bp.route("/guardar_autorizacion_service", methods=["POST", "PUT"])
 @login_required
 @permiso_requerido('autorizacion.autorizarHorasExtra')

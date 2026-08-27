@@ -147,6 +147,31 @@ class Autorizacion_Service():
 
         except Exception as ex:
             return {"error": f"No se pudo obtener autorizacion en el servicio: {str(ex)}"}
+
+    @staticmethod
+    def get_autorizaciones_por_empleado_service(db, idEmpleado, from_date, to_date):
+        try:
+            data = AutorizacionRepository.get_autorizaciones_por_empleado(db, idEmpleado, from_date, to_date)
+
+            registros = []
+
+            for row in data:
+                registro = {
+                    "fecha": row["fecha"].strftime("%d/%m/%Y"),
+                    "idEmpleado": row["idEmpleado"],
+                    "nombre_completo": row["nombre_completo"],
+                    "horario": row["horario"],
+                    "hora_simple": row["hora_simple"],
+                    "hora_doble": row["hora_doble"],
+                    "total_horas": row["total_horas"],
+                    "horas_autorizadas": row["horas_autorizadas"],
+                }
+                registros.append(registro)
+            
+            return registros
+
+        except Exception as ex:
+            raise Exception(f"No se puede obtener registros desde el servicio: {str(ex)}")
             
     @staticmethod
     def guardar_autorizacion_service(db, data):

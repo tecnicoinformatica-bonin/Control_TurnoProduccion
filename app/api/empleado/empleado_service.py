@@ -1,4 +1,7 @@
+from app.api.departamento.departamento_service import Departamento_Service
 from app.api.empleado.empleado_repository import EmpleadoRepository
+from app.api.usuario.usuario_repository import UsuarioRepository
+from app.api.usuario.usuario_service import Usuario_Service
 from app.extensions.slugify import Slugify
 
 class Empleado_Service():
@@ -71,6 +74,34 @@ class Empleado_Service():
                     "proceso": row["proceso"],
                     "activo": row["activo"],
                     "horario": row["horario"],
+                }
+                empleados.append(empleado)
+            return empleados
+
+        except Exception as ex:
+            raise Exception(f"No se pudo obtener empleados en el servicio: {str(ex)}")
+
+    @staticmethod
+    def get_empleados_id_nombre_service(db, idUsuario):
+        try:
+            usuario = Usuario_Service.getUsuarioById_service(db, idUsuario)
+            
+            if usuario["scope_departamentos_global"] == 1 or usuario["scope_departamentos_global"] == True:
+                departamentos = Departamento_Service.getDepartamentos_aplica_horas_extra_service(db)
+            else:
+                departamentos = UsuarioRepository.getUserDepartmentsById(db, idUsuario)
+
+            ids_Department = [
+                d["idDepartment"]
+                for d in departamentos
+            ]
+
+            data = EmpleadoRepository.get_empleados_id_nombre(db, ids_Department)
+            empleados = []
+            for row in data:
+                empleado = {
+                    "idEmpleado": row["idEmpleado"],
+                    "nombre_completo": row["nombre_completo"],
                 }
                 empleados.append(empleado)
             return empleados

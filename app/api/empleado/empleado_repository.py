@@ -133,6 +133,46 @@ class EmpleadoRepository:
         finally:
             if cursor:
                 cursor.close()
+
+    @staticmethod
+    def get_empleados_id_nombre(db, ids_Department):
+        cursor = None
+        
+        try: 
+            if not ids_Department:
+                return []
+            
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            placeholders = ", ".join(["%s"] * len(ids_Department))
+
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = f"""
+            SELECT 
+                te.idEmpleado,
+                CONCAT_WS(' ',
+                    te.firstName,
+                    te.secondName,
+                    te.lastName,
+                    te.lastName2
+                ) AS nombre_completo 
+            FROM turnos_empleado te
+            WHERE 
+                te.activo = 1
+                AND te.idDepartment in ({placeholders})
+            ORDER BY te.firstName
+            """
+            cursor.execute(query, ids_Department)
+
+            return cursor.fetchall()
+        
+        except Exception as ex:
+            raise Exception (f"No se pudo obtener empleados en el repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
     
     @staticmethod
     def get_full_name_empleados(db):
@@ -141,7 +181,7 @@ class EmpleadoRepository:
         try: 
             cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
 
-            query = """
+            query = f"""
             SELECT CONCAT_WS(' ',
                 firstName,
                 secondName,
@@ -157,7 +197,7 @@ class EmpleadoRepository:
             return empleados
         
         except Exception as ex:
-            raise Exception ("No se pudo obtener nombres completos de empleados en el repositorio: {str(ex)}")
+            raise Exception (f"No se pudo obtener nombres completos de empleados en el repositorio: {str(ex)}")
 
         finally:
             if cursor:
