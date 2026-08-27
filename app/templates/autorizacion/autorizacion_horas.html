@@ -281,8 +281,223 @@ messages %}
     </div>
   </div>
 </div>
+
+<!-- registrosModal Modal Reutilizable -->
+<div class="modal fade" id="registrosModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <form>
+        <div class="modal-header">
+          <h5 class="modal-title" id="editModalLabel">
+            Registro del empleado <strong id="modal-nombre-titulo"></strong> el
+            <strong id="modal-fecha-titulo"></strong>
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="grid-registros-modal">
+            <div class="col-12 grid-registros-modal-1">
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="fecha"
+                  id="modal-fecha"
+                  readonly
+                />
+                <label for="fecha" class="form-label">Fecha</label>
+              </div>
+            </div>
+
+            <div class="col-12 grid-registros-modal-2">
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="idEmpleado"
+                  id="modal-idEmpleado"
+                  readonly
+                />
+                <label for="idEmpleado" class="form-label">ID Empleado</label>
+              </div>
+            </div>
+
+            <div class="col-12 grid-registros-modal-3">
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="nombre_completo"
+                  id="modal-nombre_completo"
+                  readonly
+                />
+                <label for="nombre_completo" class="form-label"
+                  >Nombre del empleado</label
+                >
+              </div>
+            </div>
+
+            <div class="grid-registros-modal-4">
+              <hr />
+              <h6>Asignación</h6>
+            </div>
+
+            <div class="col-12 grid-registros-modal-5">
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="centro_de_costo"
+                  id="modal-centro_de_costo"
+                  readonly
+                />
+                <label for="centro_de_costo" class="form-label"
+                  >Centro de costo</label
+                >
+              </div>
+            </div>
+
+            <div class="col-12 grid-registros-modal-6">
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="linea"
+                  id="modal-linea"
+                  readonly
+                />
+                <label for="linea" class="form-label">Línea</label>
+              </div>
+            </div>
+
+            <div class="col-12 grid-registros-modal-7">
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="proceso"
+                  id="modal-proceso"
+                  readonly
+                />
+                <label for="proceso" class="form-label">Proceso</label>
+              </div>
+            </div>
+
+            <div class="grid-registros-modal-8">
+              <hr />
+              <h6>Horarios</h6>
+            </div>
+
+            <div class="col-12 grid-registros-modal-9">
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="horario_digitado"
+                  id="modal-horario_digitado"
+                  readonly
+                />
+                <label for="horario_digitado" class="form-label"
+                  >Horario Digitado</label
+                >
+              </div>
+            </div>
+
+            <div class="col-12 grid-registros-modal-10">
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="horario_reloj"
+                  id="modal-horario_reloj"
+                  readonly
+                />
+                <label for="horario_reloj" class="form-label"
+                  >Horario Reloj</label
+                >
+              </div>
+            </div>
+
+            <div class="col-12 grid-registros-modal-11">
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="horario_turno"
+                  id="modal-horario_turno"
+                  readonly
+                />
+                <label for="horario_turno" class="form-label"
+                  >Horario Turno</label
+                >
+              </div>
+            </div>
+
+            <div class="grid-registros-modal-12">
+              <hr />
+              <h6>Resultados</h6>
+            </div>
+
+            <div class="col-12 grid-registros-modal-13">
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="total_horas_digitadas"
+                  id="modal-total_horas_digitadas"
+                  readonly
+                />
+                <label for="total_horas_digitadas" class="form-label"
+                  >Total horas extra digitadas</label
+                >
+              </div>
+            </div>
+
+            <div class="col-12 grid-registros-modal-14">
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="total_horas_reloj"
+                  id="modal-total_horas_reloj"
+                  readonly
+                />
+                <label for="total_horas_reloj" class="form-label"
+                  >Total horas extra reloj</label
+                >
+              </div>
+            </div>
+
+            <div class="col-12 grid-registros-modal-15">
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="diferencia"
+                  id="modal-diferencia"
+                  readonly
+                />
+                <label for="diferencia" class="form-label">Diferencia</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer"></div>
+      </form>
+    </div>
+  </div>
+</div>
+
 {% block scripts %} {% include "layout/includes/tabulator.html" %} {% endblock
 %}
+
 <script>
   const fechaActual = new Date();
   const fecha = `${fechaActual.getFullYear()}-${String(fechaActual.getMonth() + 1).padStart(2, "0")}-${String(fechaActual.getDay()).padStart(2, "0")}`;
@@ -427,6 +642,31 @@ messages %}
         width: 70,
 
         hozAlign: "center",
+      },
+      {
+        title: "Detalles",
+        headerHozAlign: "center",
+        frozen: true,
+        width: 105,
+
+        hozAlign: "center",
+
+        formatter: function (cell) {
+          const data = cell.getRow().getData();
+
+          return `
+            <button
+              class="btn btn-success"
+              data-bs-toggle="modal"
+              data-bs-target="#registrosModal"
+              data-id-empleado = ${data.idEmpleado}
+              data-fecha = ${data.fecha}
+              data-nombre-completo = ${data.nombre_completo}
+            >
+              <i class="bi bi-card-text"></i>
+            </button>
+          `;
+        },
       },
       {
         title: "Estado",
@@ -1054,6 +1294,54 @@ messages %}
       default:
         break;
     }
+  }
+
+  const registrosModal = document.getElementById("registrosModal");
+
+  registrosModal.addEventListener("show.bs.modal", async function (event) {
+    this.querySelectorAll("input").forEach((i) => i.blur());
+
+    const button = event.relatedTarget;
+
+    document.getElementById("modal-nombre-titulo").textContent =
+      button.dataset.nombreCompleto;
+    document.getElementById("modal-fecha-titulo").textContent =
+      button.dataset.fecha;
+
+    const data = await obtenerRegistroEmpleado(
+      button.dataset.idEmpleado,
+      button.dataset.fecha,
+    );
+
+    document.getElementById("modal-fecha").value = data.fecha;
+    document.getElementById("modal-idEmpleado").value = data.idEmpleado;
+    document.getElementById("modal-nombre_completo").value =
+      data.nombre_completo;
+    document.getElementById("modal-centro_de_costo").value =
+      data.centro_de_costo;
+    document.getElementById("modal-linea").value = data.linea;
+    document.getElementById("modal-proceso").value = data.proceso;
+    document.getElementById("modal-horario_digitado").value =
+      `${data.hora_inicio_digitada} - ${data.hora_fin_digitada}`;
+    document.getElementById("modal-horario_reloj").value =
+      `${data.hora_inicio_reloj} - ${data.hora_fin_reloj}`;
+    document.getElementById("modal-horario_turno").value =
+      `${data.hora_inicio_turno} - ${data.hora_fin_turno}`;
+    document.getElementById("modal-total_horas_digitadas").value =
+      data.total_horas_digitadas;
+    document.getElementById("modal-total_horas_reloj").value =
+      data.total_horas_reloj;
+    document.getElementById("modal-diferencia").value = data.diferencia_horas;
+  });
+
+  async function obtenerRegistroEmpleado(idEmpleado, fecha) {
+    const response = await fetch(
+      `/json/registro/get_registro_with_autorizacion/${idEmpleado}/${fecha}`,
+    );
+
+    const resp = await response.json();
+
+    return resp;
   }
 </script>
 
