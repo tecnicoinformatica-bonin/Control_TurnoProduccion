@@ -54,15 +54,6 @@ class Registro_Service():
         try:
             data = RegistroRepository.get_registro_with_autorizacion(db, idEmpleado, fecha)
 
-            if not data:
-                print("Sin datos")
-                return
-            print(data)
-            print(data["fecha"])
-            print(type(data["fecha"]))
-            print(data["fecha"].isoformat())
-            print(type(data["fecha"].isoformat()))
-
             registro = {
                 "idRegistro": data["idRegistro"],
                 "fecha": data["fecha"].isoformat(),

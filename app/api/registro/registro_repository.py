@@ -90,11 +90,7 @@ class RegistroRepository:
 
             cursor.execute(query, (idEmpleado, fecha,))
 
-            result = cursor.fetchone()
-            print(result)
-
-            return result
-            # return cursor.fetchone()
+            return cursor.fetchone()
         
         except Exception as ex:
             raise Exception(f"No se pudo obtener el registro en el repositorio: {str(ex)}")
