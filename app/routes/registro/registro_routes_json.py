@@ -22,6 +22,16 @@ def get_registros(idProgramacion):
 
     return jsonify(data), 200
 
+@registro_json_bp.route("/get_registro_with_autorizacion/<int:idEmpleado>/<string:fecha>", methods=["GET"])
+@login_required
+@permiso_requerido("registro.ver")
+def get_registro_with_autorizacion(idEmpleado, fecha):
+    data = Registro_Service.get_registro_with_autorizacion_service(db, idEmpleado, fecha)
+    if not data:
+        return jsonify([]), 200
+
+    return jsonify(data), 200
+
 @registro_json_bp.route("/create_registro", methods=["POST"])
 @login_required
 @permiso_requerido("registro.crear")

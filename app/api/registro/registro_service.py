@@ -48,6 +48,44 @@ class Registro_Service():
 
         except Exception as ex:
             return {"error": f"No se puede obtener registros desde el servicio: {str(ex)}"}
+
+    @staticmethod
+    def get_registro_with_autorizacion_service(db, idEmpleado, fecha):
+        try:
+            data = RegistroRepository.get_registro_with_autorizacion(db, idEmpleado, fecha)
+
+            if not data:
+                print("Sin datos")
+                return
+            print(data)
+            print(data["fecha"])
+            print(type(data["fecha"]))
+            print(data["fecha"].isoformat())
+            print(type(data["fecha"].isoformat()))
+
+            registro = {
+                "idRegistro": data["idRegistro"],
+                "fecha": data["fecha"].isoformat(),
+                "idEmpleado": data["idEmpleado"],
+                "nombre_completo": data["nombre_completo"],
+                "centro_de_costo": data["centro_de_costo"],
+                "linea": data["linea"],
+                "proceso": data["proceso"],
+                "hora_inicio_turno": str(data["hora_inicio_turno"]) if data["hora_inicio_turno"] is not None else None,
+                "hora_fin_turno": str(data["hora_fin_turno"]) if data["hora_fin_turno"] is not None else None, 
+                "hora_inicio_digitada": str(data["hora_inicio_digitada"]) if data["hora_inicio_digitada"] is not None else None,
+                "hora_fin_digitada": str(data["hora_fin_digitada"]) if data["hora_fin_digitada"] is not None else None, 
+                "hora_inicio_reloj": str(data["hora_inicio_reloj"]) if data["hora_inicio_reloj"] is not None else None,
+                "hora_fin_reloj": str(data["hora_fin_reloj"]) if data["hora_fin_reloj"] is not None else None,
+                "total_horas_digitadas": data["total_horas_digitadas"],
+                "total_horas_reloj": data["total_horas_reloj"],
+                "diferencia_horas": data["diferencia_horas"],
+            }
+            
+            return registro
+
+        except Exception as ex:
+            raise Exception(f"No se puede obtener registros desde el servicio: {str(ex)}")
         
     @staticmethod
     def getRegistros_service(db):

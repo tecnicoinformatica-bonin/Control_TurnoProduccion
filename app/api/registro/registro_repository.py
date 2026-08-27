@@ -33,6 +33,77 @@ class RegistroRepository:
                 cursor.close()
 
     @staticmethod
+    def get_registro_with_autorizacion(db, idEmpleado, fecha):
+        cursor = None
+
+        try:
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT 
+                tr.idRegistro, 
+                tr.fecha,
+                te.idEmpleado,
+                CONCAT_WS(' ',
+                    te.firstName,
+                    te.secondName,
+                    te.lastName,
+                    te.lastName2 
+                ) AS nombre_completo,
+                tcdc.nombreCentro as centro_de_costo,
+                tl.nameLinea as linea,
+                tp.proceso as proceso,
+                th.hora_inicio AS hora_inicio_turno,
+                th.hora_fin AS hora_fin_turno,
+                tr.hora_inicio AS hora_inicio_digitada,
+                tr.hora_fin AS hora_fin_digitada,
+                COALESCE(tmi.entrada_area, tmi.entrada_garita) AS hora_inicio_reloj,
+                COALESCE(tmi.salida_area, tmi.salida_garita ) AS hora_fin_reloj,
+                tr.diferencia_horas AS total_horas_digitadas,
+                tmi.total_horas AS total_horas_reloj,
+                (tmi.total_horas - tr.diferencia_horas) AS diferencia_horas
+            FROM turnos_registro tr
+            LEFT JOIN 
+                turnos_empleado te 
+                ON tr.idEmpleado = te.idEmpleado
+            LEFT JOIN
+                turnos_centro_de_costo tcdc 
+                ON tr.idCentro = tcdc.idCentro 
+            LEFT JOIN 
+                turnos_linea tl 
+                ON tr.idLinea = tl.idLinea 
+            LEFT JOIN 
+                turnos_proceso tp 
+                ON tr.idProceso = tp.idProceso 
+            LEFT JOIN 
+                turnos_marcaje_importado tmi 
+                ON 
+                    tr.idEmpleado = tmi.idEmpleado
+                    AND tr.fecha = tmi.fecha
+            LEFT JOIN 
+                turnos_horario th 
+                ON te.idHorario = th.idHorario 
+            WHERE 
+                tr.idEmpleado = %s
+                AND tr.fecha = %s
+            """
+
+            cursor.execute(query, (idEmpleado, fecha,))
+
+            result = cursor.fetchone()
+            print(result)
+
+            return result
+            # return cursor.fetchone()
+        
+        except Exception as ex:
+            raise Exception(f"No se pudo obtener el registro en el repositorio: {str(ex)}")
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    @staticmethod
     def getRegistrosByProgramacion(db, idProgramacion):
         cursor = None
 
