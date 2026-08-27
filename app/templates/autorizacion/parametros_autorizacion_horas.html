@@ -3,90 +3,331 @@ Turnos Bonin {% endblock %} {% block content %}
 
 <div class="">
   <hr class="mb-5" />
-
-  <div class="card card-outline-secondary bg-dark text-light">
-    <div class="card-body">
-      <h3 class="text-left">
-        Ingreso de datos para autorización de horas extra
-      </h3>
-      <hr />
-
-      {% with messages = get_flashed_messages(with_categories=true) %} {% for
-      category, message in messages %}
-      <div class="alert alert-{{ category }} alert-dismissible" role="alert">
-        <strong>{{ message }}</strong>
+  <div class="accordion" id="accordion">
+    <div class="accordion-item">
+      <h2 class="accordion-header">
         <button
+          class="accordion-button"
           type="button"
-          class="btn-close"
-          data-bs-dismiss="alert"
-          aria-label="Close"
-        ></button>
-      </div>
-      {% endfor %} {% endwith %}
-      <form
-        class="form"
-        role="form"
-        action="/web/autorizacion/parametros_autorizacion_horas_web"
-        method="POST"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapseOne"
+          aria-expanded="true"
+          aria-controls="collapseOne"
+        >
+          Autorizaciones de horas extra
+        </button>
+      </h2>
+      <div
+        id="collapseOne"
+        class="accordion-collapse collapse show"
+        data-bs-parent="#accordion"
       >
-        <div class="form-group">
-          <label for="idDepartment">Departamento</label>
-          <select
-            type="text"
-            class="form-control"
-            id="idDepartment"
-            title="Departamento"
-            name="idDepartment"
-            required
-          >
-            <option selected disabled value="{{ None }}">
-              -- Seleccione una opción --
-            </option>
-            {% for d in departamentos %}
-            <option value="{{ d.idDepartment }}">{{ d.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
+        <div class="accordion-body">
+          <div class="card card-outline-secondary bg-dark text-light">
+            <div class="card-body">
+              <h3 class="text-left">
+                Ingreso de datos para autorización de horas extra
+              </h3>
+              <hr />
 
-        <div class="form-group">
-          <label for="from_date">Desde</label>
-          <input
-            type="date"
-            class="form-control"
-            id="from_date"
-            name="from_date"
-            title="Desde qué fecha se desea ver"
-            required
-          />
-        </div>
+              {% with messages = get_flashed_messages(with_categories=true) %}
+              {% for category, message in messages %}
+              <div
+                class="alert alert-{{ category }} alert-dismissible"
+                role="alert"
+              >
+                <strong>{{ message }}</strong>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="alert"
+                  aria-label="Close"
+                ></button>
+              </div>
+              {% endfor %} {% endwith %}
+              <form
+                class="form"
+                role="form"
+                action="/web/autorizacion/parametros_autorizacion_horas_web"
+                method="POST"
+              >
+                <div class="form-group">
+                  <label for="idDepartment">Departamento</label>
+                  <select
+                    type="text"
+                    class="form-control"
+                    id="idDepartment"
+                    title="Departamento"
+                    name="idDepartment"
+                    required
+                  >
+                    <option selected disabled value="{{ None }}">
+                      -- Seleccione una opción --
+                    </option>
+                    {% for d in departamentos %}
+                    <option value="{{ d.idDepartment }}">{{ d.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
 
-        <div class="form-group">
-          <label for="to_date">Hasta</label>
-          <input
-            type="date"
-            class="form-control"
-            id="to_date"
-            name="to_date"
-            title="Hasta qué fecha se desea ver"
-            required
-          />
-        </div>
+                <div class="form-group">
+                  <label for="from_date">Desde</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="from_date"
+                    name="from_date"
+                    title="Desde qué fecha se desea ver"
+                    required
+                  />
+                </div>
 
-        <hr />
-        <div class="form-group row">
-          <div class="col-md-6">
-            <button type="reset" class="btn btn-light btn-lg btn-block">
-              Borrar información
-            </button>
+                <div class="form-group">
+                  <label for="to_date">Hasta</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="to_date"
+                    name="to_date"
+                    title="Hasta qué fecha se desea ver"
+                    required
+                  />
+                </div>
+
+                <hr />
+                <div class="form-group row">
+                  <div class="col-md-6">
+                    <button type="reset" class="btn btn-light btn-lg btn-block">
+                      Borrar información
+                    </button>
+                  </div>
+                  <div class="col-md-6">
+                    <button
+                      type="submit"
+                      class="btn btn-success btn-lg btn-block"
+                    >
+                      Ver autorizaciones
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
           </div>
-          <div class="col-md-6">
-            <button type="submit" class="btn btn-success btn-lg btn-block">
-              Crear
-            </button>
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button
+          class="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapseTwo"
+          aria-expanded="false"
+          aria-controls="collapseTwo"
+        >
+          Horas autorizadas por empleado
+        </button>
+      </h2>
+      <div
+        id="collapseTwo"
+        class="accordion-collapse collapse"
+        data-bs-parent="#accordion"
+      >
+        <div class="accordion-body">
+          <div class="form-group">
+            <label for="idEmpleado">Empleado</label>
+            <select
+              type="text"
+              class="form-control"
+              id="idEmpleado-empleado"
+              title="Empleado"
+              name="idEmpleado"
+              required
+            >
+              <option selected disabled value="{{ None }}">
+                -- Seleccione una opción --
+              </option>
+              {% for e in empleados %}
+              <option value="{{ e.idEmpleado }}">
+                {{ e.nombre_completo }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="from_date">Desde</label>
+            <input
+              type="date"
+              class="form-control"
+              id="from_date-empleado"
+              name="from_date"
+              title="Desde qué fecha se desea ver"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="to_date">Hasta</label>
+            <input
+              type="date"
+              class="form-control"
+              id="to_date-empleado"
+              name="to_date"
+              title="Hasta qué fecha se desea ver"
+              required
+            />
+          </div>
+
+          <hr />
+          <div class="form-group row">
+            <div class="col-md-6">
+              <button type="reset" class="btn btn-light btn-lg btn-block">
+                Borrar información
+              </button>
+            </div>
+            <div class="col-md-6">
+              <button
+                data-bs-toggle="modal"
+                data-bs-target="#horasEmpleadoModal"
+                class="btn btn-success btn-lg btn-block"
+              >
+                Ver horas autorizadas
+              </button>
+            </div>
           </div>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 </div>
+
+<!-- horasEmpleadoModal Modal Reutilizable -->
+<div class="modal fade" id="horasEmpleadoModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Horas autorizadas del empleado</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+
+      <div id="tabla-horas-autorizadas-por-empleado" class="m-3"></div>
+
+      <div class="modal-footer">
+        <button id="descargar-pdf" class="btn btn-success">Descargar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% block scripts %} {% include "layout/includes/tabulator.html" %} {% include
+"layout/includes/jspdf.html" %} {% endblock%}
+
+<script>
+  const horasEmpleadoModal = document.getElementById("horasEmpleadoModal");
+  let tableHorasEmpleado = null;
+
+  horasEmpleadoModal.addEventListener("show.bs.modal", async function (e) {
+    if (tableHorasEmpleado) {
+      tableHorasEmpleado = null;
+    }
+
+    idEmpleado = document.getElementById("idEmpleado-empleado").value;
+    from_date = document.getElementById("from_date-empleado").value;
+    to_date = document.getElementById("to_date-empleado").value;
+
+    if (!(idEmpleado == "" || from_date || to_date)) {
+      alert("Faltan datos");
+      return;
+    }
+
+    cargarTableHorasEmpleado(idEmpleado, from_date, to_date);
+  });
+
+  function cargarTableHorasEmpleado(idEmpleado, from_date, to_date) {
+    tableRolesPorUsuario = new Tabulator(
+      "#tabla-horas-autorizadas-por-empleado",
+      {
+        theme: "site-dark",
+        maxHeight: "800px",
+        layout: "fitColumns",
+
+        ajaxURL: `/json/autorizacion/get_autorizaciones_por_empleado/${idEmpleado}/${from_date}/${to_date}`,
+        ajaxConfig: "GET",
+
+        pagination: true,
+        paginationMode: "local",
+        paginationSize: 25,
+        paginationSizeSelector: [15, 25, 50, 100],
+
+        locale: true,
+
+        langs: {
+          "es-es": {
+            pagination: {
+              page_size: "Registros",
+              first: "Primero",
+              first_title: "Primera página",
+              last: "Último",
+              last_title: "Última página",
+              prev: "Anterior",
+              prev_title: "Página anterior",
+              next: "Siguiente",
+              next_title: "Página siguiente",
+              all: "Todos",
+            },
+          },
+        },
+
+        locale: "es-es",
+
+        columns: [
+          {
+            title: "No.",
+            formatter: "rownum",
+          },
+          {
+            title: "Fecha",
+            field: "fecha",
+          },
+          {
+            title: "Horario",
+            field: "horario",
+          },
+          {
+            title: "Hora simple",
+            field: "hora_simple",
+          },
+          {
+            title: "Hora doble",
+            field: "hora_doble",
+          },
+          {
+            title: "Total horas posibles",
+            field: "total_horas",
+          },
+          {
+            title: "Horas autorizadas",
+            field: "horas_autorizadas",
+          },
+        ],
+      },
+    );
+  }
+
+  document
+    .getElementById("descargar-pdf")
+    .addEventListener("click", function () {
+      tableRolesPorUsuario.download("pdf", "Reporte_horas_empleado.pdf", {
+        orientation: "portrait",
+        title: "Reporte de horas extra autorizadas del empleado",
+      });
+    });
+</script>
 {% endblock %}
