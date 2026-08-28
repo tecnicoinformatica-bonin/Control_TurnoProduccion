@@ -433,12 +433,7 @@
     });
 
     if (centrosAgregados.includes(nameInput.value)) {
-      Swal.fire({
-        icon: "error",
-        title: "El centro / línea ya fue agregado.",
-        showConfirmButton: false,
-        timer: 1500,
-      });
+      createSweetAlertErrorTimer("El centro / línea ya fue agregado.");
       return;
     }
 
@@ -481,13 +476,9 @@
     if (respLineas.success) msgLineas = "Líneas creadas.";
     else msgLineas = "No se crearon las líneas";
 
-    Swal.fire({
-      icon: "success",
-      title: `
-              Centros de costo: ${msgCentros}
-              \nLíneas: ${msgLineas}`,
-      showConfirmButton: true,
-    });
+    createSweetAlertSuccess(
+      `Centros de costo: ${msgCentros} \nLíneas: ${msgLineas}`,
+    );
 
     if (respCentros.success && respLineas.success) {
       limpiarTablas();

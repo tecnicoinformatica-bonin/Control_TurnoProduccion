@@ -460,22 +460,6 @@ endblock %} {% block content %}
 {% block scripts %} {% include "layout/includes/tabulator.html" %} {% endblock
 %}
 <script>
-  function createSweetAlertSuccess(msg) {
-    Swal.fire({
-      icon: "success",
-      title: msg,
-      showConfirmButton: true,
-    });
-  }
-
-  function createSweetAlertError(msg) {
-    Swal.fire({
-      icon: "error",
-      title: msg,
-      showConfirmButton: true,
-    });
-  }
-
   (async function () {
     cargarTableUsuarios();
   })();
@@ -1028,7 +1012,7 @@ endblock %} {% block content %}
     const respUsuarioDepartamentos = await responseUsuarioDepartamentos.json();
 
     if (respUsuarioDepartamentos.success) {
-      createSweetAlertSuccess(
+      createSweetAlertSuccessTimer(
         `Departamentos agregados, No. de departamentos en total: ${respUsuarioDepartamentos.usuario_departamentos_creados}`,
       );
     } else {

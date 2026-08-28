@@ -164,7 +164,7 @@ asuetos - Turnos Bonin {% endblock %} {% block content %}
             row.update({
               _saveStatus: "error",
             });
-            alert("Complete los campos obligatorios");
+            createSweetAlertError("Complete los campos obligatorios");
             return;
           }
 
@@ -178,7 +178,7 @@ asuetos - Turnos Bonin {% endblock %} {% block content %}
             // CREATE
             if (data._isNew) {
               if (!data.idFeriado && !data._isNew) {
-                alert("Fila sin ID válido");
+                createSweetAlertError("Fila sin ID válido");
                 return;
               }
               response = await fetch("/json/feriado/create_feriado", {
@@ -220,7 +220,7 @@ asuetos - Turnos Bonin {% endblock %} {% block content %}
               _saveStatus: "saved",
             });
           } catch (error) {
-            alert(error.message);
+            createSweetAlertError(error.message);
           }
         },
       },

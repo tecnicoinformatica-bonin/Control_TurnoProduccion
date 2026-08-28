@@ -243,7 +243,7 @@ Turnos Bonin {% endblock %} {% block content %}
     to_date = document.getElementById("to_date-empleado").value;
 
     if (!(idEmpleado == "" || from_date || to_date)) {
-      alert("Faltan datos");
+      createSweetAlertError("Faltan datos");
       return;
     }
 

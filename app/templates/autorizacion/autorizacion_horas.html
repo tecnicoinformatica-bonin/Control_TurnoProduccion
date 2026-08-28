@@ -528,7 +528,9 @@ messages %}
     } catch (error) {
       console.error(error);
 
-      alert("Ocurrió un error de comunicación con el servidor.");
+      createSweetAlertErrorTimer(
+        "Ocurrió un error de comunicación con el servidor.",
+      );
 
       return null;
     }
@@ -596,7 +598,7 @@ messages %}
       const resp = await response.json();
 
       if (!resp.success) {
-        alert("Credenciales inválidas");
+        createSweetAlertErrorTimer("Credenciales inválidas");
         return;
       }
 
@@ -608,7 +610,7 @@ messages %}
 
       usernameInput.value = passwordInput.value = "";
 
-      alert("Sesión renovada");
+      createSweetAlertSuccessTimer("Sesión renovada");
     } catch (error) {
       console.error(error);
     }
@@ -1175,7 +1177,7 @@ messages %}
           _saveStatus: "error",
         });
 
-        alert(`Error al guardar: ${resp}`);
+        createSweetAlertError(`Error al guardar: ${resp}`);
 
         return;
       }

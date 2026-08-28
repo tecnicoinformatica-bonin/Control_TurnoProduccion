@@ -145,7 +145,7 @@ Bonin {% endblock %} {% block content %}
             row.update({
               _saveStatus: "error",
             });
-            alert("Complete los campos obligatorios");
+            createSweetAlertError("Complete los campos obligatorios");
             return;
           }
 
@@ -160,7 +160,7 @@ Bonin {% endblock %} {% block content %}
             // CREATE
             if (isCreate) {
               if (!data.idConfiguracion && !data._isNew) {
-                alert("Fila sin ID válido");
+                createSweetAlertError("Fila sin ID válido");
                 return;
               }
               response = await fetch(
@@ -205,7 +205,7 @@ Bonin {% endblock %} {% block content %}
               _saveStatus: "saved",
             });
           } catch (error) {
-            alert(error.message);
+            createSweetAlertError(error.message);
           }
         },
       },

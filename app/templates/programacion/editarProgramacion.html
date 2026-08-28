@@ -574,7 +574,9 @@ message in messages %}
     } catch (error) {
       console.error(error);
 
-      alert("Ocurrió un error de comunicación con el servidor.");
+      createSweetAlertErrorTimer(
+        "Ocurrió un error de comunicación con el servidor.",
+      );
 
       return null;
     }
@@ -891,7 +893,7 @@ message in messages %}
               row.update({
                 _saveStatus: "error",
               });
-              alert("Complete los campos obligatorios");
+              createSweetAlertError("Complete los campos obligatorios");
               return;
             }
 
@@ -907,7 +909,7 @@ message in messages %}
               // CREATE
               if (data._isNew) {
                 if (!data.idRegistro && !data._isNew) {
-                  alert("Fila sin ID válido");
+                  createSweetAlertError("Fila sin ID válido");
                   return;
                 }
                 resp = await apiFetch("/json/registro/create_registro", {
@@ -1760,7 +1762,7 @@ message in messages %}
       const resp = await response.json();
 
       if (!resp.success) {
-        alert("Credenciales inválidas");
+        createSweetAlertError("Credenciales inválidas");
         return;
       }
 
@@ -1772,7 +1774,7 @@ message in messages %}
 
       usernameInput.value = passwordInput.value = "";
 
-      alert("Sesión renovada");
+      createSweetAlertSuccess("Sesión renovada");
     } catch (error) {
       console.error(error);
     }
@@ -1819,7 +1821,7 @@ message in messages %}
         const resp = await response.json();
 
         if (!resp.success) {
-          alert("No se pudo registrar el motivo");
+          createSweetAlertError("No se pudo registrar el motivo");
           return;
         }
 
