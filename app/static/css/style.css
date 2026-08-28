@@ -700,6 +700,7 @@ a {
 
 .clr-picker {
   z-index: 1060 !important;
+  pointer-events: auto !important;
 }
 
 .grid-registros-modal {
