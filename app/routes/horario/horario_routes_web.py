@@ -27,12 +27,12 @@ def crearHorario_web():
 
         if "error" in result:
             FlashMessages.flash_error(result["error"])
-            return redirect(url_for("horario_template.crearHorario_template"))
+            return redirect(url_for("horario_template.listaHorarios_template"))
         else:
             FlashMessages.flash_success(result["mensaje"])
-            return redirect(url_for("horario_template.crearHorario_template"))
+            return redirect(url_for("horario_template.listaHorarios_template"))
 
-    return redirect(url_for("horario_template.crearHorario_template",))
+    return redirect(url_for("horario_template.listaHorarios_template",))
 
 @horario_web_bp.route("/editarHorario_web", methods=["GET", "POST"])
 @login_required

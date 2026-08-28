@@ -66,12 +66,12 @@ def crearUsuario_web():
 
         if "error" in result:
             FlashMessages.flash_error(result["error"])
-            return redirect(url_for("usuario_template.crearUsuario_template"))
+            return redirect(url_for("usuario_template.listaUsuarios_template"))
         else:
             FlashMessages.flash_success(result["mensaje"])
-            return redirect(url_for("usuario_template.crearUsuario_template"))
+            return redirect(url_for("usuario_template.listaUsuarios_template"))
 
-    return redirect(url_for("usuario_template.crearUsuario_template"))
+    return redirect(url_for("usuario_template.listaUsuarios_template"))
 
 @usuario_web_bp.route("/editarUsuario_web", methods=["GET", "POST"])
 @login_required

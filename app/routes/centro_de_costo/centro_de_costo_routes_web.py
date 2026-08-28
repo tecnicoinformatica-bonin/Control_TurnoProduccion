@@ -27,12 +27,12 @@ def crearCentro_de_costo_web():
 
         if "error" in result:
             FlashMessages.flash_error(result["error"])
-            return redirect(url_for("centro_de_costo_template.crearCentro_de_costo_template"))
+            return redirect(url_for("centro_de_costo_template.listaCentros_de_costo_template"))
         else:
             FlashMessages.flash_success(result["mensaje"])
-            return redirect(url_for("centro_de_costo_template.crearCentro_de_costo_template"))
+            return redirect(url_for("centro_de_costo_template.listaCentros_de_costo_template"))
 
-    return redirect(url_for("centro_de_costo_template.crearCentro_de_costo_template"))
+    return redirect(url_for("centro_de_costo_template.listaCentros_de_costo_template"))
 
 @centro_de_costo_web_bp.route("/editarCentro_de_costo_web", methods=["GET", "POST"])
 @login_required

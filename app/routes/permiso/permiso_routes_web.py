@@ -27,12 +27,12 @@ def crearPermiso_web():
 
         if "error" in result:
             FlashMessages.flash_error(result["error"])
-            return redirect(url_for("permiso_template.crearPermiso_template"))
+            return redirect(url_for("permiso_template.listaPermisos_template"))
         else:
             FlashMessages.flash_success(result["mensaje"])
-            return redirect(url_for("permiso_template.crearPermiso_template"))
+            return redirect(url_for("permiso_template.listaPermisos_template"))
 
-    return redirect(url_for("permiso_template.crearPermiso_template"))
+    return redirect(url_for("permiso_template.listaPermisos_template"))
 
 @permiso_web_bp.route("/editarPermiso_web", methods=["GET", "POST"])
 @login_required

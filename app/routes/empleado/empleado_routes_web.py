@@ -38,12 +38,12 @@ def crearEmpleado_web():
 
         if "error" in result:
             FlashMessages.flash_error(result["error"])
-            return redirect(url_for("empleado_template.crearEmpleado_template"))
+            return redirect(url_for("empleado_template.listaEmpleados_template"))
         else:
             FlashMessages.flash_success(result["mensaje"])
-            return redirect(url_for("empleado_template.crearEmpleado_template"))
+            return redirect(url_for("empleado_template.listaEmpleados_template"))
 
-    return redirect(url_for("empleado_template.crearEmpleado_template"))    
+    return redirect(url_for("empleado_template.listaEmpleados_template"))    
 
 @empleado_web_bp.route("/editarEmpleado_web", methods=["GET", "POST"])
 @login_required

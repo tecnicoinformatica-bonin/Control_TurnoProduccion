@@ -28,12 +28,12 @@ def crearDepartamento_web():
 
         if "error" in result:
             FlashMessages.flash_error(result["error"])
-            return redirect(url_for("departamento_template.crearDepartamento_template"))
+            return redirect(url_for("departamento_template.listaDepartamentos_template"))
         else:
             FlashMessages.flash_success(result["mensaje"])
-            return redirect(url_for("departamento_template.crearDepartamento_template"))
+            return redirect(url_for("departamento_template.listaDepartamentos_template"))
 
-    return redirect(url_for("departamento/crearDepartamento.html"))    
+    return redirect(url_for("departamento_template.listaDepartamentos_template"))    
 
 @departamento_web_bp.route("/editarDepartamento_web", methods=["GET", "POST"])
 @login_required

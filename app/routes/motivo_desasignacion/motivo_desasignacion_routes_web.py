@@ -26,12 +26,12 @@ def crearMotivo_desasignacion_web():
 
         if "error" in result:
             FlashMessages.flash_error(result["error"])
-            return redirect(url_for("motivo_desasignacion_template.crearMotivo_desasignacion_template"))
+            return redirect(url_for("motivo_desasignacion_template.listaMotivos_desasignacion_template"))
         else:
             FlashMessages.flash_success(result["mensaje"])
-            return redirect(url_for("motivo_desasignacion_template.crearMotivo_desasignacion_template"))
+            return redirect(url_for("motivo_desasignacion_template.listaMotivos_desasignacion_template"))
 
-    return redirect(url_for("motivo_desasignacion_template.crearMotivo_desasignacion_template",))
+    return redirect(url_for("motivo_desasignacion_template.listaMotivos_desasignacion_template",))
 
 @motivo_desasignacion_web_bp.route("/editarMotivo_desasignacion_web", methods=["GET", "POST"])
 @login_required

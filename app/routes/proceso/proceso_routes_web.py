@@ -27,12 +27,12 @@ def crearProceso_web():
 
         if "error" in result:
             FlashMessages.flash_error(result["error"])
-            return redirect(url_for("proceso_template.crearProceso_template"))
+            return redirect(url_for("proceso_template.listaProcesos_template"))
         else:
             FlashMessages.flash_success(result["mensaje"])
-            return redirect(url_for("proceso_template.crearProceso_template"))
+            return redirect(url_for("proceso_template.listaProcesos_template"))
 
-    return redirect(url_for("proceso_template.crearProceso_template"))
+    return redirect(url_for("proceso_template.listaProcesos_template"))
 
 @proceso_web_bp.route("/editarProceso_web", methods=["GET", "POST"])
 @login_required

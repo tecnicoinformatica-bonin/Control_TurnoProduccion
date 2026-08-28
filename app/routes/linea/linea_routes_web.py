@@ -28,12 +28,12 @@ def crearLinea_web():
 
         if "error" in result:
             FlashMessages.flash_error(result["error"])
-            return redirect(url_for("linea_template.crearLinea_template"))
+            return redirect(url_for("linea_template.listaLineas_template"))
         else:
             FlashMessages.flash_success(result["mensaje"])
-            return redirect(url_for("linea_template.crearLinea_template"))
+            return redirect(url_for("linea_template.listaLineas_template"))
 
-    return redirect(url_for("linea_template.crearLinea_template",))
+    return redirect(url_for("linea_template.listaLineas_template",))
 
 @linea_web_bp.route("/editarLinea_web", methods=["GET", "POST"])
 @login_required

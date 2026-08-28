@@ -27,12 +27,12 @@ def crearRol_web():
 
         if "error" in result:
             FlashMessages.flash_error(result["error"])
-            return redirect(url_for("rol_template.crearRol_template"))
+            return redirect(url_for("rol_template.listaRoles_template"))
         else:
             FlashMessages.flash_success(result["mensaje"])
-            return redirect(url_for("rol_template.crearRol_template"))
+            return redirect(url_for("rol_template.listaRoles_template"))
 
-    return redirect(url_for("rol_template.crearRol_template"))
+    return redirect(url_for("rol_template.listaRoles_template"))
 
 @rol_web_bp.route("/editarRol_web", methods=["GET", "POST"])
 @login_required
